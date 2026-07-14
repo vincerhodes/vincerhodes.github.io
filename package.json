@@ -1,0 +1,18 @@
+{
+  "name": "rightcourtsc",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Right Court SC — club website verification tooling (the site itself is plain HTML/CSS/JS with no build step; these are dev-only dependencies for the verify gate).",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run worker/"
+  },
+  "devDependencies": {
+    "html-validate": "^8.24.0",
+    "@playwright/test": "^1.48.0",
+    "ajv": "^8.17.1",
+    "vitest": "^2.1.4",
+    "lighthouse": "^12.2.1",
+    "serve": "^14.2.4"
+  }
+}
