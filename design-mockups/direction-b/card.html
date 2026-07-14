@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction B — Session Card — Right Court SC</title>
+<style>
+  :root {
+    --forest-green: #21472E;
+    --near-black-green: #152218;
+    --white: #FFFFFF;
+    --sage: #8FA893;
+    --sage-tint: #EEF3EF;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: var(--white);
+    color: var(--near-black-green);
+    padding: 1.5rem;
+  }
+  .notes { max-width: 700px; margin: 0 auto 1.5rem; font-size: 0.9rem; }
+  .card-grid {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  .card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(21, 34, 24, 0.08);
+    border-top: 3px solid var(--forest-green);
+    text-decoration: none;
+    color: var(--near-black-green);
+    display: block;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+  .card .session-no {
+    display: inline-block;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--sage-tint);
+    color: var(--forest-green);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    margin-bottom: 0.6rem;
+  }
+  .card h3 { margin: 0 0 0.35rem; color: var(--forest-green); font-size: 1.1rem; }
+  .card p { margin: 0.2rem 0; font-size: 0.9rem; }
+  .tag-row { margin-top: 0.75rem; display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .tag {
+    background: var(--sage);
+    color: var(--near-black-green);
+    font-size: 0.75rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+  }
+</style>
+</head>
+<body>
+  <p class="notes">Design Direction B — session card component: rounded corners, soft shadow, a top accent rule instead of a solid header band, pill-shaped session number.</p>
+
+  <div class="card-grid">
+    <a class="card" href="#">
+      <span class="session-no">Session 01</span>
+      <h3>Straight Length and the T</h3>
+      <p>Thursday, TBD &middot; 8 players &middot; 2 courts</p>
+      <div class="tag-row">
+        <span class="tag">length</span>
+        <span class="tag">movement</span>
+      </div>
+    </a>
+    <a class="card" href="#">
+      <span class="session-no">Session 02</span>
+      <h3>Volleys &amp; Front-Court Pressure</h3>
+      <p>Thursday, TBD &middot; 6 players &middot; 1 court</p>
+      <div class="tag-row">
+        <span class="tag">volleys</span>
+        <span class="tag">front-court</span>
+      </div>
+    </a>
+  </div>
+</body>
+</html>

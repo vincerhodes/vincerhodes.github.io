@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction A — Navbar — Right Court SC</title>
+<style>
+  :root {
+    --forest-green: #21472E;
+    --near-black-green: #152218;
+    --white: #FFFFFF;
+    --sage: #8FA893;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background: var(--white);
+    color: var(--near-black-green);
+  }
+  .notes {
+    font-family: system-ui, sans-serif;
+    max-width: 700px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+    font-size: 0.9rem;
+    color: var(--near-black-green);
+  }
+  header.site-nav {
+    background: var(--forest-green);
+    color: var(--white);
+  }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    color: var(--white);
+  }
+  .brand img {
+    height: 40px;
+    width: auto;
+  }
+  .brand span {
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  nav.primary ul {
+    list-style: none;
+    display: flex;
+    gap: 1.75rem;
+    margin: 0;
+    padding: 0;
+  }
+  nav.primary a {
+    color: var(--white);
+    text-decoration: none;
+    font-family: system-ui, sans-serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    padding: 0.25rem 0;
+    border-bottom: 2px solid transparent;
+  }
+  nav.primary a:hover,
+  nav.primary a:focus {
+    border-bottom-color: var(--sage);
+  }
+  .hamburger {
+    display: none;
+    background: none;
+    border: 1px solid var(--white);
+    color: var(--white);
+    font-size: 1.1rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 4px;
+  }
+  @media (max-width: 700px) {
+    nav.primary {
+      display: none;
+    }
+    .hamburger {
+      display: inline-block;
+    }
+  }
+</style>
+</head>
+<body>
+  <p class="notes">Design Direction A — "Heritage Crest": solid forest-green nav bar, serif wordmark, generous letter-spacing echoing the crest lettering.</p>
+
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="../../index.html">
+        <img src="../../assets/logos/logo_white_on_green.webp" alt="Right Court SC crest">
+        <span>Right Court SC</span>
+      </a>
+      <nav class="primary" aria-label="Primary">
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../../drills/index.html">Drills &amp; Sessions</a></li>
+          <li><a href="../../gallery/index.html">Gallery</a></li>
+          <li><a href="../../about/index.html">About / Join</a></li>
+        </ul>
+      </nav>
+      <button class="hamburger" type="button" aria-label="Open menu">&#9776;</button>
+    </div>
+  </header>
+</body>
+</html>

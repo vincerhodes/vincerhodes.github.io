@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction A — Homepage — Right Court SC</title>
+<style>
+  :root {
+    --forest-green: #21472E;
+    --near-black-green: #152218;
+    --white: #FFFFFF;
+    --sage: #8FA893;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--white);
+    color: var(--near-black-green);
+  }
+  h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; margin: 0 0 0.5em; }
+  .notes {
+    font-family: system-ui, sans-serif;
+    max-width: 700px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+    font-size: 0.9rem;
+  }
+  header.site-nav { background: var(--forest-green); color: var(--white); }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--white); }
+  .brand img { height: 40px; width: auto; }
+  .brand span { font-family: Georgia, serif; font-size: 1.15rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  nav.primary ul { list-style: none; display: flex; gap: 1.5rem; margin: 0; padding: 0; flex-wrap: wrap; }
+  nav.primary a { color: var(--white); text-decoration: none; font-size: 0.95rem; letter-spacing: 0.03em; }
+  .hero {
+    background: var(--forest-green);
+    color: var(--white);
+    text-align: center;
+    padding: 4rem 1.25rem;
+  }
+  .hero img.badge { height: 140px; width: auto; margin-bottom: 1rem; }
+  .hero h1 { font-size: 2.4rem; letter-spacing: 0.05em; }
+  .hero p.tagline { font-size: 1.15rem; color: var(--sage); margin: 0.25rem 0 0; }
+  .hero p.est { font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 1rem; color: var(--white); }
+  main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.25rem; }
+  .intro { max-width: 700px; margin: 0 auto 2.5rem; text-align: center; font-size: 1.05rem; line-height: 1.6; }
+  .next-session {
+    border: 1px solid var(--sage);
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    text-align: center;
+  }
+  .next-session h2 { font-size: 1.1rem; color: var(--forest-green); }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+  .tile {
+    border: 1px solid var(--sage);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--near-black-green);
+  }
+  .tile h3 { color: var(--forest-green); font-size: 1.15rem; }
+  .tile p { font-size: 0.9rem; line-height: 1.5; margin-bottom: 0; }
+  footer {
+    background: var(--forest-green);
+    color: var(--white);
+    padding: 2.5rem 1.25rem;
+    margin-top: 3rem;
+  }
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  footer img.monogram { height: 56px; width: auto; }
+  footer a { color: var(--white); }
+  footer .col { min-width: 200px; }
+  footer .col h4 { font-family: Georgia, serif; font-size: 1rem; margin: 0 0 0.5rem; }
+  footer .col p, footer .col a { display: block; font-size: 0.9rem; margin: 0.25rem 0; }
+  .copyright { text-align: center; font-size: 0.8rem; color: var(--sage); margin-top: 2rem; }
+  @media (max-width: 700px) {
+    nav.primary { display: none; }
+  }
+</style>
+</head>
+<body>
+  <p class="notes">Design Direction A — "Heritage Crest": full-bleed forest-green hero with the solid badge logo, serif headings, generous vertical rhythm.</p>
+
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="#">
+        <img src="../../assets/logos/logo_white_on_green.webp" alt="Right Court SC crest">
+        <span>Right Court SC</span>
+      </a>
+      <nav class="primary" aria-label="Primary">
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Drills &amp; Sessions</a></li>
+          <li><a href="#">Gallery</a></li>
+          <li><a href="#">About / Join</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <img class="badge" src="../../assets/logos/logo_white_on_green.webp" alt="Right Court SC badge">
+    <h1>Right Court SC</h1>
+    <p class="tagline">Recreational squash, played with intent.</p>
+    <p class="est">Est. 2026</p>
+  </section>
+
+  <main>
+    <p class="intro">Right Court SC is a recreational squash club for intermediate-to-advanced
+    players who want structured, coached sessions rather than just open court time. Whether
+    you're sharpening your length game or learning to read the front court, there's a session
+    plan built for you.</p>
+
+    <div class="next-session">
+      <h2>Next Session</h2>
+      <p>Thursday, 19:00 — Riverside Courts 3&amp;4</p>
+    </div>
+
+    <div class="tiles">
+      <a class="tile" href="#">
+        <h3>Drills &amp; Sessions</h3>
+        <p>Browse the full library of coached session plans, complete with court diagrams.</p>
+      </a>
+      <a class="tile" href="#">
+        <h3>Gallery</h3>
+        <p>Photos from sessions, socials, and club nights.</p>
+      </a>
+      <a class="tile" href="#">
+        <h3>AI Drill Builder</h3>
+        <p>Generate a fresh session plan in seconds, tailored to who's showing up tonight.</p>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="col">
+        <img class="monogram" src="../../assets/logos/monogram.webp" alt="Right Court SC monogram">
+      </div>
+      <div class="col">
+        <h4>Get in touch</h4>
+        <a href="mailto:info@rightcourtsc.com">info@rightcourtsc.com</a>
+        <p>Thursdays, 19:00 — Riverside Courts</p>
+      </div>
+      <div class="col">
+        <h4>Quick links</h4>
+        <a href="#">Drill Builder</a>
+        <a href="#">About / Join</a>
+      </div>
+    </div>
+    <p class="copyright">&copy; 2026 Right Court SC. All rights reserved.</p>
+  </footer>
+</body>
+</html>

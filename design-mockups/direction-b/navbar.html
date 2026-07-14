@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction B — Navbar — Right Court SC</title>
+<style>
+  :root {
+    --forest-green: #21472E;
+    --near-black-green: #152218;
+    --white: #FFFFFF;
+    --sage: #8FA893;
+    --sage-tint: #EEF3EF;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--white);
+    color: var(--near-black-green);
+  }
+  .notes {
+    max-width: 700px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+    font-size: 0.9rem;
+  }
+  header.site-nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--sage-tint);
+  }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.9rem 1.25rem;
+  }
+  .brand { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--forest-green); }
+  .brand img { height: 36px; width: auto; }
+  .brand span { font-weight: 700; font-size: 1.05rem; letter-spacing: 0.03em; }
+  nav.primary ul { list-style: none; display: flex; gap: 2rem; margin: 0; padding: 0; }
+  nav.primary a {
+    color: var(--near-black-green);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding-bottom: 0.3rem;
+    border-bottom: 2px solid transparent;
+  }
+  nav.primary a:hover,
+  nav.primary a:focus {
+    color: var(--forest-green);
+    border-bottom-color: var(--forest-green);
+  }
+  .hamburger {
+    display: none;
+    background: var(--sage-tint);
+    border: none;
+    color: var(--forest-green);
+    font-size: 1.1rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 6px;
+  }
+  @media (max-width: 700px) {
+    nav.primary { display: none; }
+    .hamburger { display: inline-block; }
+  }
+</style>
+</head>
+<body>
+  <p class="notes">Design Direction B — "Modern Court": light navbar, green underline-on-hover links, more whitespace and a lighter overall touch than Direction A's solid-green bar.</p>
+
+  <header class="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="../../index.html">
+        <img src="../../assets/logos/logo_green_on_white.webp" alt="Right Court SC crest">
+        <span>Right Court SC</span>
+      </a>
+      <nav class="primary" aria-label="Primary">
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../../drills/index.html">Drills &amp; Sessions</a></li>
+          <li><a href="../../gallery/index.html">Gallery</a></li>
+          <li><a href="../../about/index.html">About / Join</a></li>
+        </ul>
+      </nav>
+      <button class="hamburger" type="button" aria-label="Open menu">&#9776;</button>
+    </div>
+  </header>
+</body>
+</html>

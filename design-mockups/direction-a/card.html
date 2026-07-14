@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direction A — Session Card — Right Court SC</title>
+<style>
+  :root {
+    --forest-green: #21472E;
+    --near-black-green: #152218;
+    --white: #FFFFFF;
+    --sage: #8FA893;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: var(--white);
+    color: var(--near-black-green);
+    padding: 1.5rem;
+  }
+  h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; }
+  .notes { max-width: 700px; margin: 0 auto 1.5rem; font-size: 0.9rem; }
+  .card-grid {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+  .card {
+    border: 1px solid var(--sage);
+    border-radius: 8px;
+    overflow: hidden;
+    text-decoration: none;
+    color: var(--near-black-green);
+    display: block;
+  }
+  .card-band {
+    background: var(--forest-green);
+    color: var(--white);
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .card-body { padding: 1.25rem 1rem; }
+  .card h3 { margin: 0 0 0.35rem; color: var(--forest-green); font-size: 1.1rem; }
+  .card p { margin: 0.2rem 0; font-size: 0.9rem; }
+  .tag-row { margin-top: 0.75rem; display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .tag {
+    background: var(--sage);
+    color: var(--near-black-green);
+    font-size: 0.75rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+  }
+</style>
+</head>
+<body>
+  <p class="notes">Design Direction A — session card component: a banded header in solid forest green, serif title, sage skill-theme tags.</p>
+
+  <div class="card-grid">
+    <a class="card" href="#">
+      <div class="card-band">Session 01</div>
+      <div class="card-body">
+        <h3>Straight Length and the T</h3>
+        <p>Thursday, TBD &middot; 8 players &middot; 2 courts</p>
+        <div class="tag-row">
+          <span class="tag">length</span>
+          <span class="tag">movement</span>
+        </div>
+      </div>
+    </a>
+    <a class="card" href="#">
+      <div class="card-band">Session 02</div>
+      <div class="card-body">
+        <h3>Volleys &amp; Front-Court Pressure</h3>
+        <p>Thursday, TBD &middot; 6 players &middot; 1 court</p>
+        <div class="tag-row">
+          <span class="tag">volleys</span>
+          <span class="tag">front-court</span>
+        </div>
+      </div>
+    </a>
+  </div>
+</body>
+</html>
