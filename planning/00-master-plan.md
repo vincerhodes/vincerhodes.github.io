@@ -43,9 +43,8 @@ something pre-fixed by this plan — surfacing it clearly is what preflight is f
 no build step (plain HTML/CSS/JS per `03-TECHNICAL-ARCHITECTURE.md`); `npm` is only used to install dev
 tooling (`html-validate`, `@playwright/test`, `ajv`, `vitest`, `lighthouse`) that the checks below invoke.
 
-**ASSUMPTION:** GitHub repo name is `<your-github-username>.github.io` per the root-site pattern decided
-in `03-TECHNICAL-ARCHITECTURE.md`. **OPEN:** the actual GitHub username/account has not been provided —
-needed before Phase 1's deploy step and before `03`'s CORS allow-list can be finalized with a real URL.
+GitHub repo name is `vincerhodes.github.io` per the root-site pattern decided in
+`03-TECHNICAL-ARCHITECTURE.md` — CORS allow-list and deploy target are both resolved.
 
 ## Global frozen set (every phase, in addition to phase-specific entries below)
 ```
@@ -133,7 +132,7 @@ contains exactly 4 items (Home, Drills & Sessions, Gallery, About/Join) and the 
 
 **Human checkpoints:**
 - Confirm GitHub Pages deployment is live and reachable at the public
-  `https://<your-github-username>.github.io/` URL (external deploy timing/DNS propagation — a sandboxed
+  `https://vincerhodes.github.io/` URL (external deploy timing/DNS propagation — a sandboxed
   check has no reliable way to depend on this).
 
 ---

@@ -3,6 +3,9 @@ quality_reports/
 .DS_Store
 test-results/
 playwright-report/
+.env
+.env.*
+.dev.vars
 
 # .claude/verify runtime output — regenerated every run, not source (see .claude/verify/integrity.sh)
 .claude/verify/last-run.json

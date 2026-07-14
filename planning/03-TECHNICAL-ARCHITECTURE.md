@@ -19,9 +19,9 @@ You could — Cloudflare Pages also hosts static sites for free and can run the 
 6. Point a subdomain, `api.rightcourtsc.com`, at the Cloudflare Worker (this is a Cloudflare-native route, straightforward since DNS already lives there).
 
 ## GitHub repo structure (decided: root user/org site)
-Repo name is fixed to `<your-github-username>.github.io` — this exact name is required for GitHub's root-site pattern (serves from the account root with zero Pages config, vs. a named repo needing custom-domain settings). Replace `<your-github-username>` with the real account before Phase 1.
+Repo name is fixed to `vincerhodes.github.io` — this exact name is required for GitHub's root-site pattern (serves from the account root with zero Pages config, vs. a named repo needing custom-domain settings).
 ```
-<your-github-username>.github.io
+vincerhodes.github.io
 ├── index.html
 ├── about/
 ├── gallery/
@@ -72,7 +72,7 @@ distinct from the partial-diagram-failure case above, which never surfaces an er
 
 **Security notes:**
 - The OpenRouter API key must live only in the Worker's environment (`wrangler secret put OPENROUTER_API_KEY`), never in any client-side JS or committed to the repo.
-- CORS on the Worker should be restricted to `https://rightcourtsc.com` and `https://<your-github-username>.github.io` (the root-site Pages URL used during development before the custom domain is cut over — see repo structure above).
+- CORS on the Worker should be restricted to `https://rightcourtsc.com` and `https://vincerhodes.github.io` (the root-site Pages URL used during development before the custom domain is cut over — see repo structure above).
 - **Rate limiting (decided):** a Cloudflare KV counter, not Cloudflare's built-in rate limiting rules — KV stays inside the free tier at this traffic volume with a straightforward implementation (increment a per-IP key with a 1-hour TTL), whereas the built-in rules product has its own plan-dependent limits and would be one more thing to configure outside the Worker's own code. Cap: 30 generations per IP per hour. Set higher than the "abuse guard" instinct
   suggests: members will often hit this from the same clubhouse/car-park wifi NAT'd to one shared IP
   (see `00-PROJECT-BRIEF.md` — "phone in the car park before a session" is the primary use case), and
