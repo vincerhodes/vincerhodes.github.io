@@ -7,7 +7,7 @@ These are the actual provided files (moved here from a `planning/images/` stagin
 |---|---|---|
 | `logo.png` / `logo.webp` | Full badge, green-filled ring with white line-art/text | **Standard logo — default choice for most placements**, including on white backgrounds |
 | `logo_green_on_white.png` / `.webp` | Line-art only (no fill), thin green strokes on white/transparent | Lighter-weight alternative for white backgrounds where the filled badge feels too heavy (e.g. dense text contexts); `logo.png` is preferred by default |
-| `logo_white_on_green.png` / `.webp` | Same badge, green-filled with white line-art/text | For placement directly on green-colored page sections (hero backgrounds, footer) |
+| `logo_white_on_green.png` / `.webp` | Same badge, green-filled with white line-art/text | For placement directly on green-colored page sections (hero backgrounds). Not the footer — the footer uses the monogram (see `monogram.png` row below), per `02-SITE-MAP-AND-CONTENT.md` and the `STATIC.nav-footer-structure` check. |
 | `monogram.png` / `.webp` | "RC" embroidery-style monogram with two ball icons | Favicon, small UI elements (mobile nav, social avatar) — anywhere the full badge would be too small to read |
 
 The moon-gate/crossed-rackets motif is worth carrying through into small UI touches (e.g. a simplified gate motif as a section divider or loading icon), but don't overuse it.
@@ -37,7 +37,7 @@ The logo lettering is a classic serif with wide letter-spacing (a stamped/colleg
 
 ## Visual tone
 Traditional/heritage club feel (crest logo, "EST." date, forest green) rather than a modern sporty/neon look. Lean into:
-- Generous white space, restrained color use (green + ivory + white, not a rainbow of accent colors)
+- Generous white space, restrained color use (green + white, not a rainbow of accent colors — no ivory in the current palette, see the Color Palette section's correction above)
 - Subtle, not flashy, motion (fades/slides, not bouncy animations)
 - The crossed-rackets/moon-gate motif can recur subtly as a divider or watermark, not as decoration on every page
 

@@ -83,7 +83,7 @@ distinct from the partial-diagram-failure case above, which never surfaces an er
 ## wrangler.toml (starting sketch)
 ```toml
 name = "rightcourtsc-drill-builder"
-main = "src/worker.js"
+main = "worker/src/index.js"    # matches planning/00-master-plan.md's Phase 4 deliverable path
 compatibility_date = "2026-07-01"
 
 routes = [

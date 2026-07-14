@@ -23,7 +23,7 @@ Before scaffolding the repo or writing implementation code, work through the vis
 ## Phase 3 — Drills & Sessions library + diagram system
 - Build the `/drills/` listing page and individual session plan page template.
 - Build the SVG diagram system per `06-SVG-DIAGRAM-SYSTEM.md`: the static court template and the `renderCourtDiagram` component. Do this here, not later, since Phase 4 depends on it.
-- Convert the existing session plan (Session 1 — Straight Length and the T) into the site's content format as the first real entry, using its Markdown structure as the template for all future sessions. Author the diagram JSON for each of its four drills as the first worked examples of the schema.
+- Move the already-authored Session 1 (Straight Length and the T) content from `planning/content-source/session-01-straight-length-and-the-t/` into the site's content format as the first real entry — its Markdown structure is the template for all future sessions. Its two drills' diagram JSON (already written and schema-validated) are the first worked examples of the schema; see `planning/00-master-plan.md`'s Phase 3 section for the exact target paths.
 - Implement the simple client-side theme filter (length, volleys, drops, boasts, movement, front-court, deception, serves/returns).
 - Write `CONTENTS-HOWTO.md` explaining, for a non-technical committee member, how a new session plan file (and its diagram JSON files) gets added.
 
@@ -34,13 +34,13 @@ Before scaffolding the repo or writing implementation code, work through the vis
 - Build the `/drill-builder/` form and results view, rendering both the plan text and the diagrams using the same components built in Phase 3 (reuse, don't build a second layout or a second diagram renderer).
 - Implement rate limiting (30 generations/IP/hour — see `03-TECHNICAL-ARCHITECTURE.md` for why this is higher than the "abuse guard" instinct) and CORS restrictions as specified.
 - Add the "Save this session plan" button described in `05-AI-DRILL-BUILDER-PROMPT.md` ("Save to library"), packaging a liked generation into Phase 3's exact content-library file layout for a committee member to commit by hand. Build this after the generate/render flow works and Phase 3's file layout is finalized, not before.
-- Test with realistic inputs (5, 6, 7, 8 players; each of the standard themes; wet-weather/low-turnout notes) against the model shortlist in `05-AI-DRILL-BUILDER-PROMPT.md` (`claude-haiku-4.5:exacto`, `gpt-5.4-mini:exacto`, `gemini-3.1-flash-lite`) to confirm both plan quality and diagram sanity (no overlapping markers, no out-of-bounds coordinates, low diagram-degrade rate) before locking in the default and considering this phase done.
+- Test with realistic inputs (5, 6, 7, 8 players; each of the standard themes; wet-weather/low-turnout notes) against the **decided** default model (`claude-haiku-4.5:exacto` — see `05-AI-DRILL-BUILDER-PROMPT.md`'s "Notes for implementation"). This is what `JUDGE.live-generation-quality` in `.claude/verify/checks.yaml` validates, and its PASS criteria are exhaustive — every run produces a rendered plan (zero total failures) and the diagram-degrade rate across all runs is under 10%. It does not separately check for overlapping markers or out-of-bounds coordinates — those are already enforced structurally by the tool-use schema (`minimum`/`maximum`/`enum`) and the Worker's defensive clamp (see `06-SVG-DIAGRAM-SYSTEM.md`), not by this live check. Passing `JUDGE.live-generation-quality` is what "done" means for this phase; comparing the other two shortlisted models (`gpt-5.4-mini:exacto`, `gemini-3.1-flash-lite`) head-to-head is optional exploratory follow-up, not required.
 
 ## Phase 5 — Domain + polish
 - Register and configure `rightcourtsc.com` per the DNS steps in `03-TECHNICAL-ARCHITECTURE.md`.
 - Point the Worker at `api.rightcourtsc.com`.
 - Full cross-device QA pass (iOS Safari, Android Chrome, desktop Chrome/Firefox/Safari at minimum).
-- Basic performance pass: compress logo images (the source PNGs are large — export optimized/appropriately-sized versions for web use, and generate a small favicon from the monogram), check Lighthouse scores, confirm no layout shift on the AI drill builder's loading state.
+- Basic performance pass: logo images are already provided as optimized `.webp` versions alongside their `.png` sources (see `01-BRAND-STYLE-GUIDE.md` — no further compression work needed there); generate a small favicon from the monogram, check Lighthouse scores, confirm no layout shift on the AI drill builder's loading state.
 
 ## Out of scope for v1 (note, don't build unless asked)
 - Member login/accounts

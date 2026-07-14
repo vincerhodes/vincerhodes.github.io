@@ -8,7 +8,7 @@ sentences.
 Component specs referenced by phases below are unchanged and live alongside this file:
 `01-BRAND-STYLE-GUIDE.md`, `02-SITE-MAP-AND-CONTENT.md`, `03-TECHNICAL-ARCHITECTURE.md`,
 `05-AI-DRILL-BUILDER-PROMPT.md`, `06-SVG-DIAGRAM-SYSTEM.md`. Real assets already exist:
-`assets/logos/**` and `content-source/session-01-straight-length-and-the-t/**` (the first session's
+`assets/logos/**` and `planning/content-source/session-01-straight-length-and-the-t/**` (the first session's
 content + 2 schema-validated diagram JSONs, staged ahead of Phase 3 — see that phase below for where it
 moves).
 
@@ -55,14 +55,14 @@ needed before Phase 1's deploy step and before `03`'s CORS allow-list can be fin
 *.config.*
 ```
 
-## Test layout (bootstrapped in Phase 0, extended per phase)
+## Test layout (each directory first created in the phase that first needs it — see per-phase `writable`)
 ```
 tests/
-├── responsive/     # Playwright: no-horizontal-scroll at 375/768/1280px
-├── structure/      # Playwright: nav/footer/DOM structure assertions
-└── e2e/            # Playwright: user-flow smoke tests
-scripts/            # Node validation scripts invoked by DOMAIN checks
-worker/              # Cloudflare Worker source + its own vitest unit tests
+├── responsive/     # Playwright: no-horizontal-scroll at 375/768/1280px — Phase 0
+├── structure/      # Playwright: nav/footer/DOM structure assertions   — Phase 1
+└── e2e/            # Playwright: user-flow smoke tests                 — Phase 3
+scripts/            # Node validation/perf scripts invoked by checks (domain, static, e2e — see checks.yaml) — Phase 3
+worker/              # Cloudflare Worker source + its own vitest unit tests — Phase 4
 ```
 Every phase below introduces new spec files for its own checks (there's no pre-existing test suite to
 extend — this is a from-scratch repo), so every phase is marked `test_authoring: true` and carries the
@@ -115,7 +115,6 @@ deliverables:
   - about/index.html
   - assets/css/**
   - assets/js/nav.js        # shared nav/footer partial logic
-  - CNAME
 loop: {max_iterations: 10, stuck_after: 4}
 writable: ["index.html", "about/**", "assets/css/**", "assets/js/nav.js", "tests/responsive/**", "tests/structure/**"]
 frozen: ["design-mockups/**"]   # Phase 0's approved direction is the source of truth, don't silently redesign it here
@@ -188,8 +187,8 @@ frozen: ["design-mockups/**", "index.html", "about/**", "gallery/**"]
 test_authoring: true
 ```
 The session-01 content and both diagram JSONs already exist at
-`content-source/session-01-straight-length-and-the-t/` (authored and schema-validated ahead of this
-phase) — this phase's job is to move that folder to `content/sessions/`, build the page template and
+`planning/content-source/session-01-straight-length-and-the-t/` (authored and schema-validated ahead of
+this phase) — this phase's job is to move that folder to `content/sessions/`, build the page template and
 `renderCourtDiagram` component around it, and write the validator script that the check below runs.
 
 **Checks:**
@@ -255,9 +254,10 @@ does call the real OpenRouter endpoint:
     every run produces a rendered plan (zero total failures) and the diagram-degrade rate across all
     runs is under 10%. Quote the actual failures/degraded drills as evidence for a FAIL verdict.
 ```
-**Cost note:** this check makes real, billed OpenRouter API calls (~13 generations × ≈$0.02 each ≈ $0.25
-per run) and will rerun on every phase-4 loop iteration up to `max_iterations: 10` — worst case ≈$2.50
-for the phase, trivial against the project's own cost target but worth knowing before the loop runs
+**Cost note:** this check makes real, billed OpenRouter API calls — 14 generations (4 player-count runs
++ 9 theme runs [8 named themes + "surprise me"] + 1 wet-weather run) × ≈$0.02 each ≈ $0.28 per run — and
+will rerun on every phase-4 loop iteration up to `max_iterations: 10` — worst case ≈$2.80 for the phase,
+trivial against the project's own cost target but worth knowing before the loop runs
 unattended.
 
 **Human checkpoints:**
@@ -276,11 +276,18 @@ deliverables:
   - assets/favicon.png
   - scripts/check-image-sizes.mjs
   - scripts/run-lighthouse.mjs
+  - CNAME                    # moved here from an earlier Phase-1 draft — its only purpose (03) is
+                              # telling GitHub Pages to serve the custom domain, which 04 always said
+                              # comes in Phase 5, not Phase 1. Not shell-tested (DNS cutover is a human
+                              # checkpoint below); this just makes the deliverable list match reality.
 loop: {max_iterations: 10, stuck_after: 4}
-writable: ["assets/**", "**/*.html", "README.md", "scripts/check-image-sizes.mjs", "scripts/run-lighthouse.mjs", "tests/e2e/**"]
+writable: ["assets/**", "index.html", "about/**", "gallery/**", "drills/**", "drill-builder/**", "README.md", "CNAME", "scripts/check-image-sizes.mjs", "scripts/run-lighthouse.mjs", "tests/e2e/**"]
 # Deliberately narrower than phases 2-4's accumulating pattern: polish is cross-cutting by definition
-# (favicon links, meta tags, perf tweaks) and needs **/*.html across every page built so far. Worker
-# source/config and content data still don't belong to a "polish" phase, so those stay frozen.
+# (favicon links, meta tags, perf tweaks) and needs every REAL site page built so far — but not
+# design-mockups/** (Phase 0 reference material, never a live page) which frozen below still protects.
+# An earlier draft used a blanket "**/*.html" here, which silently included design-mockups/**/*.html
+# and directly contradicted the frozen line below — preflight's contradiction hunt caught it. Listing
+# real page globs explicitly instead means writable and frozen can never overlap by construction.
 frozen: ["design-mockups/**", "worker/**", "wrangler.toml", "content/sessions/**"]
 test_authoring: true
 ```
@@ -289,8 +296,8 @@ test_authoring: true
 |---|---|---|---|
 | `STATIC.favicon-present` | static, phase5 | `test -f assets/favicon.png` | 0 |
 | `STATIC.images-optimized` | static, phase5 | `node scripts/check-image-sizes.mjs` | 0 |
-| `E2E.lighthouse-perf` | static, phase5 | `node scripts/run-lighthouse.mjs` | 0 |
-| `E2E.cross-browser-smoke` | static, phase5 | `npx playwright test tests/e2e/smoke.spec.ts --project=chromium --project=firefox` | 0 |
+| `E2E.lighthouse-perf` | e2e, phase5 | `node scripts/run-lighthouse.mjs` | 0 |
+| `E2E.cross-browser-smoke` | e2e, phase5 | `npx playwright test tests/e2e/smoke.spec.ts --project=chromium --project=firefox` | 0 |
 
 `STATIC.images-optimized` asserts every file under `assets/**/*.webp` is under 100KB (the real logo webps
 already measured 9–40KB during planning, so this is easily satisfiable, not aspirational).

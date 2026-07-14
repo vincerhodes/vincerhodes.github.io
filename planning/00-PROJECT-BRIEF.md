@@ -13,9 +13,9 @@ A small, fast, good-looking static website for Right Court SC (a recreational sq
 ## Pages (v1)
 1. **Home** — intro, logo, what the club is, next session info, CTA to gallery/drills.
 2. **Gallery** — embedded Google Drive folder of session/event photos.
-3. **Drills & Sessions** — library of session plans (starting with the ones already written), browsable by theme.
-4. **AI Drill Builder** — form (player count, theme, duration) → generates a formatted session plan in the house style.
-5. **About / Contact** — basic club info, how to join, contact method.
+3. **Drills & Sessions** — library of session plans (starting with Session 1, already written), browsable by theme.
+4. **AI Drill Builder** — form (player count, courts, theme, duration) → generates a formatted session plan in the house style.
+5. **About / Join** — basic club info, how to join, contact method (see `02-SITE-MAP-AND-CONTENT.md` for the exact page name — matches the nav item).
 
 ## Recommended stack
 | Layer | Choice | Why |

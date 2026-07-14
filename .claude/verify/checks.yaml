@@ -112,7 +112,8 @@ checks:
       drill's diagram rendered or degraded (see 06-SVG-DIAGRAM-SYSTEM.md's graceful-degrade path). PASS
       only if every run produces a rendered plan (zero total failures) and the diagram-degrade rate
       across all runs is under 10%. Quote the actual failures/degraded drills as evidence for a FAIL
-      verdict. Note: this check makes real, billed OpenRouter API calls (~13 generations, ≈$0.25/run).
+      verdict. Note: this check makes real, billed OpenRouter API calls (14 generations: 4 player-count
+      runs + 9 theme runs + 1 wet-weather run, ≈$0.28/run).
 
   # --- Phase 5: Domain + polish --------------------------------------------------------------------
   - id: STATIC.favicon-present
