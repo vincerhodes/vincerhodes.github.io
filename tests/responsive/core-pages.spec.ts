@@ -17,6 +17,7 @@ const VIEWPORTS = [
 const PAGES = [
   { name: 'home', file: path.join(REPO_ROOT, 'index.html') },
   { name: 'about', file: path.join(REPO_ROOT, 'about', 'index.html') },
+  { name: 'gallery', file: path.join(REPO_ROOT, 'gallery', 'index.html') },
 ];
 
 test.describe('core page responsiveness (no horizontal overflow)', () => {

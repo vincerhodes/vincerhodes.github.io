@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — Right Court SC</title>
+<meta name="description" content="Photos from Right Court SC sessions, socials, and club nights.">
+<link rel="stylesheet" href="../assets/css/styles.css">
+<style>
+  /* Gallery page (Phase 2) — scoped to this page only; the shared stylesheet stays untouched
+     during this phase (see planning/00-master-plan.md Phase 2 "writable" scope). */
+  .gallery-intro {
+    max-width: 700px;
+    margin: 0 auto 1.5rem;
+    padding: 0 1.25rem;
+    line-height: 1.6;
+  }
+
+  .gallery-embed {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+    padding: 0 1.25rem;
+  }
+
+  .gallery-embed iframe {
+    display: block;
+    width: 100%;
+    height: 80vh;
+    border: 0;
+    border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+  <header class="site-nav" id="site-header"></header>
+
+  <section class="page-header">
+    <h1>Gallery</h1>
+  </section>
+
+  <main>
+    <p class="gallery-intro">
+      Photos from sessions, socials, and club nights &mdash; all stored in a shared Google Drive
+      folder below. Want to add your own? Ask a committee member for the upload link, or drop your
+      photos to <a href="mailto:info@rightcourtsc.com">info@rightcourtsc.com</a> and we'll get them
+      added.
+    </p>
+
+    <div class="gallery-embed">
+      <iframe
+        src="https://drive.google.com/embeddedfolderview?id=FOLDER_ID#grid"
+        title="Right Court SC photo gallery (Google Drive)"
+        loading="lazy">
+      </iframe>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="../assets/js/nav.js" data-base=".."></script>
+</body>
+</html>
