@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drills &amp; Sessions — Right Court SC</title>
+<meta name="description" content="Browse Right Court SC's library of coached session plans, filterable by skill theme, complete with court diagrams.">
+<link rel="stylesheet" href="../assets/css/styles.css">
+<style>
+  /* Drills & Sessions page (Phase 3) — scoped to this page only; the shared stylesheet stays
+     untouched during this phase (see planning/00-master-plan.md Phase 3 "writable" scope). */
+  .drills-intro {
+    max-width: 700px;
+    margin: 0 auto 1.5rem;
+    padding: 0 1.25rem;
+    line-height: 1.6;
+  }
+
+  .theme-filter {
+    max-width: 1100px;
+    margin: 0 auto 2rem;
+    padding: 0 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .theme-filter button {
+    border: 1px solid var(--sage);
+    background: var(--white);
+    color: var(--forest-green);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+
+  .theme-filter button[aria-pressed="true"] {
+    background: var(--forest-green);
+    color: var(--white);
+  }
+
+  .session-grid {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+    padding: 0 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .session-card {
+    border: 1px solid var(--sage);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-decoration: none;
+    color: var(--near-black-green);
+    display: block;
+  }
+
+  .session-card .session-number {
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin: 0 0 0.4rem;
+  }
+
+  .session-card h3 {
+    color: var(--forest-green);
+    font-size: 1.1rem;
+  }
+
+  .session-card .session-date {
+    font-size: 0.85rem;
+    margin: 0.75rem 0 0;
+  }
+
+  .session-card[hidden] {
+    display: none;
+  }
+
+  .no-results {
+    max-width: 1100px;
+    margin: 0 auto 3rem;
+    padding: 0 1.25rem;
+    color: var(--near-black-green);
+  }
+</style>
+</head>
+<body>
+  <header class="site-nav" id="site-header"></header>
+
+  <section class="page-header">
+    <h1>Drills &amp; Sessions</h1>
+  </section>
+
+  <main>
+    <p class="drills-intro">
+      Coached session plans from past and upcoming Thursdays &mdash; each with a full drill
+      breakdown, conditioned games, and court diagrams. Filter by skill theme to find sessions
+      that focus on what you want to work on.
+    </p>
+
+    <div class="theme-filter" role="group" aria-label="Filter sessions by skill theme">
+      <button type="button" data-theme="all" aria-pressed="true">All</button>
+      <button type="button" data-theme="length" aria-pressed="false">Length</button>
+      <button type="button" data-theme="volleys" aria-pressed="false">Volleys</button>
+      <button type="button" data-theme="drops" aria-pressed="false">Drops</button>
+      <button type="button" data-theme="boasts" aria-pressed="false">Boasts</button>
+      <button type="button" data-theme="movement" aria-pressed="false">Movement</button>
+      <button type="button" data-theme="front-court" aria-pressed="false">Front-court</button>
+      <button type="button" data-theme="deception" aria-pressed="false">Deception</button>
+      <button type="button" data-theme="serves-returns" aria-pressed="false">Serves &amp; Returns</button>
+    </div>
+
+    <div class="session-grid" id="session-grid">
+      <a class="session-card" href="session-01-straight-length-and-the-t/index.html" data-themes="length movement">
+        <p class="session-number">Session 1</p>
+        <h3>Straight Length and the T</h3>
+        <p class="session-date">8 players &middot; 2 courts &middot; 120 min</p>
+      </a>
+    </div>
+
+    <p class="no-results" id="no-results" hidden>No sessions match that theme yet &mdash; check back soon.</p>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="../assets/js/nav.js" data-base=".."></script>
+  <script>
+    (function () {
+      var buttons = document.querySelectorAll('.theme-filter button');
+      var cards = document.querySelectorAll('.session-card');
+      var noResults = document.getElementById('no-results');
+
+      function applyFilter(theme) {
+        var visibleCount = 0;
+        cards.forEach(function (card) {
+          var themes = (card.getAttribute('data-themes') || '').split(' ');
+          var show = theme === 'all' || themes.indexOf(theme) !== -1;
+          card.hidden = !show;
+          if (show) visibleCount += 1;
+        });
+        if (noResults) noResults.hidden = visibleCount !== 0;
+      }
+
+      buttons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          buttons.forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+          btn.setAttribute('aria-pressed', 'true');
+          applyFilter(btn.getAttribute('data-theme'));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
