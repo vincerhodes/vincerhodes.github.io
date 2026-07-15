@@ -183,21 +183,19 @@ dev` with the OpenRouter call **stubbed** (`TEST_MODE=true` env flag the Worker 
 
 ---
 
-## Phase 5 — Domain + polish — **scripted work DONE**; DNS cutover + mobile QA still open
+## Phase 5 — Domain + polish — **DONE**
 Deliverables:
 - `assets/favicon.png` — generated from `assets/logos/monogram.png` per `01-BRAND-STYLE-GUIDE.md`.
   Linked via `<link rel="icon">` on all 6 real pages.
 - `scripts/check-image-sizes.mjs` — done, passing (4 webp files, all under 100KB).
 - `scripts/run-lighthouse.mjs` — done, passing (100 performance, 0.000 CLS on Home/Drills/Drill
   Builder).
-- `CNAME` — **reverted, not in the repo.** `rightcourtsc.com` turned out to already be a registered
-  domain sitting on a registrar parking page (openresty, "Parking Page" title, content dated
-  2026-06-02) — not unregistered-and-waiting as this plan assumed. Adding `CNAME` made GitHub Pages
-  301-redirect all live `vincerhodes.github.io` traffic to that parking page, breaking the live site
-  for a few minutes until reverted. **Do not re-add `CNAME` until the domain situation is confirmed
-  with the user** — find out whether they already own `rightcourtsc.com` (parking pages are what a
-  freshly-registered-but-unconfigured domain looks like) and get it pointed at GitHub Pages first, or
-  confirm a different domain is actually intended.
+- `CNAME` — done, contains `rightcourtsc.com`, live. `rightcourtsc.com` is user-owned (registrar:
+  Spaceship, Inc.) and was sitting on a registrar parking page when first discovered — not
+  unregistered-and-waiting as this plan originally assumed. Nameservers were delegated to Cloudflare,
+  DNS records added (4 A + 4 AAAA to GitHub Pages, `www` CNAME), then `CNAME` re-added once verified.
+  HTTPS certificate issued (`CN=rightcourtsc.com`), Enforce HTTPS on. Full incident history and the
+  cert-stuck fix (`gh api` clear-and-reset trick) are in `planning/HANDOFF.md`.
 - `tests/e2e/smoke.spec.ts` + `playwright.config.js` — done, passing on both chromium and firefox.
 
 **Verify:**
@@ -222,9 +220,8 @@ Don't touch `worker/**`, `wrangler.toml`, or `content/sessions/**` while doing p
 Phase 3/4 deliverables, unrelated to this phase's scope.
 
 **Human checkpoints:**
-- Manual QA pass on real iOS Safari and Android Chrome devices.
-- DNS cutover: `rightcourtsc.com` registered and pointed per `03-TECHNICAL-ARCHITECTURE.md`, HTTPS
-  certificate issuance confirmed — external registrar/Cloudflare account access required.
+- Manual QA pass on real iOS Safari and Android Chrome devices. Still open.
+- ~~DNS cutover~~ — done, see deliverables above.
 
 ---
 
@@ -235,9 +232,8 @@ Phase 3/4 deliverables, unrelated to this phase's scope.
 3. **Worker deploy** — KV namespace, `OPENROUTER_API_KEY` secret, `wrangler deploy`. Currently the
    live drill-builder page can't actually generate anything.
 4. **Live-generation quality check** — after the Worker is deployed (item 3).
-5. **DNS cutover** — blocked on confirming who controls `rightcourtsc.com`: it's a registered domain
-   on a parking page, not unregistered as originally assumed (see Phase 5 note above). Confirm
-   ownership/registrar access with the user before re-adding `CNAME` or touching DNS.
-6. **Manual mobile QA** — real iOS Safari + Android Chrome.
+5. **Manual mobile QA** — real iOS Safari + Android Chrome.
+
+DNS cutover is done — `rightcourtsc.com` live with HTTPS, see Phase 5 above.
 
 See `planning/HANDOFF.md` for current session-to-session status.

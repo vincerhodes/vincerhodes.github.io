@@ -18,14 +18,25 @@
   linked on all 6 real pages, `scripts/check-image-sizes.mjs` and `scripts/run-lighthouse.mjs` both
   passing (100 Lighthouse performance, ~0 CLS on Home/Drills/Drill Builder), `tests/e2e/smoke.spec.ts`
   + `playwright.config.js` passing on chromium + firefox.
-- **Incident (2026-07-15): `CNAME` briefly broke the live site, reverted.** Added `CNAME` containing
-  `rightcourtsc.com` per the Phase 5 spec, assuming (per planning) the domain was unregistered and
-  DNS cutover was a separate future step. It isn't unregistered — `rightcourtsc.com` already resolves
-  to a registrar parking page (openresty, "Parking Page" title). GitHub Pages responded to the CNAME
-  file by 301-redirecting all `vincerhodes.github.io` traffic to that parking page — the live site was
-  broken for a few minutes until `CNAME` was reverted (commit `336e544`). **Do not re-add `CNAME`**
-  until domain ownership is confirmed with the user — either they already own `rightcourtsc.com` and it
-  just needs pointing at GitHub Pages, or a different domain was intended.
+- **DNS cutover: DONE.** `rightcourtsc.com` is user-owned (registrar: Spaceship, Inc.), was sitting on
+  a registrar parking page when first discovered (see incident below). Nameservers delegated to
+  Cloudflare (`OLIVIA.NS.CLOUDFLARE.COM` / `YEW.NS.CLOUDFLARE.COM`), zone DNS holds the 4 GitHub Pages
+  A records, 4 AAAA records, and a `www` CNAME to `vincerhodes.github.io` — all DNS-only (not proxied).
+  `CNAME` file is back in the repo. HTTPS certificate issued (`CN=rightcourtsc.com`, expires
+  2026-10-13), "Enforce HTTPS" is on. `https://rightcourtsc.com/`, `/gallery/`, `/drills/`, and
+  `/drill-builder/` all return `200`. `http://` and the old `vincerhodes.github.io` URL both correctly
+  redirect through to `https://rightcourtsc.com/`.
+  - **Incident, resolved:** first CNAME add (2026-07-15) briefly broke the live site — the domain
+    turned out to already be registered and parked (not unregistered as planning assumed), so GitHub's
+    301 redirect sent all traffic to the parking page until reverted (commit `336e544`).
+  - **Second incident, resolved:** after DNS was correctly repointed, GitHub's cert issuance sat
+    stuck for ~2 hours with the `https_certificate` field entirely absent from the Pages API response
+    — it had likely never properly started. Fix: `gh api -X PUT repos/vincerhodes/vincerhodes.github.io/pages`
+    with `{"cname": null}` to clear the custom domain, confirm the repo falls back to serving cleanly
+    on `vincerhodes.github.io`, then PUT `{"cname": "rightcourtsc.com"}` again — this reliably
+    re-triggers a fresh certificate authorization (state went `authorization_created` → `approved` in
+    under 2 minutes). If a future custom-domain cert ever seems stuck with no `https_certificate`
+    field in the API response, this clear-and-reset is the fix, not more waiting.
 - **Build-loop tooling (`/plan-preflight`, `/verify-init`, `/converge`, and everything they generated —
   `.claude/verify/**`, `.claude/integrity/**`, `.claude/skills/verify-rightcourtsc/`,
   `planning/PREFLIGHT.json`, `planning/LOOP-LOG.md`) has been removed.** It didn't work reliably and is
@@ -87,8 +98,8 @@ tests/                              # responsive/, structure/, e2e/
 ## Next steps
 
 1. Confirm "Verify on entry" above is clean.
-2. Work through the "Outstanding work" list at the bottom of `00-master-plan.md`, in order: Drive
-   folder id, contact email, Worker deploy (3 steps), live-generation quality check, DNS cutover,
-   mobile QA. All require external account access (Google Drive, Cloudflare, a domain registrar, real
-   devices) that this session doesn't have — none are scriptable further from here.
+2. Work through the remaining "Outstanding work" list at the bottom of `00-master-plan.md`: Drive
+   folder id, contact email, Worker deploy (3 steps), live-generation quality check, mobile QA. DNS
+   cutover is done (see above). Remaining items require external account access (Google Drive,
+   Cloudflare Worker dashboard, real devices) that this session doesn't have on its own.
 3. Update this file and commit when a checkpoint is reached.
