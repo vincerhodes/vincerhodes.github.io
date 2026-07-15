@@ -190,8 +190,14 @@ Deliverables:
 - `scripts/check-image-sizes.mjs` — done, passing (4 webp files, all under 100KB).
 - `scripts/run-lighthouse.mjs` — done, passing (100 performance, 0.000 CLS on Home/Drills/Drill
   Builder).
-- `CNAME` — done, contains `rightcourtsc.com`. Tells GitHub Pages to serve the custom domain; **does
-  not by itself complete DNS cutover** — that's the separate human step below.
+- `CNAME` — **reverted, not in the repo.** `rightcourtsc.com` turned out to already be a registered
+  domain sitting on a registrar parking page (openresty, "Parking Page" title, content dated
+  2026-06-02) — not unregistered-and-waiting as this plan assumed. Adding `CNAME` made GitHub Pages
+  301-redirect all live `vincerhodes.github.io` traffic to that parking page, breaking the live site
+  for a few minutes until reverted. **Do not re-add `CNAME` until the domain situation is confirmed
+  with the user** — find out whether they already own `rightcourtsc.com` (parking pages are what a
+  freshly-registered-but-unconfigured domain looks like) and get it pointed at GitHub Pages first, or
+  confirm a different domain is actually intended.
 - `tests/e2e/smoke.spec.ts` + `playwright.config.js` — done, passing on both chromium and firefox.
 
 **Verify:**
@@ -229,8 +235,9 @@ Phase 3/4 deliverables, unrelated to this phase's scope.
 3. **Worker deploy** — KV namespace, `OPENROUTER_API_KEY` secret, `wrangler deploy`. Currently the
    live drill-builder page can't actually generate anything.
 4. **Live-generation quality check** — after the Worker is deployed (item 3).
-5. **DNS cutover** — `rightcourtsc.com` → GitHub Pages / Cloudflare, external account access required.
-   `CNAME` file is in place (Phase 5); DNS records themselves are not.
+5. **DNS cutover** — blocked on confirming who controls `rightcourtsc.com`: it's a registered domain
+   on a parking page, not unregistered as originally assumed (see Phase 5 note above). Confirm
+   ownership/registrar access with the user before re-adding `CNAME` or touching DNS.
 6. **Manual mobile QA** — real iOS Safari + Android Chrome.
 
 See `planning/HANDOFF.md` for current session-to-session status.
