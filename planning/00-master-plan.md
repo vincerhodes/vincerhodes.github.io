@@ -183,15 +183,18 @@ dev` with the OpenRouter call **stubbed** (`TEST_MODE=true` env flag the Worker 
 
 ---
 
-## Phase 5 — Domain + polish — **NOT STARTED**
+## Phase 5 — Domain + polish — **scripted work DONE**; DNS cutover + mobile QA still open
 Deliverables:
-- `assets/favicon.png`
-- `scripts/check-image-sizes.mjs`
-- `scripts/run-lighthouse.mjs`
-- `CNAME` (tells GitHub Pages to serve the custom domain — DNS cutover is a separate human step below,
-  this file alone doesn't do it)
+- `assets/favicon.png` — generated from `assets/logos/monogram.png` per `01-BRAND-STYLE-GUIDE.md`.
+  Linked via `<link rel="icon">` on all 6 real pages.
+- `scripts/check-image-sizes.mjs` — done, passing (4 webp files, all under 100KB).
+- `scripts/run-lighthouse.mjs` — done, passing (100 performance, 0.000 CLS on Home/Drills/Drill
+  Builder).
+- `CNAME` — done, contains `rightcourtsc.com`. Tells GitHub Pages to serve the custom domain; **does
+  not by itself complete DNS cutover** — that's the separate human step below.
+- `tests/e2e/smoke.spec.ts` + `playwright.config.js` — done, passing on both chromium and firefox.
 
-**Verify (once built):**
+**Verify:**
 | what | cmd | expect_exit |
 |---|---|---|
 | favicon present | `test -f assets/favicon.png` | 0 |
@@ -199,12 +202,15 @@ Deliverables:
 | lighthouse perf | `node scripts/run-lighthouse.mjs` | 0 |
 | cross-browser smoke | `npx playwright test tests/e2e/smoke.spec.ts --project=chromium --project=firefox` | 0 |
 
-`images optimized` should assert every file under `assets/**/*.webp` is under 100KB (the real logo
-webps already measured 9–40KB during planning, so this is easily satisfiable). `lighthouse perf` should
-serve the site locally, run Lighthouse against Home, Drills, and Drill Builder, and assert Performance
-≥ 90 and CLS < 0.1. `cross-browser smoke` should run chromium + firefox only — webkit can't launch on
-this dev machine (missing system deps needing `sudo apt-get install`); if a future environment has sudo
-access, `playwright install-deps` + adding `--project=webkit` is a two-line fix.
+`images optimized` asserts every file under `assets/**/*.webp` is under 100KB. `lighthouse perf` serves
+the site locally, runs Lighthouse against Home, Drills, and Drill Builder, and asserts Performance ≥ 90
+and CLS < 0.1. `cross-browser smoke` runs chromium + firefox only — webkit can't launch on this dev
+machine (missing system deps needing `sudo apt-get install`); if a future environment has sudo access,
+`playwright install-deps` + adding a webkit project is a two-line fix. The smoke test skips the
+zero-console-errors assertion on the gallery page specifically — its Drive iframe still points at the
+placeholder `FOLDER_ID`, which reliably 404s against the real Drive endpoint until that's swapped for
+the real folder (see Phase 2 and the Outstanding work list below); same reason
+`tests/structure/gallery.spec.ts` never asserted on console cleanliness either.
 
 Don't touch `worker/**`, `wrangler.toml`, or `content/sessions/**` while doing polish work — those are
 Phase 3/4 deliverables, unrelated to this phase's scope.
@@ -218,13 +224,13 @@ Phase 3/4 deliverables, unrelated to this phase's scope.
 
 ## Outstanding work, all phases (summary)
 
-1. **Phase 5** — favicon, image-size + Lighthouse scripts, CNAME, cross-browser smoke test. Not started.
-2. **Gallery** — swap placeholder Drive `FOLDER_ID` for the real one; verify mobile usability.
-3. **About page** — swap placeholder contact email `info@rightcourtsc.com` for the club's real address.
-4. **Worker deploy** — KV namespace, `OPENROUTER_API_KEY` secret, `wrangler deploy`. Currently the
+1. **Gallery** — swap placeholder Drive `FOLDER_ID` for the real one; verify mobile usability.
+2. **About page** — swap placeholder contact email `info@rightcourtsc.com` for the club's real address.
+3. **Worker deploy** — KV namespace, `OPENROUTER_API_KEY` secret, `wrangler deploy`. Currently the
    live drill-builder page can't actually generate anything.
-5. **Live-generation quality check** — after the Worker is deployed (item 4).
-6. **DNS cutover** — `rightcourtsc.com` → GitHub Pages / Cloudflare, external account access required.
-7. **Manual mobile QA** — real iOS Safari + Android Chrome.
+4. **Live-generation quality check** — after the Worker is deployed (item 3).
+5. **DNS cutover** — `rightcourtsc.com` → GitHub Pages / Cloudflare, external account access required.
+   `CNAME` file is in place (Phase 5); DNS records themselves are not.
+6. **Manual mobile QA** — real iOS Safari + Android Chrome.
 
 See `planning/HANDOFF.md` for current session-to-session status.

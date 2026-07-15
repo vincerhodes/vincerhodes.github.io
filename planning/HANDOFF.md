@@ -14,7 +14,12 @@
   `api.rightcourtsc.com` doesn't resolve (DNS cutover is a Phase 5 checkpoint, not done). The
   drill-builder UI is live and renders, but a generate request will fail until the Worker is deployed —
   see `planning/00-master-plan.md`'s Phase 4 "Still open" list for the 3 deploy steps.
-- **Phase 5 (Domain + polish): not started.**
+- **Phase 5 (Domain + polish): scripted work done.** Favicon generated from `assets/logos/monogram.png`
+  and linked on all 6 real pages, `scripts/check-image-sizes.mjs` and `scripts/run-lighthouse.mjs`
+  both passing (100 Lighthouse performance, 0 CLS on Home/Drills/Drill Builder), `CNAME` in place
+  (`rightcourtsc.com` — file only, DNS not cut over), `tests/e2e/smoke.spec.ts` +
+  `playwright.config.js` passing on chromium + firefox. DNS cutover and manual mobile QA are still
+  open human checkpoints (see Phase 5 in `00-master-plan.md`).
 - **Build-loop tooling (`/plan-preflight`, `/verify-init`, `/converge`, and everything they generated —
   `.claude/verify/**`, `.claude/integrity/**`, `.claude/skills/verify-rightcourtsc/`,
   `planning/PREFLIGHT.json`, `planning/LOOP-LOG.md`) has been removed.** It didn't work reliably and is
@@ -76,9 +81,8 @@ tests/                              # responsive/, structure/, e2e/
 ## Next steps
 
 1. Confirm "Verify on entry" above is clean.
-2. Build Phase 5 (favicon, `scripts/check-image-sizes.mjs`, `scripts/run-lighthouse.mjs`, `CNAME`,
-   cross-browser smoke test) — see `planning/00-master-plan.md`'s Phase 5 section. No loop tooling; just
-   write the files and run the verify commands by hand.
-3. Work through the "Outstanding work" list at the bottom of `00-master-plan.md`: Drive folder id,
-   contact email, Worker deploy (3 steps), live-generation quality check, DNS cutover, mobile QA.
-4. Update this file and commit when a checkpoint is reached.
+2. Work through the "Outstanding work" list at the bottom of `00-master-plan.md`, in order: Drive
+   folder id, contact email, Worker deploy (3 steps), live-generation quality check, DNS cutover,
+   mobile QA. All require external account access (Google Drive, Cloudflare, a domain registrar, real
+   devices) that this session doesn't have — none are scriptable further from here.
+3. Update this file and commit when a checkpoint is reached.
