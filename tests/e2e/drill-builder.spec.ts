@@ -104,7 +104,7 @@ test.describe('AI Drill Builder — end-to-end generate flow (stubbed OpenRouter
     await page.locator('#field-courts').fill('2');
     await page.locator('#field-theme').selectOption('length');
     await page.locator('#field-duration').fill('120');
-    await page.locator('#field-notes').fill('wet weather');
+    await page.locator('#field-notes').fill('low turnout expected');
 
     await page.getByRole('button', { name: 'Generate session plan' }).click();
 

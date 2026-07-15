@@ -253,13 +253,13 @@ describe('buildUserMessage', () => {
       courts: 2,
       theme: 'length',
       duration_minutes: 120,
-      notes: 'wet weather',
+      notes: 'low turnout expected',
     });
     expect(msg).toContain('Confirmed players: 6');
     expect(msg).toContain('Courts booked: 2');
     expect(msg).toContain('Theme: length');
     expect(msg).toContain('Session length: 120 minutes');
-    expect(msg).toContain('Additional notes: wet weather');
+    expect(msg).toContain('Additional notes: low turnout expected');
   });
 
   it('uses "none" when notes is empty/missing', () => {

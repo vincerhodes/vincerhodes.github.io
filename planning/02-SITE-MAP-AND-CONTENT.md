@@ -35,7 +35,7 @@ Keep the nav to 4 items max for mobile — this should sit comfortably as a hamb
   Requires the target Drive folder to be shared as "Anyone with the link can view."
 
 ### 4. AI Drill Builder (`/drill-builder/`)
-- Simple form: number of confirmed players, number of courts booked, theme (dropdown of the standard skill themes, or "surprise me"), session length (default 2 hours), any notes (e.g. low turnout, wet weather). Linked from a homepage feature tile and a persistent footer link (see Home, above) — it has no entry in the main nav bar to keep that list at 4 items for mobile.
+- Simple form: number of confirmed players, number of courts booked, theme (dropdown of the standard skill themes, or "surprise me"), session length (default 2 hours), any notes (e.g. low turnout, two beginners joining this week). Linked from a homepage feature tile and a persistent footer link (see Home, above) — it has no entry in the main nav bar to keep that list at 4 items for mobile.
 - Submit → calls the Cloudflare Worker endpoint → Worker calls an LLM via OpenRouter using the system prompt in `05-AI-DRILL-BUILDER-PROMPT.md` → returns a formatted session plan.
 - Render the result in the same visual template as the static session plans (reuse the component), with a "copy"/"download as text" button plus a separate "Save this session plan" button that packages a good generation into the Drills & Sessions library's file format for a committee member to commit — see "Save to library" in `05-AI-DRILL-BUILDER-PROMPT.md`.
 - No login required for v1; rate limit in the Worker by IP (30/hour — see `03-TECHNICAL-ARCHITECTURE.md`) to prevent abuse/cost overrun, since each generation costs a small amount of API credit.

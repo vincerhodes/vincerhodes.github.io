@@ -186,7 +186,7 @@ text. Put the full plan into plan_markdown, structured as:
    front-wall/left corner and (1,1) is the back-wall/right corner.
 4. Games details — for each game: condition, scoring, rotation, duration.
 5. Court split — who/what runs on each court if courts differ.
-6. Coach's notes — 2–3 things to watch for, and a wet-weather/low-turnout fallback
+6. Coach's notes — 2–3 things to watch for, and a low-turnout fallback
    in one line.
 Keep it practical and printable — someone should be able to run the session from
 the plan alone, with no further explanation needed.

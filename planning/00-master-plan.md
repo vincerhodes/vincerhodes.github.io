@@ -176,7 +176,7 @@ dev` with the OpenRouter call **stubbed** (`TEST_MODE=true` env flag the Worker 
   backend.
 - **Live-generation quality check** (real OpenRouter calls, not free — ≈$0.28 for a full run): once the
   Worker is deployed, run the live drill-builder endpoint for 5/6/7/8 players, each of the 8 named
-  themes plus "surprise me", and one wet-weather/low-turnout note (14 generations total). Confirm every
+  themes plus "surprise me", and one low-turnout note (14 generations total). Confirm every
   run produces a rendered plan and the diagram-degrade rate (see `06-SVG-DIAGRAM-SYSTEM.md`'s
   graceful-degrade path) stays under 10%. This only makes sense against the real deployed Worker, not
   the stub.

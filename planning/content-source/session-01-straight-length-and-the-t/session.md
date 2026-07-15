@@ -79,4 +79,4 @@ Both courts mirror the same drill/game at the same time — this plan is written
 ## Coach's notes
 - Watch for players cutting the T-touch short in Drill 2 and Games 2 — the whole point is building a deliberate recovery habit, not just going through the motions.
 - If numbers are odd (7 or 9), run Drill 2's 3-on-court rotation from the start on one court instead of building up to it, and float the extra player between courts each set.
-- Wet-weather/low-turnout fallback: if only 1 court is available or turnout is 5–6 players, run everything on a single court with a tighter constant 3-player rotation (skip Drill 2's 4th resting slot) and shorten each block by about 5 minutes to keep the same proportions.
+- Low-turnout fallback: if only 1 court is available or turnout is 5–6 players, run everything on a single court with a tighter constant 3-player rotation (skip Drill 2's 4th resting slot) and shorten each block by about 5 minutes to keep the same proportions.

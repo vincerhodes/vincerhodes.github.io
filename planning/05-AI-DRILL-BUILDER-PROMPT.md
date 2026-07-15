@@ -9,7 +9,7 @@ This is the system prompt the Cloudflare Worker should send via OpenRouter for e
 - `courts` (integer, e.g. 1–3 — number of courts booked for the session)
 - `theme` (one of: length, volleys, drops, boasts, movement, front-court, deception, serves/returns — or "surprise me")
 - `duration_minutes` (default 120)
-- `notes` (free text — optional, e.g. "wet weather," "two beginners joining this week," "low turnout expected")
+- `notes` (free text — optional, e.g. "two beginners joining this week," "low turnout expected")
 
 ## Structured output via forced tool-use (not prose-embedded JSON)
 Earlier drafts of this spec had the model emit the plan as Markdown with fenced ` ```json ` diagram
@@ -171,7 +171,7 @@ text. Put the full plan into plan_markdown, structured as:
    front-wall/left corner and (1,1) is the back-wall/right corner.
 4. Games details — for each game: condition, scoring, rotation, duration.
 5. Court split — who/what runs on each court if courts differ.
-6. Coach's notes — 2–3 things to watch for, and a wet-weather/low-turnout fallback
+6. Coach's notes — 2–3 things to watch for, and a low-turnout fallback
    in one line.
 Keep it practical and printable — someone should be able to run the session from
 the plan alone, with no further explanation needed.

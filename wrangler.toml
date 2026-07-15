@@ -17,7 +17,7 @@ routes = [
 
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "<create with: wrangler kv namespace create RATE_LIMIT>"
+id = "26d84c6ee0094eb8ad59ee15fabc6a2c"
 
 # Secrets (not in this file): set via `wrangler secret put OPENROUTER_API_KEY`.
 #
