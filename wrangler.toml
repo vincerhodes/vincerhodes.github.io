@@ -1,0 +1,30 @@
+name = "rightcourtsc-drill-builder"
+main = "worker/src/index.js"
+# planning/03-TECHNICAL-ARCHITECTURE.md's "starting sketch" used 2026-07-01, but the installed
+# wrangler (4.86.0)'s workerd binary only supports compatibility dates up to 2026-05-03 — confirmed
+# via `wrangler dev` erroring "newest date supported by this server binary is 2026-05-03" at Phase 4
+# build time. Using a future date `wrangler dev` can't run defeats the point of a dev/test flag this
+# check re-runs on every loop iteration, so pin to the newest date this machine's tooling supports.
+compatibility_date = "2026-05-03"
+
+routes = [
+  # Cloudflare Custom Domains don't support wildcards or paths (unlike a plain Route) — the
+  # `/*` in planning/03-TECHNICAL-ARCHITECTURE.md's "starting sketch" doesn't actually deploy;
+  # confirmed via `wrangler dev` erroring "Wildcard operators (*) are not allowed in Custom
+  # Domains" at Phase 4 build time. A bare hostname is the correct form for custom_domain = true.
+  { pattern = "api.rightcourtsc.com", custom_domain = true }
+]
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "<create with: wrangler kv namespace create RATE_LIMIT>"
+
+# Secrets (not in this file): set via `wrangler secret put OPENROUTER_API_KEY`.
+#
+# Dev/test-only variables (never set here — passed at invocation time, see
+# tests/e2e/drill-builder.spec.ts and package.json's "worker:dev" script):
+#   TEST_MODE            "true" makes the Worker return a stubbed generation instead of calling
+#                         OpenRouter (see worker/src/index.js's stubGeneration) — real API calls
+#                         don't belong in a check that reruns on every loop iteration.
+#   EXTRA_ALLOWED_ORIGIN  one extra CORS origin on top of the two production origins baked into
+#                         worker/src/lib.js's ALLOWED_ORIGINS — used for the local dev/test server.
