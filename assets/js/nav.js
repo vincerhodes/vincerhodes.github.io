@@ -27,8 +27,7 @@
   var headerHtml =
     '<div class="nav-inner">' +
     '<a class="brand" href="' + prefix + 'index.html">' +
-    '<img src="' + prefix + 'assets/logos/logo_white_on_green.webp" alt="Right Court SC crest">' +
-    '<span>Right Court SC</span>' +
+    '<img src="' + prefix + 'assets/logos/monogram.webp" alt="Right Court SC">' +
     '</a>' +
     '<nav class="primary" aria-label="Primary">' +
     '<ul>' + navListHtml + '</ul>' +
@@ -44,7 +43,7 @@
     '<div class="col">' +
     '<h4>Get in touch</h4>' +
     '<a href="mailto:info@rightcourtsc.com">info@rightcourtsc.com</a>' +
-    '<p>Thursdays, 19:00 — Riverside Courts</p>' +
+    '<p>Wed 18:00–20:00 &amp; Sat 09:00–11:00 — Feeling Squash</p>' +
     '</div>' +
     '<div class="col">' +
     '<h4>Quick links</h4>' +

@@ -2,13 +2,16 @@
    Direction A ("Heritage Crest") from design-mockups/direction-a/ — solid forest-green nav/hero,
    serif headings, generous letter-spacing. See planning/01-BRAND-STYLE-GUIDE.md for the palette. */
 
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&display=swap");
+
 :root {
   --forest-green: #21472E;
   --near-black-green: #152218;
   --white: #FFFFFF;
   --sage: #8FA893;
+  --header-height: 76px;
 
-  --font-heading: Georgia, "Times New Roman", serif;
+  --font-heading: "Lora", Georgia, "Times New Roman", serif;
   --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
@@ -45,41 +48,41 @@ a {
 /* --- Header / primary nav ------------------------------------------------------------------ */
 
 header.site-nav {
-  background: var(--forest-green);
-  color: var(--white);
+  background: var(--white);
+  color: var(--forest-green);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  z-index: 100;
+  border-bottom: 1px solid #E3E6E2;
 }
 
 .nav-inner {
   max-width: 1100px;
+  height: 100%;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.75rem 1.25rem;
+  padding: 0 1.25rem;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
+  display: block;
+  line-height: 0;
   text-decoration: none;
-  color: var(--white);
-  min-width: 0;
+  color: var(--forest-green);
 }
 
 .brand img {
-  height: 40px;
+  height: 56px;
   width: auto;
   flex-shrink: 0;
-}
-
-.brand span {
-  font-family: var(--font-heading);
-  font-size: 1.15rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  display: block;
 }
 
 nav.primary ul {
@@ -92,24 +95,26 @@ nav.primary ul {
 }
 
 nav.primary a {
-  color: var(--white);
+  color: var(--forest-green);
   text-decoration: none;
   font-size: 0.95rem;
   letter-spacing: 0.03em;
   padding: 0.25rem 0;
+  opacity: 0.75;
   border-bottom: 2px solid transparent;
 }
 
 nav.primary a:hover,
 nav.primary a:focus {
-  border-bottom-color: var(--sage);
+  opacity: 1;
+  border-bottom-color: var(--forest-green);
 }
 
 .hamburger {
   display: none;
   background: none;
-  border: 1px solid var(--white);
-  color: var(--white);
+  border: 1px solid var(--forest-green);
+  color: var(--forest-green);
   font-size: 1.1rem;
   padding: 0.35rem 0.6rem;
   border-radius: 4px;
@@ -140,6 +145,7 @@ nav.primary a:focus {
   background: var(--forest-green);
   color: var(--white);
   text-align: center;
+  margin-top: var(--header-height);
   padding: 4rem 1.25rem;
 }
 
@@ -231,6 +237,7 @@ main {
   background: var(--forest-green);
   color: var(--white);
   text-align: center;
+  margin-top: var(--header-height);
   padding: 3rem 1.25rem;
 }
 
