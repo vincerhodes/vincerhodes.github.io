@@ -72,32 +72,33 @@
   to { transform: rotate(360deg); }
 }
 
-/* --- Pattern: drive (length) — long, flat drive parallel to the side wall, deep into the front
-   wall, firm squash on arrival. ------------------------------------------------------------- */
+/* --- Pattern: drive (length) — a flat, level drive parallel to the side wall — rises to height
+   early and holds it, rather than arcing up and dropping down, hitting the front wall while
+   still up rather than down near the floor. -------------------------------------------------- */
 .ball-spinner-arc--drive { animation: ball-spinner-bounce--drive 1.4s linear infinite; }
 .ball-spinner-shadow--drive { animation: ball-spinner-shadow--drive 1.4s linear infinite; }
 
 @keyframes ball-spinner-bounce--drive {
   0% { transform: translate(0px, 0px) scale(1, 1); }
-  20% { transform: translate(20px, -17.6px) scale(1, 1); }
-  38% { transform: translate(50px, -34px) scale(1, 1); }
-  46% { transform: translate(66px, -26.4px) scale(0.85, 1.15); }
-  50% { transform: translate(72px, -20px) scale(0.55, 1.4); }
-  54% { transform: translate(66px, -26.4px) scale(0.85, 1.15); }
-  70% { transform: translate(40px, -29px) scale(1, 1); }
-  92% { transform: translate(6px, -4.6px) scale(1, 1); }
+  18% { transform: translate(22px, -22px) scale(1, 1); }
+  34% { transform: translate(44px, -27px) scale(1, 1); }
+  44% { transform: translate(58px, -28px) scale(1, 1); }
+  50% { transform: translate(72px, -26px) scale(0.55, 1.4); }
+  56% { transform: translate(58px, -28px) scale(0.85, 1.15); }
+  68% { transform: translate(40px, -26px) scale(1, 1); }
+  88% { transform: translate(12px, -8px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--drive {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  20% { transform: translate(20.2px, -5.6px) scale(0.7); opacity: 0.24; }
-  38% { transform: translate(50.4px, -14px) scale(0.5); opacity: 0.12; }
-  46% { transform: translate(66.2px, -18.4px) scale(0.78); opacity: 0.29; }
-  50% { transform: translate(72px, -20px) scale(1); opacity: 0.45; }
-  54% { transform: translate(66.2px, -18.4px) scale(0.78); opacity: 0.29; }
-  70% { transform: translate(39.6px, -11px) scale(0.55); opacity: 0.15; }
-  92% { transform: translate(5.8px, -1.6px) scale(0.93); opacity: 0.41; }
+  18% { transform: translate(22px, -4px) scale(0.65); opacity: 0.2; }
+  34% { transform: translate(44px, -5px) scale(0.55); opacity: 0.15; }
+  44% { transform: translate(58px, -5px) scale(0.55); opacity: 0.15; }
+  50% { transform: translate(72px, -5px) scale(0.7); opacity: 0.25; }
+  56% { transform: translate(58px, -5px) scale(0.55); opacity: 0.15; }
+  68% { transform: translate(40px, -5px) scale(0.55); opacity: 0.15; }
+  88% { transform: translate(12px, -1px) scale(0.85); opacity: 0.35; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
@@ -163,32 +164,32 @@
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: volley (volleys) — quick, low, direct — struck early and hit hard and flat at the
-   front wall, minimal air time. ------------------------------------------------------------------ */
-.ball-spinner-arc--volley { animation: ball-spinner-bounce--volley 0.95s linear infinite; }
-.ball-spinner-shadow--volley { animation: ball-spinner-shadow--volley 0.95s linear infinite; }
+/* --- Pattern: volley (volleys) — quick and direct, but with real air under it — struck early and
+   hit crisply at the front wall well above the tin, not skimmed along the floor. --------------- */
+.ball-spinner-arc--volley { animation: ball-spinner-bounce--volley 1s linear infinite; }
+.ball-spinner-shadow--volley { animation: ball-spinner-shadow--volley 1s linear infinite; }
 
 @keyframes ball-spinner-bounce--volley {
   0% { transform: translate(0px, 0px) scale(1, 1); }
-  22% { transform: translate(34px, -10px) scale(1, 1); }
-  40% { transform: translate(60px, -16px) scale(1, 1); }
-  46% { transform: translate(68px, -18px) scale(0.85, 1.15); }
-  50% { transform: translate(72px, -20px) scale(0.5, 1.45); }
-  54% { transform: translate(68px, -18px) scale(0.85, 1.15); }
-  72% { transform: translate(42px, -14px) scale(1, 1); }
-  90% { transform: translate(12px, -4px) scale(1, 1); }
+  22% { transform: translate(30px, -16px) scale(1, 1); }
+  40% { transform: translate(54px, -26px) scale(1, 1); }
+  46% { transform: translate(64px, -29px) scale(0.85, 1.15); }
+  50% { transform: translate(72px, -30px) scale(0.5, 1.45); }
+  54% { transform: translate(64px, -29px) scale(0.85, 1.15); }
+  72% { transform: translate(38px, -22px) scale(1, 1); }
+  90% { transform: translate(10px, -6px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--volley {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  22% { transform: translate(34px, -4px) scale(0.85); opacity: 0.36; }
-  40% { transform: translate(60px, -6.4px) scale(0.75); opacity: 0.3; }
-  46% { transform: translate(68px, -7.2px) scale(0.85); opacity: 0.36; }
-  50% { transform: translate(72px, -8px) scale(1); opacity: 0.45; }
-  54% { transform: translate(68px, -7.2px) scale(0.85); opacity: 0.36; }
-  72% { transform: translate(42px, -5.6px) scale(0.8); opacity: 0.33; }
-  90% { transform: translate(12px, -1.6px) scale(0.95); opacity: 0.42; }
+  22% { transform: translate(30px, -6.4px) scale(0.8); opacity: 0.32; }
+  40% { transform: translate(54px, -10.4px) scale(0.68); opacity: 0.24; }
+  46% { transform: translate(64px, -11.6px) scale(0.8); opacity: 0.32; }
+  50% { transform: translate(72px, -12px) scale(1); opacity: 0.45; }
+  54% { transform: translate(64px, -11.6px) scale(0.8); opacity: 0.32; }
+  72% { transform: translate(38px, -8.8px) scale(0.75); opacity: 0.28; }
+  90% { transform: translate(10px, -2.4px) scale(0.93); opacity: 0.4; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
@@ -327,34 +328,35 @@
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: crosscourt (movement) — a cross-court drive: travels wide across the floor before
-   converging on the front wall, echoing the ground a "movement" session covers. --------------- */
-.ball-spinner-arc--crosscourt { animation: ball-spinner-bounce--crosscourt 1.8s linear infinite; }
-.ball-spinner-shadow--crosscourt { animation: ball-spinner-shadow--crosscourt 1.8s linear infinite; }
+/* --- Pattern: crosscourt (movement) — a cross-court drive: stays low while crossing the width of
+   the floor, then rises smoothly into the front wall on the far side. A single continuous sweep —
+   no dip-then-rise reversal, which read as a glitch rather than a shot. ------------------------- */
+.ball-spinner-arc--crosscourt { animation: ball-spinner-bounce--crosscourt 1.7s linear infinite; }
+.ball-spinner-shadow--crosscourt { animation: ball-spinner-shadow--crosscourt 1.7s linear infinite; }
 
 @keyframes ball-spinner-bounce--crosscourt {
   0% { transform: translate(0px, 0px) scale(1, 1); }
-  18% { transform: translate(30px, 3px) scale(1, 1); }
-  34% { transform: translate(62px, 6px) scale(1, 1); }
-  44% { transform: translate(85px, 0px) scale(1, 1); }
-  52% { transform: translate(78px, -12px) scale(0.9, 1.1); }
-  58% { transform: translate(72px, -20px) scale(0.6, 1.35); }
-  64% { transform: translate(76px, -14px) scale(0.9, 1.1); }
-  78% { transform: translate(48px, -6px) scale(1, 1); }
-  92% { transform: translate(14px, 1px) scale(1, 1); }
+  16% { transform: translate(24px, 2px) scale(1, 1); }
+  30% { transform: translate(46px, 0px) scale(1, 1); }
+  42% { transform: translate(66px, -6px) scale(1, 1); }
+  50% { transform: translate(80px, -13px) scale(0.9, 1.1); }
+  56% { transform: translate(90px, -19px) scale(0.6, 1.35); }
+  62% { transform: translate(82px, -13px) scale(0.9, 1.1); }
+  76% { transform: translate(50px, -3px) scale(1, 1); }
+  90% { transform: translate(16px, 1px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--crosscourt {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  18% { transform: translate(30px, 2px) scale(0.85); opacity: 0.35; }
-  34% { transform: translate(62px, 4px) scale(0.7); opacity: 0.26; }
-  44% { transform: translate(85px, 0px) scale(0.65); opacity: 0.22; }
-  52% { transform: translate(78px, -7px) scale(0.8); opacity: 0.3; }
-  58% { transform: translate(72px, -8px) scale(0.5); opacity: 0.15; }
-  64% { transform: translate(76px, -6px) scale(0.7); opacity: 0.25; }
-  78% { transform: translate(48px, -3px) scale(0.85); opacity: 0.35; }
-  92% { transform: translate(14px, 0px) scale(0.95); opacity: 0.42; }
+  16% { transform: translate(24px, 1px) scale(0.85); opacity: 0.36; }
+  30% { transform: translate(46px, 0px) scale(0.8); opacity: 0.32; }
+  42% { transform: translate(66px, -2px) scale(0.7); opacity: 0.25; }
+  50% { transform: translate(80px, -4px) scale(0.55); opacity: 0.16; }
+  56% { transform: translate(90px, -6px) scale(0.75); opacity: 0.28; }
+  62% { transform: translate(82px, -4px) scale(0.6); opacity: 0.2; }
+  76% { transform: translate(50px, -1px) scale(0.85); opacity: 0.36; }
+  90% { transform: translate(16px, 0px) scale(0.95); opacity: 0.42; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
