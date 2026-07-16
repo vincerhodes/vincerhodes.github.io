@@ -13,6 +13,12 @@
 
   --font-heading: "Lora", Georgia, "Times New Roman", serif;
   --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* This site is light-only by design (no dark theme built) — opt out of browsers/OSes that
+     auto-invert colors on pages without a declared scheme. Without this, a phone with "force dark
+     mode for web content" enabled can heuristically re-color a transparent-background bordered
+     button like .hamburger and land on text/border/background all reading as the same color. */
+  color-scheme: light;
 }
 
 * {
@@ -112,10 +118,11 @@ nav.primary a:focus {
 
 .hamburger {
   display: none;
-  background: none;
+  background: var(--white);
   border: 1px solid var(--forest-green);
   color: var(--forest-green);
   font-size: 1.1rem;
+  line-height: 1;
   padding: 0.35rem 0.6rem;
   border-radius: 4px;
 }
