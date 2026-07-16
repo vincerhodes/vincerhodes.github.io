@@ -1,0 +1,319 @@
+/* Right Court SC — modular squash-ball loader. See assets/js/ball-loader.js for the markup
+   builder + pattern-selection logic. Self-contained: any page that wants the loader just needs
+   this stylesheet + that script, then calls window.RCBallLoader.markup(message, theme).
+
+   Scene: an isometric corner of a court — wooden floor, side wall, back wall (with a tin line) —
+   with the ball hopping across the floor and into a wall, squashing flat on impact. Real squash
+   court walls are white, so the walls are white with a forest-green outline ("green surround");
+   the floor is a wood tone matching a real sprung squash floor. Speed-dot yellow on the ball is
+   the site's one other deliberate spot of color.
+
+   Multiple tracer PATTERNS are available (drive, boast, drop, volley, arc, sweep, wobble,
+   flourish) — each a distinct path/squash/timing combination echoing a real squash shot. The JS
+   module maps a drill-builder theme to one of these, or picks randomly when no theme is given. */
+
+.ball-spinner-svg {
+  overflow: visible;
+}
+
+.ball-spinner-floor {
+  fill: #DEB873;
+  stroke: #C79A55;
+  stroke-opacity: 0.6;
+  stroke-width: 1;
+}
+
+.ball-spinner-plank {
+  stroke: #C79A55;
+  stroke-width: 1;
+  opacity: 0.35;
+}
+
+.ball-spinner-wall-back,
+.ball-spinner-wall-side {
+  fill: var(--white);
+  stroke: var(--forest-green);
+  stroke-width: 1.5;
+}
+
+.ball-spinner-tin {
+  stroke: var(--forest-green);
+  stroke-width: 1.5;
+  opacity: 0.35;
+}
+
+.ball-spinner-shadow {
+  fill: var(--near-black-green);
+  opacity: 0.3;
+  transform-origin: 37px 89px;
+}
+
+.ball-spinner-arc {
+  transform-origin: 37px 89px;
+}
+
+.ball-spinner-spin {
+  transform-origin: 37px 89px;
+  animation: ball-spinner-spin 1.6s linear infinite;
+}
+
+.ball-spinner-body {
+  fill: var(--near-black-green);
+}
+
+.ball-spinner-seam {
+  fill: none;
+  stroke: var(--sage);
+  stroke-width: 0.75;
+  opacity: 0.6;
+}
+
+.ball-spinner-dot {
+  fill: #F2C230;
+}
+
+@keyframes ball-spinner-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Pattern: drive (length) — long, flat drive parallel to the side wall, deep into the back
+   corner, firm squash on arrival. --------------------------------------------------------- */
+.ball-spinner-arc--drive { animation: ball-spinner-bounce--drive 1.4s linear infinite; }
+.ball-spinner-shadow--drive { animation: ball-spinner-shadow--drive 1.4s linear infinite; }
+
+@keyframes ball-spinner-bounce--drive {
+  0% { transform: translate(0px, 0px) scale(1, 1); }
+  20% { transform: translate(20px, -17.6px) scale(1, 1); }
+  38% { transform: translate(50px, -34px) scale(1, 1); }
+  46% { transform: translate(66px, -26.4px) scale(0.85, 1.15); }
+  50% { transform: translate(72px, -20px) scale(0.55, 1.4); }
+  54% { transform: translate(66px, -26.4px) scale(0.85, 1.15); }
+  70% { transform: translate(40px, -29px) scale(1, 1); }
+  92% { transform: translate(6px, -4.6px) scale(1, 1); }
+  100% { transform: translate(0px, 0px) scale(1, 1); }
+}
+
+@keyframes ball-spinner-shadow--drive {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  20% { transform: translate(20.2px, -5.6px) scale(0.7); opacity: 0.24; }
+  38% { transform: translate(50.4px, -14px) scale(0.5); opacity: 0.12; }
+  46% { transform: translate(66.2px, -18.4px) scale(0.78); opacity: 0.29; }
+  50% { transform: translate(72px, -20px) scale(1); opacity: 0.45; }
+  54% { transform: translate(66.2px, -18.4px) scale(0.78); opacity: 0.29; }
+  70% { transform: translate(39.6px, -11px) scale(0.55); opacity: 0.15; }
+  92% { transform: translate(5.8px, -1.6px) scale(0.93); opacity: 0.41; }
+  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+}
+
+/* --- Pattern: boast (boasts) — steeper, shorter shot straight into the side wall. ----------- */
+.ball-spinner-arc--boast { animation: ball-spinner-bounce--boast 1.4s linear infinite; }
+.ball-spinner-shadow--boast { animation: ball-spinner-shadow--boast 1.4s linear infinite; }
+
+@keyframes ball-spinner-bounce--boast {
+  0% { transform: translate(0px, 0px) scale(1, 1); }
+  20% { transform: translate(5px, -20px) scale(1, 1); }
+  38% { transform: translate(13px, -41px) scale(1, 1); }
+  46% { transform: translate(17px, -36px) scale(0.8, 1.2); }
+  50% { transform: translate(18px, -30px) scale(0.5, 1.45); }
+  54% { transform: translate(17px, -36px) scale(0.8, 1.2); }
+  70% { transform: translate(10px, -35px) scale(1, 1); }
+  92% { transform: translate(1px, -5px) scale(1, 1); }
+  100% { transform: translate(0px, 0px) scale(1, 1); }
+}
+
+@keyframes ball-spinner-shadow--boast {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  20% { transform: translate(5px, -8px) scale(0.7); opacity: 0.24; }
+  38% { transform: translate(13px, -21px) scale(0.5); opacity: 0.12; }
+  46% { transform: translate(17px, -28px) scale(0.78); opacity: 0.29; }
+  50% { transform: translate(18px, -30px) scale(1); opacity: 0.45; }
+  54% { transform: translate(17px, -28px) scale(0.78); opacity: 0.29; }
+  70% { transform: translate(10px, -17px) scale(0.55); opacity: 0.15; }
+  92% { transform: translate(1px, -2px) scale(0.93); opacity: 0.41; }
+  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+}
+
+/* --- Pattern: drop (drops, front-court) — short, soft, low; dies gently at the wall instead of
+   rebounding hard. --------------------------------------------------------------------------- */
+.ball-spinner-arc--drop { animation: ball-spinner-bounce--drop 1.5s linear infinite; }
+.ball-spinner-shadow--drop { animation: ball-spinner-shadow--drop 1.5s linear infinite; }
+
+@keyframes ball-spinner-bounce--drop {
+  0% { transform: translate(0px, 0px) scale(1, 1); }
+  25% { transform: translate(8px, -8px) scale(1, 1); }
+  42% { transform: translate(18px, -13px) scale(1, 1); }
+  48% { transform: translate(21px, -9px) scale(0.85, 1.1); }
+  50% { transform: translate(22px, -6px) scale(0.72, 1.2); }
+  52% { transform: translate(21px, -9px) scale(0.85, 1.1); }
+  58% { transform: translate(18px, -13px) scale(1, 1); }
+  75% { transform: translate(7px, -4px) scale(1, 1); }
+  100% { transform: translate(0px, 0px) scale(1, 1); }
+}
+
+@keyframes ball-spinner-shadow--drop {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  25% { transform: translate(8px, -2px) scale(0.78); opacity: 0.3; }
+  42% { transform: translate(18px, -5px) scale(0.7); opacity: 0.25; }
+  48% { transform: translate(21px, -6px) scale(0.9); opacity: 0.4; }
+  50% { transform: translate(22px, -6px) scale(1); opacity: 0.45; }
+  52% { transform: translate(21px, -6px) scale(0.9); opacity: 0.4; }
+  58% { transform: translate(18px, -5px) scale(0.7); opacity: 0.25; }
+  75% { transform: translate(7px, -2px) scale(0.93); opacity: 0.42; }
+  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+}
+
+/* --- Pattern: volley (volleys) — quick, low double-tap in open floor, no wall contact. ------ */
+.ball-spinner-arc--volley { animation: ball-spinner-bounce--volley 1.1s linear infinite; }
+.ball-spinner-shadow--volley { animation: ball-spinner-shadow--volley 1.1s linear infinite; }
+
+@keyframes ball-spinner-bounce--volley {
+  0% { transform: translate(0px, 0px) scale(1, 1); }
+  12% { transform: translate(14px, -10px) scale(1, 1); }
+  22% { transform: translate(24px, -4px) scale(0.8, 1.15); }
+  32% { transform: translate(20px, -12px) scale(1, 1); }
+  42% { transform: translate(26px, -3px) scale(0.8, 1.15); }
+  58% { transform: translate(18px, -14px) scale(1, 1); }
+  75% { transform: translate(8px, -9px) scale(1, 1); }
+  90% { transform: translate(2px, -3px) scale(1, 1); }
+  100% { transform: translate(0px, 0px) scale(1, 1); }
+}
+
+@keyframes ball-spinner-shadow--volley {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  12% { transform: translate(14px, -3px) scale(0.75); opacity: 0.28; }
+  22% { transform: translate(24px, 0px) scale(1); opacity: 0.45; }
+  32% { transform: translate(20px, -4px) scale(0.8); opacity: 0.3; }
+  42% { transform: translate(26px, 1px) scale(1); opacity: 0.45; }
+  58% { transform: translate(18px, -5px) scale(0.75); opacity: 0.28; }
+  75% { transform: translate(8px, -3px) scale(0.85); opacity: 0.35; }
+  90% { transform: translate(2px, -1px) scale(0.95); opacity: 0.42; }
+  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+}
+
+/* --- Pattern: arc (serves/returns) — a big, high, floaty lob that dies high on the back wall
+   instead of at floor level. Shadow shrinks toward nothing at the peak. --------------------- */
+.ball-spinner-arc--arc { animation: ball-spinner-bounce--arc 1.6s linear infinite; }
+.ball-spinner-shadow--arc { animation: ball-spinner-shadow--arc 1.6s linear infinite; }
+
+@keyframes ball-spinner-bounce--arc {
+  0% { transform: translate(0px, 0px) scale(1, 1); }
+  20% { transform: translate(20px, -25.6px) scale(1, 1); }
+  38% { transform: translate(50px, -46px) scale(1, 1); }
+  46% { transform: translate(66px, -44.4px) scale(0.9, 1.08); }
+  50% { transform: translate(72px, -38px) scale(0.75, 1.2); }
+  54% { transform: translate(66px, -44.4px) scale(0.9, 1.08); }
+  70% { transform: translate(40px, -41px) scale(1, 1); }
+  92% { transform: translate(6px, -7.6px) scale(1, 1); }
+  100% { transform: translate(0px, 0px) scale(1, 1); }
+}
+
+@keyframes ball-spinner-shadow--arc {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  20% { transform: translate(20.2px, -5.6px) scale(0.6); opacity: 0.2; }
+  38% { transform: translate(50.4px, -14px) scale(0.35); opacity: 0.08; }
+  46% { transform: translate(66.2px, -18.4px) scale(0.48); opacity: 0.14; }
+  50% { transform: translate(72px, -20px) scale(0.65); opacity: 0.22; }
+  54% { transform: translate(66.2px, -18.4px) scale(0.48); opacity: 0.14; }
+  70% { transform: translate(39.6px, -11px) scale(0.4); opacity: 0.1; }
+  92% { transform: translate(5.8px, -1.6px) scale(0.85); opacity: 0.35; }
+  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+}
+
+/* --- Pattern: sweep (movement) — a wide, floaty loop covering open floor; no hard impact,
+   more court coverage than a discrete shot. --------------------------------------------------- */
+.ball-spinner-arc--sweep { animation: ball-spinner-bounce--sweep 1.7s linear infinite; }
+.ball-spinner-shadow--sweep { animation: ball-spinner-shadow--sweep 1.7s linear infinite; }
+
+@keyframes ball-spinner-bounce--sweep {
+  0% { transform: translate(0px, 0px) scale(1, 1); }
+  20% { transform: translate(27px, -7px) scale(1, 1); }
+  38% { transform: translate(67px, -10px) scale(1, 1); }
+  46% { transform: translate(87px, -5px) scale(0.95, 1.05); }
+  50% { transform: translate(95px, -1px) scale(0.9, 1.05); }
+  54% { transform: translate(87px, -5px) scale(0.95, 1.05); }
+  70% { transform: translate(52px, -10px) scale(1, 1); }
+  92% { transform: translate(8px, -2px) scale(1, 1); }
+  100% { transform: translate(0px, 0px) scale(1, 1); }
+}
+
+@keyframes ball-spinner-shadow--sweep {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  20% { transform: translate(27px, 1px) scale(0.78); opacity: 0.32; }
+  38% { transform: translate(67px, 4px) scale(0.6); opacity: 0.22; }
+  46% { transform: translate(87px, 5px) scale(0.72); opacity: 0.29; }
+  50% { transform: translate(95px, 5px) scale(0.85); opacity: 0.35; }
+  54% { transform: translate(87px, 5px) scale(0.72); opacity: 0.29; }
+  70% { transform: translate(52px, 3px) scale(0.63); opacity: 0.24; }
+  92% { transform: translate(8px, 0px) scale(0.95); opacity: 0.42; }
+  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+}
+
+/* --- Pattern: wobble (deception) — starts toward the side wall (a feint), then kinks and
+   redirects into the back corner instead. ------------------------------------------------------ */
+.ball-spinner-arc--wobble { animation: ball-spinner-bounce--wobble 1.5s linear infinite; }
+.ball-spinner-shadow--wobble { animation: ball-spinner-shadow--wobble 1.5s linear infinite; }
+
+@keyframes ball-spinner-bounce--wobble {
+  0% { transform: translate(0px, 0px) scale(1, 1); }
+  14% { transform: translate(10px, -16px) scale(1, 1); }
+  26% { transform: translate(16px, -24px) scale(1, 1); }
+  34% { transform: translate(22px, -20px) scale(1, 1); }
+  46% { transform: translate(55px, -28px) scale(0.9, 1.08); }
+  52% { transform: translate(72px, -20px) scale(0.55, 1.4); }
+  58% { transform: translate(66px, -26px) scale(0.85, 1.15); }
+  74% { transform: translate(38px, -27px) scale(1, 1); }
+  90% { transform: translate(8px, -6px) scale(1, 1); }
+  100% { transform: translate(0px, 0px) scale(1, 1); }
+}
+
+@keyframes ball-spinner-shadow--wobble {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  14% { transform: translate(10px, -5px) scale(0.75); opacity: 0.28; }
+  26% { transform: translate(16px, -8px) scale(0.6); opacity: 0.2; }
+  34% { transform: translate(22px, -7px) scale(0.7); opacity: 0.25; }
+  46% { transform: translate(55px, -15px) scale(0.55); opacity: 0.14; }
+  52% { transform: translate(72px, -20px) scale(1); opacity: 0.45; }
+  58% { transform: translate(66px, -18px) scale(0.75); opacity: 0.28; }
+  74% { transform: translate(38px, -10px) scale(0.6); opacity: 0.2; }
+  90% { transform: translate(8px, -2px) scale(0.9); opacity: 0.38; }
+  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+}
+
+/* --- Pattern: flourish (exhibition-shots) — the drive shot, exaggerated: bigger arc, showier
+   squash, and a little extra overshoot wobble before it settles. ----------------------------- */
+.ball-spinner-arc--flourish { animation: ball-spinner-bounce--flourish 1.5s linear infinite; }
+.ball-spinner-shadow--flourish { animation: ball-spinner-shadow--flourish 1.5s linear infinite; }
+
+@keyframes ball-spinner-bounce--flourish {
+  0% { transform: translate(0px, 0px) scale(1, 1); }
+  20% { transform: translate(22px, -22px) scale(1, 1); }
+  38% { transform: translate(54px, -40px) scale(1, 1); }
+  46% { transform: translate(68px, -30px) scale(0.8, 1.2); }
+  50% { transform: translate(74px, -21px) scale(0.42, 1.65); }
+  54% { transform: translate(68px, -30px) scale(0.8, 1.2); }
+  70% { transform: translate(42px, -33px) scale(1, 1); }
+  88% { transform: translate(10px, -8px) scale(1.08, 0.92); }
+  96% { transform: translate(-3px, 1px) scale(0.95, 1.05); }
+  100% { transform: translate(0px, 0px) scale(1, 1); }
+}
+
+@keyframes ball-spinner-shadow--flourish {
+  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  20% { transform: translate(22.2px, -6.5px) scale(0.65); opacity: 0.22; }
+  38% { transform: translate(53.5px, -14.5px) scale(0.45); opacity: 0.1; }
+  46% { transform: translate(67.8px, -18.9px) scale(0.72); opacity: 0.27; }
+  50% { transform: translate(74px, -21px) scale(1); opacity: 0.48; }
+  54% { transform: translate(67.8px, -18.9px) scale(0.72); opacity: 0.27; }
+  70% { transform: translate(41.6px, -12.3px) scale(0.5); opacity: 0.13; }
+  88% { transform: translate(9.5px, -2.8px) scale(0.9); opacity: 0.38; }
+  96% { transform: translate(-2.9px, 0.9px) scale(0.97); opacity: 0.44; }
+  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ball-spinner-arc,
+  .ball-spinner-spin,
+  .ball-spinner-shadow {
+    animation: none;
+  }
+}

@@ -21,29 +21,6 @@
 
   var lastPlan = null; // { plan_markdown, drills } — for the Save flow.
 
-  // Squash-ball loading spinner — an isometric court corner (floor, back wall, side wall) with
-  // the ball hopping across the floor and squashing flat against the back wall on impact.
-  // Near-black-green ball, two yellow speed dots (a nod to real squash ball speed-grade dot
-  // markings, and the site's one deliberate spot of color). Shown only while a generation
-  // request is in flight.
-  var BALL_SPINNER_SVG =
-    '<svg class="ball-spinner-svg" width="140" height="105" viewBox="0 0 160 120" aria-hidden="true">' +
-    '<polygon class="ball-spinner-wall-side" points="70,53 10,78 10,32 70,7"></polygon>' +
-    '<polygon class="ball-spinner-wall-back" points="70,53 130,78 130,32 70,7"></polygon>' +
-    '<line class="ball-spinner-tin" x1="70" y1="46" x2="130" y2="71"></line>' +
-    '<polygon class="ball-spinner-floor" points="10,78 70,103 130,78 70,53"></polygon>' +
-    '<ellipse class="ball-spinner-shadow" cx="37" cy="89" rx="10" ry="4"></ellipse>' +
-    '<g class="ball-spinner-arc">' +
-    '<g class="ball-spinner-spin">' +
-    '<circle class="ball-spinner-body" cx="37" cy="89" r="8"></circle>' +
-    '<path class="ball-spinner-seam" d="M30,83 Q37,89 30,95"></path>' +
-    '<path class="ball-spinner-seam" d="M44,83 Q37,89 44,95"></path>' +
-    '<circle class="ball-spinner-dot" cx="34" cy="85" r="1.1"></circle>' +
-    '<circle class="ball-spinner-dot" cx="40" cy="89" r="1.1"></circle>' +
-    '</g>' +
-    '</g>' +
-    '</svg>';
-
   // --- Minimal Markdown -> HTML renderer -------------------------------------------------
   // No external dependencies (per 03-TECHNICAL-ARCHITECTURE.md's "plain HTML/CSS/JS, no build
   // step"). Covers exactly what the return_session_plan system prompt's OUTPUT FORMAT asks the
@@ -166,9 +143,11 @@
   }
 
   // --- Status / result rendering ----------------------------------------------------------
-  function setStatus(message, state) {
-    if (state === 'loading') {
-      statusEl.innerHTML = BALL_SPINNER_SVG + '<span>' + escapeHtml(message || '') + '</span>';
+  // theme (optional): the selected drill theme, used only when state === 'loading' so the
+  // loader's tracer pattern (see assets/js/ball-loader.js) matches the shot being generated.
+  function setStatus(message, state, theme) {
+    if (state === 'loading' && window.RCBallLoader) {
+      statusEl.innerHTML = window.RCBallLoader.markup(message, theme);
     } else {
       statusEl.textContent = message || '';
     }
@@ -284,7 +263,7 @@
 
     submitBtn.disabled = true;
     resultEl.hidden = true;
-    setStatus('Generating your session plan… complex plans can take a little while.', 'loading');
+    setStatus('Generating your session plan… complex plans can take a little while.', 'loading', payload.theme);
 
     fetch(API_BASE + '/generate', {
       method: 'POST',
