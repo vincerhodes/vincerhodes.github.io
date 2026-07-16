@@ -21,19 +21,21 @@
 
   var lastPlan = null; // { plan_markdown, drills } — for the Save flow.
 
-  // Squash-ball loading spinner — near-black-green ball, sage shadow, two yellow speed dots
-  // (a nod to real squash ball speed-grade dot markings, and the site's one deliberate spot of
-  // color). Shown only while a generation request is in flight.
+  // Squash-ball loading spinner — a ball rallying against the front wall, squashing flat on
+  // impact. Near-black-green ball, two yellow speed dots (a nod to real squash ball speed-grade
+  // dot markings, and the site's one deliberate spot of color). Shown only while a generation
+  // request is in flight.
   var BALL_SPINNER_SVG =
-    '<svg class="ball-spinner-svg" width="40" height="40" viewBox="0 0 60 60" aria-hidden="true">' +
-    '<ellipse class="ball-spinner-shadow" cx="30" cy="50" rx="14" ry="4"></ellipse>' +
+    '<svg class="ball-spinner-svg" width="120" height="40" viewBox="0 0 130 40" aria-hidden="true">' +
+    '<line class="ball-spinner-floor" x1="4" y1="34" x2="112" y2="34"></line>' +
+    '<line class="ball-spinner-wall" x1="120" y1="4" x2="120" y2="36"></line>' +
     '<g class="ball-spinner-arc">' +
-    '<g class="ball-spinner-ball">' +
-    '<circle class="ball-spinner-body" cx="30" cy="30" r="15"></circle>' +
-    '<path class="ball-spinner-seam" d="M17,22 Q30,32 17,42"></path>' +
-    '<path class="ball-spinner-seam" d="M43,22 Q30,32 43,42"></path>' +
-    '<circle class="ball-spinner-dot" cx="24" cy="24" r="1.7"></circle>' +
-    '<circle class="ball-spinner-dot" cx="36" cy="30" r="1.7"></circle>' +
+    '<g class="ball-spinner-spin">' +
+    '<circle class="ball-spinner-body" cx="18" cy="20" r="9"></circle>' +
+    '<path class="ball-spinner-seam" d="M11,14 Q18,20 11,26"></path>' +
+    '<path class="ball-spinner-seam" d="M25,14 Q18,20 25,26"></path>' +
+    '<circle class="ball-spinner-dot" cx="15" cy="16" r="1.1"></circle>' +
+    '<circle class="ball-spinner-dot" cx="21" cy="20" r="1.1"></circle>' +
     '</g>' +
     '</g>' +
     '</svg>';
