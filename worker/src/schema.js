@@ -15,7 +15,7 @@ export const PLAYER_COLORS = ['#21472E', '#8FA893', '#152218'];
 
 export const ARROW_TYPES = ['ball', 'movement'];
 
-// The 8 named themes plus "surprise me", per 05-AI-DRILL-BUILDER-PROMPT.md's "Inputs from the form".
+// The 9 named themes plus "surprise me", per 05-AI-DRILL-BUILDER-PROMPT.md's "Inputs from the form".
 export const THEMES = [
   'length',
   'volleys',
@@ -25,8 +25,14 @@ export const THEMES = [
   'front-court',
   'deception',
   'serves/returns',
+  'exhibition-shots',
 ];
 export const SURPRISE_ME = 'surprise me';
+
+// Target level, per 05-AI-DRILL-BUILDER-PROMPT.md's "Inputs from the form" — calibrates every drill
+// and coaching cue in SYSTEM_PROMPT's TARGET LEVEL section. "old man squash" and "pinball" are
+// deliberate house in-jokes (see that section) — craft over fitness, and chaos over craft.
+export const LEVELS = ['beginner', 'intermediate', 'expert', 'pro', 'old man squash', 'pinball'];
 
 export const MODEL = 'anthropic/claude-haiku-4.5:exacto';
 export const MAX_TOKENS = 4096;
@@ -134,11 +140,48 @@ drilling followed by conditioned games that reinforce the same skills.
 THE GROUP
 Players and courts vary week to week — you will be told the confirmed player count
 and the number of courts booked. Adapt rotations for odd numbers and uneven splits
-across the given court count (e.g. 5, 6, or 7 players across 2 courts). Standard
-level: intermediate to advanced, with most players at the top end of intermediate.
-A few players may find advanced drills difficult and need support. Never plan for
-complete beginners unless explicitly told the group includes them. Courts are
+across the given court count (e.g. 5, 6, or 7 players across 2 courts). Courts are
 booked for the full session length given to you.
+
+TARGET LEVEL
+You will be told a target level for the session — calibrate every drill, game, and
+coaching cue to it:
+- Beginner: ball control and basic swing technique first. Short, simple patterns,
+  generous targets, lots of feeding, no advanced tactics. Prioritize rallying
+  safely and getting comfortable on court over winning points.
+- Intermediate: solid racket skills assumed, most players at the top end of this
+  band. Build reliable patterns (length, width, movement) with room to push pace.
+  A few players may find harder drills difficult and need support — give them the
+  regression, not a watered-down session.
+- Expert: tight margins, high tempo, minimal rest between reps. Assume strong
+  technique — coach tactics, deception, and shot selection under pressure rather
+  than basic execution.
+- Pro: tour-level technical and tactical demands. Complex multi-pattern drills,
+  short recovery windows, live-ball conditioning worked in throughout. Coaching
+  points should read like they're for someone who already has every shot — the
+  focus is precision, patterns, and match-craft.
+- Old Man Squash: players who know exactly what they're doing and have zero
+  interest in running for it. Prioritize craft, positioning, and shot placement
+  over movement and fitness — width and length over lunges, deception over
+  desperation retrieves. Generous rest between drills (the legs need it, the ego
+  doesn't). Games should reward cunning and court sense over speed. A dry, knowing
+  sense of humour in the coach's notes is welcome here.
+- Pinball: chaos mode. End-to-end rallies at maximum tempo, players ricocheting
+  corner to corner like the ball is trying to escape. Skip regressions — the whole
+  point is controlled bedlam. Short, high-intensity blocks with minimal standing
+  around and quick recovery, and games that reward whoever's still moving at the
+  end. Structure is still required (this is still a coached session), just with
+  the dial turned all the way up.
+
+EXHIBITION SHOTS THEME
+When the theme is "Exhibition Shots," shift the tone: this session is about flair
+and fun as much as skill — trick shots and low-percentage-but-spectacular shots,
+shown off in a controlled, cooperative way. Draw from shots like skyballs, nick
+attempts, around-the-wall boasts, reverse-angle returns, and trick serves. Keep
+the cooperative/no-competitive-drilling principle for the drill block, but
+conditioned games can reward hitting a flashy shot (e.g. a bonus point for a clean
+nick or a successful skyball) rather than just rallying length. This is the one
+theme where players should leave grinning, not just sweating.
 
 SESSION STRUCTURE
 Unless told otherwise, follow this shape:

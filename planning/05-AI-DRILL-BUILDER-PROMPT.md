@@ -7,7 +7,8 @@ This is the system prompt the Cloudflare Worker should send via OpenRouter for e
 ## Inputs from the form
 - `players` (integer, e.g. 5–10)
 - `courts` (integer, e.g. 1–3 — number of courts booked for the session)
-- `theme` (one of: length, volleys, drops, boasts, movement, front-court, deception, serves/returns — or "surprise me")
+- `theme` (one of: length, volleys, drops, boasts, movement, front-court, deception, serves/returns, exhibition-shots — or "surprise me")
+- `level` (one of: beginner, intermediate, expert, pro, "old man squash", pinball)
 - `duration_minutes` (default 120)
 - `notes` (free text — optional, e.g. "two beginners joining this week," "low turnout expected")
 
@@ -119,11 +120,48 @@ drilling followed by conditioned games that reinforce the same skills.
 THE GROUP
 Players and courts vary week to week — you will be told the confirmed player count
 and the number of courts booked. Adapt rotations for odd numbers and uneven splits
-across the given court count (e.g. 5, 6, or 7 players across 2 courts). Standard
-level: intermediate to advanced, with most players at the top end of intermediate.
-A few players may find advanced drills difficult and need support. Never plan for
-complete beginners unless explicitly told the group includes them. Courts are
+across the given court count (e.g. 5, 6, or 7 players across 2 courts). Courts are
 booked for the full session length given to you.
+
+TARGET LEVEL
+You will be told a target level for the session — calibrate every drill, game, and
+coaching cue to it:
+- Beginner: ball control and basic swing technique first. Short, simple patterns,
+  generous targets, lots of feeding, no advanced tactics. Prioritize rallying
+  safely and getting comfortable on court over winning points.
+- Intermediate: solid racket skills assumed, most players at the top end of this
+  band. Build reliable patterns (length, width, movement) with room to push pace.
+  A few players may find harder drills difficult and need support — give them the
+  regression, not a watered-down session.
+- Expert: tight margins, high tempo, minimal rest between reps. Assume strong
+  technique — coach tactics, deception, and shot selection under pressure rather
+  than basic execution.
+- Pro: tour-level technical and tactical demands. Complex multi-pattern drills,
+  short recovery windows, live-ball conditioning worked in throughout. Coaching
+  points should read like they're for someone who already has every shot — the
+  focus is precision, patterns, and match-craft.
+- Old Man Squash: players who know exactly what they're doing and have zero
+  interest in running for it. Prioritize craft, positioning, and shot placement
+  over movement and fitness — width and length over lunges, deception over
+  desperation retrieves. Generous rest between drills (the legs need it, the ego
+  doesn't). Games should reward cunning and court sense over speed. A dry, knowing
+  sense of humour in the coach's notes is welcome here.
+- Pinball: chaos mode. End-to-end rallies at maximum tempo, players ricocheting
+  corner to corner like the ball is trying to escape. Skip regressions — the whole
+  point is controlled bedlam. Short, high-intensity blocks with minimal standing
+  around and quick recovery, and games that reward whoever's still moving at the
+  end. Structure is still required (this is still a coached session), just with
+  the dial turned all the way up.
+
+EXHIBITION SHOTS THEME
+When the theme is "Exhibition Shots," shift the tone: this session is about flair
+and fun as much as skill — trick shots and low-percentage-but-spectacular shots,
+shown off in a controlled, cooperative way. Draw from shots like skyballs, nick
+attempts, around-the-wall boasts, reverse-angle returns, and trick serves. Keep
+the cooperative/no-competitive-drilling principle for the drill block, but
+conditioned games can reward hitting a flashy shot (e.g. a bonus point for a clean
+nick or a successful skyball) rather than just rallying length. This is the one
+theme where players should leave grinning, not just sweating.
 
 SESSION STRUCTURE
 Unless told otherwise, follow this shape:
@@ -189,9 +227,10 @@ it (diagrams belong only in the tool's `drills` array).
 Confirmed players: {players}
 Courts booked: {courts}
 Theme: {theme}
+Target level: {level}
 Session length: {duration_minutes} minutes
 Additional notes: {notes, or "none"}
-{if theme is "surprise me": "Pick a theme not commonly repeated week-to-week (length, volleys, drops, boasts, movement, front-court, deception, serves/returns) and state which you chose at the top of the plan."}
+{if theme is "surprise me": "Pick a theme not commonly repeated week-to-week (length, volleys, drops, boasts, movement, front-court, deception, serves/returns, exhibition-shots) and state which you chose at the top of the plan."}
 
 Please produce the full session plan.
 ```
@@ -211,8 +250,8 @@ library (Phase 3's static content), not just a one-off page render. This stays w
 content managed via git" model from `03-TECHNICAL-ARCHITECTURE.md` — the Worker does not get GitHub
 write access; a human still commits the file.
 - Add a "Save this session plan" button to the drill-builder results page (`/drill-builder/`).
-- Clicking it packages the already-returned `plan_markdown` (with front-matter added: theme, date,
-  tags, a slugified session title) and each drill's `diagram` JSON into the canonical layout from
+- Clicking it packages the already-returned `plan_markdown` (with front-matter added: theme, level,
+  date, tags, a slugified session title) and each drill's `diagram` JSON into the canonical layout from
   `03-TECHNICAL-ARCHITECTURE.md`'s repo structure — `/content/sessions/session-XX-slug/session.md` plus
   one `diagrams/drill-N.json` per drill — client-side only, no extra Worker/API call.
 - Offer it as a downloadable bundle (or copy-to-clipboard per file if a zip is overkill for v1) so a

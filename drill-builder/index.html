@@ -220,7 +220,20 @@
           <option value="front-court">Front-court</option>
           <option value="deception">Deception</option>
           <option value="serves/returns">Serves/returns</option>
+          <option value="exhibition-shots">Exhibition Shots</option>
           <option value="surprise me">Surprise me</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="field-level">Target level</label>
+        <select id="field-level" name="level" required>
+          <option value="beginner">Beginner</option>
+          <option value="intermediate" selected>Intermediate</option>
+          <option value="expert">Expert</option>
+          <option value="pro">Pro</option>
+          <option value="old man squash">Old Man Squash</option>
+          <option value="pinball">Pinball</option>
         </select>
       </div>
 
@@ -468,12 +481,14 @@
         saveButtonsEl.innerHTML = '';
 
         var themeValue = form.elements.theme.value;
+        var levelValue = form.elements.level.value;
         var slug = 'session-XX-' + slugify(themeValue || 'session');
         var today = new Date().toISOString().slice(0, 10);
 
         var frontMatter =
           '---\n' +
           'theme: ' + themeValue + '\n' +
+          'level: ' + levelValue + '\n' +
           'date: ' + today + '\n' +
           'tags: [' + themeValue + ']\n' +
           'title: ' + slug + '\n' +
@@ -507,6 +522,7 @@
           players: parseInt(formData.get('players'), 10),
           courts: parseInt(formData.get('courts'), 10),
           theme: theme,
+          level: String(formData.get('level') || ''),
           duration_minutes: parseInt(formData.get('duration_minutes'), 10),
           notes: String(formData.get('notes') || '').trim(),
         };

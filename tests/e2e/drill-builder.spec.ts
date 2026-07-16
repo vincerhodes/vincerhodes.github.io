@@ -103,6 +103,7 @@ test.describe('AI Drill Builder — end-to-end generate flow (stubbed OpenRouter
     await page.locator('#field-players').fill('6');
     await page.locator('#field-courts').fill('2');
     await page.locator('#field-theme').selectOption('length');
+    await page.locator('#field-level').selectOption('intermediate');
     await page.locator('#field-duration').fill('120');
     await page.locator('#field-notes').fill('low turnout expected');
 

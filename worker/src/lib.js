@@ -8,7 +8,7 @@
 //   - request validation (rejects missing players/courts/theme/duration_minutes)
 //   - the KV rate-limit counter logic (KV itself is mocked in tests, not the unit under test)
 
-import { SURPRISE_ME, THEMES } from './schema.js';
+import { LEVELS, SURPRISE_ME, THEMES } from './schema.js';
 
 // -----------------------------------------------------------------------------------------------
 // Request validation
@@ -37,6 +37,12 @@ export function validateRequestBody(body) {
     errors.push('theme is required');
   } else if (body.theme !== SURPRISE_ME && !THEMES.includes(body.theme)) {
     errors.push(`theme must be one of: ${THEMES.join(', ')}, or "${SURPRISE_ME}"`);
+  }
+
+  if (typeof body.level !== 'string' || body.level.trim() === '') {
+    errors.push('level is required');
+  } else if (!LEVELS.includes(body.level)) {
+    errors.push(`level must be one of: ${LEVELS.join(', ')}`);
   }
 
   if (!Number.isFinite(body.duration_minutes) || body.duration_minutes <= 0) {
@@ -154,11 +160,12 @@ export function filterValidDiagrams(drills, planMarkdown) {
 // User message template (see 05-AI-DRILL-BUILDER-PROMPT.md "User message template")
 // -----------------------------------------------------------------------------------------------
 
-export function buildUserMessage({ players, courts, theme, duration_minutes, notes }) {
+export function buildUserMessage({ players, courts, theme, level, duration_minutes, notes }) {
   const lines = [
     `Confirmed players: ${players}`,
     `Courts booked: ${courts}`,
     `Theme: ${theme}`,
+    `Target level: ${level}`,
     `Session length: ${duration_minutes} minutes`,
     `Additional notes: ${notes && String(notes).trim() ? notes : 'none'}`,
   ];

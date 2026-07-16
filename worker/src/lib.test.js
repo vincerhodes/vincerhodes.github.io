@@ -191,7 +191,14 @@ describe('filterValidDiagrams', () => {
 });
 
 describe('validateRequestBody', () => {
-  const valid = { players: 6, courts: 2, theme: 'length', duration_minutes: 120, notes: '' };
+  const valid = {
+    players: 6,
+    courts: 2,
+    theme: 'length',
+    level: 'intermediate',
+    duration_minutes: 120,
+    notes: '',
+  };
 
   it('accepts a fully valid request', () => {
     expect(validateRequestBody(valid)).toEqual({ valid: true, errors: [] });
@@ -199,6 +206,28 @@ describe('validateRequestBody', () => {
 
   it('accepts theme "surprise me"', () => {
     expect(validateRequestBody({ ...valid, theme: 'surprise me' }).valid).toBe(true);
+  });
+
+  it('accepts theme "exhibition-shots"', () => {
+    expect(validateRequestBody({ ...valid, theme: 'exhibition-shots' }).valid).toBe(true);
+  });
+
+  it('accepts every named level, including "old man squash" and "pinball"', () => {
+    for (const level of ['beginner', 'intermediate', 'expert', 'pro', 'old man squash', 'pinball']) {
+      expect(validateRequestBody({ ...valid, level }).valid).toBe(true);
+    }
+  });
+
+  it('rejects a request missing level', () => {
+    const { level, ...rest } = valid;
+    const result = validateRequestBody(rest);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.includes('level'))).toBe(true);
+  });
+
+  it('rejects a request with an unrecognized level', () => {
+    const result = validateRequestBody({ ...valid, level: 'grandmaster' });
+    expect(result.valid).toBe(false);
   });
 
   it('rejects a request missing players', () => {
@@ -247,23 +276,42 @@ describe('validateRequestBody', () => {
 });
 
 describe('buildUserMessage', () => {
-  it('interpolates all five form fields', () => {
+  it('interpolates all six form fields', () => {
     const msg = buildUserMessage({
       players: 6,
       courts: 2,
       theme: 'length',
+      level: 'intermediate',
       duration_minutes: 120,
       notes: 'low turnout expected',
     });
     expect(msg).toContain('Confirmed players: 6');
     expect(msg).toContain('Courts booked: 2');
     expect(msg).toContain('Theme: length');
+    expect(msg).toContain('Target level: intermediate');
     expect(msg).toContain('Session length: 120 minutes');
     expect(msg).toContain('Additional notes: low turnout expected');
   });
 
+  it('passes "old man squash" through as the target level verbatim', () => {
+    const msg = buildUserMessage({
+      players: 4,
+      courts: 1,
+      theme: 'movement',
+      level: 'old man squash',
+      duration_minutes: 90,
+    });
+    expect(msg).toContain('Target level: old man squash');
+  });
+
   it('uses "none" when notes is empty/missing', () => {
-    const msg = buildUserMessage({ players: 6, courts: 2, theme: 'length', duration_minutes: 120 });
+    const msg = buildUserMessage({
+      players: 6,
+      courts: 2,
+      theme: 'length',
+      level: 'intermediate',
+      duration_minutes: 120,
+    });
     expect(msg).toContain('Additional notes: none');
   });
 
@@ -272,6 +320,7 @@ describe('buildUserMessage', () => {
       players: 6,
       courts: 2,
       theme: 'surprise me',
+      level: 'intermediate',
       duration_minutes: 120,
     });
     expect(surpriseMsg).toContain('Pick a theme not commonly repeated week-to-week');
@@ -280,6 +329,7 @@ describe('buildUserMessage', () => {
       players: 6,
       courts: 2,
       theme: 'length',
+      level: 'intermediate',
       duration_minutes: 120,
     });
     expect(namedMsg).not.toContain('Pick a theme not commonly repeated week-to-week');
