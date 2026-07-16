@@ -1,0 +1,12 @@
+{
+  "title": "Drill 1: Drop & Volley Combo",
+  "players": [
+    { "id": "A", "label": "Feeder", "color": "#8FA893", "x": 0.5, "y": 0.5 },
+    { "id": "B", "label": "Hitter", "color": "#21472E", "x": 0.25, "y": 0.2 }
+  ],
+  "arrows": [
+    { "number": 1, "type": "ball", "points": [[0.5, 0.5], [0.15, 0.05], [0.15, 0.2]] },
+    { "number": 2, "type": "ball", "points": [[0.15, 0.2], [0.85, 0.05], [0.85, 0.2]] },
+    { "number": 3, "type": "movement", "points": [[0.15, 0.2], [0.85, 0.2]] }
+  ]
+}

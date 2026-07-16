@@ -1,0 +1,12 @@
+{
+  "title": "Drill 2: Return of Serve Pressure",
+  "players": [
+    { "id": "A", "label": "Server", "color": "#8FA893", "x": 0.25, "y": 0.55 },
+    { "id": "B", "label": "Returner", "color": "#21472E", "x": 0.4, "y": 0.75 }
+  ],
+  "arrows": [
+    { "number": 1, "type": "ball", "points": [[0.25, 0.55], [0.05, 0.1], [0.15, 0.85]] },
+    { "number": 2, "type": "ball", "points": [[0.25, 0.55], [0.4, 0.3], [0.45, 0.6]] },
+    { "number": 3, "type": "movement", "points": [[0.4, 0.75], [0.5, 0.45]] }
+  ]
+}
