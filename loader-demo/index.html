@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ball Loader Demo — Right Court SC</title>
+<meta name="description" content="Internal demo of the squash-ball loader's tracer patterns — not linked from site navigation.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../assets/css/styles.css">
+<link rel="stylesheet" href="../assets/css/ball-loader.css">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<style>
+  /* Dev/demo page only — not part of the site's public design system, so kept local rather than
+     added to any shared stylesheet. Not linked from nav.js; reachable by direct URL only. */
+  .demo-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem 4rem;
+  }
+
+  .demo-content > p {
+    max-width: 700px;
+    line-height: 1.6;
+  }
+
+  .demo-picker {
+    border: 1px solid var(--sage);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0 3rem;
+    text-align: center;
+  }
+
+  .demo-picker label {
+    display: block;
+    font-weight: 600;
+    color: var(--forest-green);
+    margin-bottom: 0.5rem;
+  }
+
+  .demo-picker select {
+    font: inherit;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--sage);
+    border-radius: 4px;
+    color: var(--near-black-green);
+    min-width: 220px;
+  }
+
+  .demo-picker-loader {
+    margin-top: 1.5rem;
+  }
+
+  .demo-picker-loader .ball-spinner-svg {
+    width: 280px;
+    height: 210px;
+  }
+
+  .demo-picker-pattern {
+    font-size: 0.85rem;
+    color: var(--near-black-green);
+    margin-top: 0.5rem;
+  }
+
+  .demo-picker-pattern code {
+    color: var(--forest-green);
+    font-weight: 600;
+  }
+
+  .demo-grid h2 {
+    color: var(--forest-green);
+  }
+
+  .demo-grid-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .demo-card {
+    border: 1px solid var(--sage);
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .demo-card h3 {
+    color: var(--forest-green);
+    font-size: 1rem;
+    margin: 0 0 0.25rem;
+  }
+
+  .demo-card p {
+    font-size: 0.8rem;
+    color: var(--near-black-green);
+    margin: 0 0 1rem;
+    min-height: 2.2em;
+  }
+
+  .demo-card .ball-spinner-svg {
+    width: 200px;
+    height: 150px;
+  }
+</style>
+</head>
+<body>
+  <header class="site-nav" id="site-header"></header>
+
+  <section class="page-header">
+    <h1>Ball Loader Demo</h1>
+  </section>
+
+  <main class="demo-content">
+    <p>
+      Every tracer pattern the squash-ball loader can show, larger than they render in the real
+      drill builder. Pick a theme below to see exactly what the drill builder would show for it,
+      or browse the full set underneath. This page isn't linked from the site nav — it's a dev
+      tool for eyeballing the patterns, not public content.
+    </p>
+
+    <div class="demo-picker">
+      <label for="theme-select">Preview by drill-builder theme</label>
+      <select id="theme-select"></select>
+      <div class="demo-picker-loader" id="picked-loader"></div>
+      <p class="demo-picker-pattern" id="picked-pattern-label"></p>
+    </div>
+
+    <div class="demo-grid">
+      <h2>All patterns</h2>
+      <div class="demo-grid-items" id="pattern-grid"></div>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="../assets/js/nav.js" data-base=".."></script>
+  <script src="../assets/js/ball-loader.js"></script>
+  <script>
+    (function () {
+      var PATTERN_DESCRIPTIONS = {
+        'drive': 'Long, flat drive parallel to the side wall, deep into the back corner.',
+        'boast': 'Steeper, shorter shot straight into the side wall.',
+        'drop': 'Short and soft — dies gently at the wall instead of rebounding hard.',
+        'volley': 'Quick, low double-tap in open floor — no wall contact.',
+        'arc': 'Big, high, floaty lob that dies near the top of the wall.',
+        'sweep': 'Wide, floaty loop covering open floor — court coverage, not a discrete shot.',
+        'wobble': 'Fakes toward the side wall, then kinks and redirects into the back corner.',
+        'flourish': 'The drive shot, exaggerated — bigger arc, showier squash, a little overshoot wobble.',
+      };
+
+      // Same options as the real drill-builder theme dropdown (worker/src/schema.js THEMES).
+      var THEMES = [
+        'length', 'volleys', 'drops', 'boasts', 'movement', 'front-court',
+        'deception', 'serves/returns', 'exhibition-shots', 'surprise me',
+      ];
+
+      var loader = window.RCBallLoader;
+
+      function resolvePattern(theme) {
+        if (theme && Object.prototype.hasOwnProperty.call(loader.THEME_PATTERN, theme)) {
+          return loader.THEME_PATTERN[theme];
+        }
+        return null; // random — markup() will pick, we just can't predict which up front.
+      }
+
+      // --- Theme picker -----------------------------------------------------------------------
+      var select = document.getElementById('theme-select');
+      THEMES.forEach(function (theme) {
+        var opt = document.createElement('option');
+        opt.value = theme;
+        opt.textContent = theme;
+        select.appendChild(opt);
+      });
+
+      var pickedLoaderEl = document.getElementById('picked-loader');
+      var pickedPatternEl = document.getElementById('picked-pattern-label');
+
+      function renderPicked() {
+        var theme = select.value;
+        pickedLoaderEl.innerHTML = loader.markup('', theme);
+        var mapped = resolvePattern(theme);
+        pickedPatternEl.textContent = mapped
+          ? 'Theme "' + theme + '" -> pattern: '
+          : 'Theme "' + theme + '" has no fixed mapping -> random pattern each time: ';
+        var code = document.createElement('code');
+        // Read back which pattern actually got used by checking the modifier class on the arc group.
+        var arc = pickedLoaderEl.querySelector('.ball-spinner-arc');
+        var used = 'unknown';
+        if (arc) {
+          arc.classList.forEach(function (c) {
+            var m = /^ball-spinner-arc--(.+)$/.exec(c);
+            if (m) used = m[1];
+          });
+        }
+        code.textContent = used;
+        pickedPatternEl.appendChild(code);
+      }
+
+      select.addEventListener('change', renderPicked);
+      renderPicked();
+
+      // --- Full pattern grid -------------------------------------------------------------------
+      var grid = document.getElementById('pattern-grid');
+      loader.PATTERNS.forEach(function (pattern) {
+        var card = document.createElement('div');
+        card.className = 'demo-card';
+
+        var heading = document.createElement('h3');
+        heading.textContent = pattern;
+        card.appendChild(heading);
+
+        var desc = document.createElement('p');
+        desc.textContent = PATTERN_DESCRIPTIONS[pattern] || '';
+        card.appendChild(desc);
+
+        var loaderEl = document.createElement('div');
+        loaderEl.innerHTML = loader.markupForPattern('', pattern);
+        card.appendChild(loaderEl);
+
+        grid.appendChild(card);
+      });
+    })();
+  </script>
+</body>
+</html>

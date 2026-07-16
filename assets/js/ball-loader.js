@@ -69,7 +69,14 @@
   // is an optional drill-builder theme value used to pick a matching tracer pattern; omit it (or
   // pass an unrecognized value, e.g. "surprise me") to get a random pattern.
   function markup(message, theme) {
-    var html = svg(resolvePattern(theme));
+    return markupForPattern(message, resolvePattern(theme));
+  }
+
+  // Same as markup(), but for callers that want an exact named pattern (see PATTERNS) instead of
+  // resolving one from a theme — e.g. a demo/QA page showing every pattern, or a page that always
+  // wants a specific one regardless of theme.
+  function markupForPattern(message, pattern) {
+    var html = svg(pattern);
     if (message) html += '<span>' + escapeHtml(message) + '</span>';
     return html;
   }
@@ -90,6 +97,7 @@
 
   window.RCBallLoader = {
     markup: markup,
+    markupForPattern: markupForPattern,
     mount: mount,
     PATTERNS: PATTERNS.slice(),
     THEME_PATTERN: THEME_PATTERN,
