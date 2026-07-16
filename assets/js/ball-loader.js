@@ -7,8 +7,9 @@
   'use strict';
 
   // Each pattern is a distinct tracer path/squash/timing combo (see ball-loader.css for the
-  // actual keyframes) echoing a real squash shot.
-  var PATTERNS = ['drive', 'boast', 'drop', 'volley', 'arc', 'sweep', 'wobble', 'flourish'];
+  // actual keyframes) named after a real squash shot — every one ends its final impact on the
+  // front wall, since that's the actual rule (every shot must reach the front wall).
+  var PATTERNS = ['drive', 'boast', 'drop', 'volley', 'lob', 'nick', 'reverse', 'corkscrew', 'crosscourt'];
 
   // Maps a drill-builder theme value to the pattern that best matches the shot it describes.
   // Themes not listed here (and "surprise me") fall through to a random pick.
@@ -17,11 +18,11 @@
     'volleys': 'volley',
     'drops': 'drop',
     'boasts': 'boast',
-    'movement': 'sweep',
-    'front-court': 'drop',
-    'deception': 'wobble',
-    'serves/returns': 'arc',
-    'exhibition-shots': 'flourish',
+    'movement': 'crosscourt',
+    'front-court': 'nick',
+    'deception': 'reverse',
+    'serves/returns': 'lob',
+    'exhibition-shots': 'corkscrew',
   };
 
   function escapeHtml(s) {
@@ -46,7 +47,7 @@
     return (
       '<svg class="ball-spinner-svg" width="140" height="105" viewBox="0 0 160 120" aria-hidden="true">' +
       '<polygon class="ball-spinner-wall-side" points="70,53 10,78 10,32 70,7"></polygon>' +
-      '<polygon class="ball-spinner-wall-back" points="70,53 130,78 130,32 70,7"></polygon>' +
+      '<polygon class="ball-spinner-wall-front" points="70,53 130,78 130,32 70,7"></polygon>' +
       '<line class="ball-spinner-tin" x1="70" y1="46" x2="130" y2="71"></line>' +
       '<polygon class="ball-spinner-floor" points="10,78 70,103 130,78 70,53"></polygon>' +
       '<line class="ball-spinner-plank" x1="30" y1="70" x2="90" y2="95"></line>' +
@@ -55,8 +56,6 @@
       '<g class="ball-spinner-arc ball-spinner-arc--' + pattern + '">' +
       '<g class="ball-spinner-spin">' +
       '<circle class="ball-spinner-body" cx="37" cy="89" r="8"></circle>' +
-      '<path class="ball-spinner-seam" d="M30,83 Q37,89 30,95"></path>' +
-      '<path class="ball-spinner-seam" d="M44,83 Q37,89 44,95"></path>' +
       '<circle class="ball-spinner-dot" cx="34" cy="85" r="1.1"></circle>' +
       '<circle class="ball-spinner-dot" cx="40" cy="89" r="1.1"></circle>' +
       '</g>' +
