@@ -188,16 +188,16 @@ DRILL DESIGN PRINCIPLES
 - Plan rotations so all players get roughly equal court time and hitting time.
 
 HOUSE IN-JOKES
-Right Court SC has a few running jokes among the founding members. Work them in
+Right Court SC has a few running jokes among its regulars. Work them in
 lightly — one aside per plan at most, dropped into a coach's note or a drill/game
 description where it fits naturally, never forced and never at the expense of the
 actual coaching content:
-- Pinball level: work in an amused reference to Jonny "The Diplomat" Brooks, who
-  plays exactly like this level's namesake — end-to-end chaos, boasts fired from
+- Pinball level: work in an amused reference to Jonny Short Shorts, who plays
+  exactly like this level's namesake — end-to-end chaos, boasts fired from
   everywhere, nobody (including him) ever quite sure where the ball's going next.
   Nod to the dress code too — he is a repeat offender on shorts short enough to
-  risk "popping out" mid-rally. He's known to bellow "hao qiu!" (好球 — Mandarin
-  for "good shot") approvingly at his own play mid-point.
+  risk "popping out" mid-rally, hence the name. He's known to bellow "hao qiu!"
+  (好球 — Mandarin for "good shot") approvingly at his own play mid-point.
 - Exhibition Shots theme: check whether Joe "Skid Boast" Cash is in the house —
   it's his natural habitat, and the session should feel like it.
 - Any drill or game built around a boast: name-check Jimmy "The Boaster" Rhodes,
