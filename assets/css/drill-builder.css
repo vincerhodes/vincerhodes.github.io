@@ -1,0 +1,175 @@
+/* Right Court SC — AI Drill Builder styles, shared between /drill-builder/ (standalone page) and
+   /drills/ (embedded section). See assets/js/drill-builder.js for the matching form logic. */
+
+.builder-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+.builder-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  border: 1px solid var(--sage);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.builder-form .field-full {
+  grid-column: 1 / -1;
+}
+
+.builder-form label {
+  display: block;
+  font-weight: 600;
+  color: var(--forest-green);
+  margin-bottom: 0.35rem;
+}
+
+.builder-form input,
+.builder-form select,
+.builder-form textarea {
+  width: 100%;
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--sage);
+  border-radius: 4px;
+  color: var(--near-black-green);
+}
+
+.builder-form textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.builder-submit {
+  grid-column: 1 / -1;
+  background: var(--forest-green);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.builder-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.builder-status {
+  margin: 1.25rem 0;
+  font-weight: 600;
+}
+
+.builder-status[data-state="error"] {
+  color: #8a1f1f;
+}
+
+.builder-status[hidden] {
+  display: none;
+}
+
+.builder-retry {
+  margin-left: 0.75rem;
+  background: none;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  padding: 0.3rem 0.75rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+#plan-result[hidden] {
+  display: none;
+}
+
+.plan-markdown h1,
+.plan-markdown h2,
+.plan-markdown h3 {
+  color: var(--forest-green);
+  margin-top: 2rem;
+}
+
+.plan-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.95rem;
+}
+
+.plan-markdown th,
+.plan-markdown td {
+  border: 1px solid var(--sage);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.plan-markdown th {
+  background: var(--forest-green);
+  color: var(--white);
+}
+
+.drill-diagram-slot {
+  max-width: 320px;
+  margin: 0 auto 1.5rem;
+}
+
+.drill-diagram-slot .court-diagram-figure {
+  max-width: 320px;
+  margin: 1rem auto 0.5rem;
+}
+
+.drill-diagram-slot svg.court-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.court-diagram-caption {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  color: var(--near-black-green);
+}
+
+.diagram-unavailable {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--forest-green);
+  border: 1px dashed var(--sage);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.save-plan {
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--sage);
+  padding-top: 1.5rem;
+}
+
+.save-plan button {
+  background: var(--white);
+  color: var(--forest-green);
+  border: 1px solid var(--forest-green);
+  border-radius: 4px;
+  padding: 0.6rem 1rem;
+  font: inherit;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.save-plan-files {
+  font-size: 0.85rem;
+}
+
+@media (max-width: 640px) {
+  .builder-form {
+    grid-template-columns: 1fr;
+  }
+}

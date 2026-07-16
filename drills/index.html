@@ -6,6 +6,7 @@
 <title>Drills &amp; Sessions — Right Court SC</title>
 <meta name="description" content="Browse Right Court SC's library of coached session plans, filterable by skill theme, complete with court diagrams.">
 <link rel="stylesheet" href="../assets/css/styles.css">
+<link rel="stylesheet" href="../assets/css/drill-builder.css">
 <link rel="icon" type="image/png" href="../assets/favicon.png">
 <style>
   /* Drills & Sessions page (Phase 3) — scoped to this page only; the shared stylesheet stays
@@ -88,6 +89,30 @@
     padding: 0 1.25rem;
     color: var(--near-black-green);
   }
+
+  .builder-section {
+    border-top: 1px solid var(--sage);
+    padding-top: 1rem;
+  }
+
+  .builder-section-header {
+    max-width: 700px;
+    margin: 0 auto 0.5rem;
+    padding: 0 1.25rem;
+    text-align: center;
+  }
+
+  .builder-section-header h2 {
+    color: var(--forest-green);
+  }
+
+  .builder-section-header p {
+    line-height: 1.6;
+  }
+
+  .builder-section .builder-content {
+    padding-top: 1rem;
+  }
 </style>
 </head>
 <body>
@@ -99,9 +124,10 @@
 
   <main>
     <p class="drills-intro">
-      Coached session plans from past and upcoming Wednesdays and Saturdays &mdash; each with a
-      full drill breakdown, conditioned games, and court diagrams. Filter by skill theme to find
-      sessions that focus on what you want to work on.
+      Every coached session, past and upcoming, Wednesdays and Saturdays &mdash; full drill
+      breakdowns, conditioned games, and diagrams, so nobody has an excuse for standing in the
+      wrong spot. Filter by theme if you know what you want to work on. If you don't, that's what
+      Surprise Me is for.
     </p>
 
     <div class="theme-filter" role="group" aria-label="Filter sessions by skill theme">
@@ -125,11 +151,97 @@
     </div>
 
     <p class="no-results" id="no-results" hidden>No sessions match that theme yet &mdash; check back soon.</p>
+
+    <section class="builder-section">
+      <div class="builder-section-header">
+        <h2>Generate a new session</h2>
+        <p>
+          Nothing above hitting the spot? Tell it who's turning up tonight and it'll build a full
+          session on the fly &mdash; diagrams, coaching points, the lot. Same coaching brain
+          behind it as everything else in the library, just faster and slightly less judgmental.
+        </p>
+      </div>
+
+      <div class="builder-content">
+        <form class="builder-form" id="builder-form">
+          <div class="field">
+            <label for="field-players">Players</label>
+            <input type="number" id="field-players" name="players" min="1" step="1" value="6" required>
+          </div>
+
+          <div class="field">
+            <label for="field-courts">Courts booked</label>
+            <input type="number" id="field-courts" name="courts" min="1" step="1" value="2" required>
+          </div>
+
+          <div class="field">
+            <label for="field-theme">Theme</label>
+            <select id="field-theme" name="theme" required>
+              <option value="length">Length</option>
+              <option value="volleys">Volleys</option>
+              <option value="drops">Drops</option>
+              <option value="boasts">Boasts</option>
+              <option value="movement">Movement</option>
+              <option value="front-court">Front-court</option>
+              <option value="deception">Deception</option>
+              <option value="serves/returns">Serves/returns</option>
+              <option value="exhibition-shots">Exhibition Shots</option>
+              <option value="surprise me">Surprise me</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="field-level">Target level</label>
+            <select id="field-level" name="level" required>
+              <option value="beginner">Beginner</option>
+              <option value="intermediate" selected>Intermediate</option>
+              <option value="expert">Expert</option>
+              <option value="pro">Pro</option>
+              <option value="old man squash">Old Man Squash</option>
+              <option value="pinball">Pinball</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="field-duration">Session length (minutes)</label>
+            <input type="number" id="field-duration" name="duration_minutes" min="15" step="5" value="120" required>
+          </div>
+
+          <div class="field field-full">
+            <label for="field-notes">Notes (optional)</label>
+            <textarea id="field-notes" name="notes" placeholder="e.g. two beginners joining, low turnout, someone's carrying an injury"></textarea>
+          </div>
+
+          <button class="builder-submit" type="submit" id="builder-submit">Generate session plan</button>
+        </form>
+
+        <p class="builder-status" id="builder-status" hidden></p>
+
+        <div id="plan-result" hidden>
+          <div class="plan-markdown" id="plan-markdown"></div>
+          <div id="plan-diagrams"></div>
+
+          <div class="save-plan">
+            <h2>Save this session plan</h2>
+            <p>
+              Like this one? Grab the files below and hand them to a committee member to add to
+              <code>content/sessions/</code> &mdash; see
+              <a href="../CONTENTS-HOWTO.md">CONTENTS-HOWTO.md</a> for the exact layout.
+              Everything's packaged client-side, so this won't call the Worker again &mdash; no
+              extra cost for admiring your own handiwork.
+            </p>
+            <div id="save-plan-buttons"></div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer id="site-footer"></footer>
 
   <script src="../assets/js/nav.js" data-base=".."></script>
+  <script src="../assets/js/court-diagram.js"></script>
+  <script src="../assets/js/drill-builder.js"></script>
   <script>
     (function () {
       var buttons = document.querySelectorAll('.theme-filter button');

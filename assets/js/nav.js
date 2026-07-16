@@ -48,11 +48,11 @@
     '<div class="col">' +
     '<h4>Quick links</h4>' +
     '<a href="' + prefix + 'drill-builder/index.html">Drill Builder</a>' +
-    '<a href="' + prefix + 'founding-fathers/index.html">Founding Fathers</a>' +
+    '<a href="' + prefix + 'founding-squashers/index.html">Founding Squashers</a>' +
     '<a href="' + prefix + 'about/index.html">About / Join</a>' +
     '</div>' +
     '</div>' +
-    '<p class="copyright">&copy; 2026 Right Court SC. All rights reserved.</p>';
+    '<p class="copyright">&copy; 2026 Right Court SC. All rights reserved (mostly the wrongs too).</p>';
 
   var headerEl = document.getElementById('site-header');
   var footerEl = document.getElementById('site-footer');
