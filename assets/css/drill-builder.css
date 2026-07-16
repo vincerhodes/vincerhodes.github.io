@@ -69,8 +69,75 @@
   color: #8a1f1f;
 }
 
+.builder-status[data-state="loading"] {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .builder-status[hidden] {
   display: none;
+}
+
+/* --- Squash-ball loading spinner --------------------------------------------------------- */
+/* Speed-dot yellow, matching real squash ball dot markings (single/double dot = ball speed) —
+   the one deliberate spot of color in an otherwise forest-green/sage/white site. */
+.ball-spinner-svg {
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.ball-spinner-shadow {
+  fill: var(--sage);
+  opacity: 0.5;
+  transform-origin: 30px 50px;
+  animation: ball-spinner-shadow 0.9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.ball-spinner-arc {
+  animation: ball-spinner-bounce 0.9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.ball-spinner-ball {
+  transform-origin: 30px 30px;
+  animation: ball-spinner-spin 1.8s linear infinite;
+}
+
+.ball-spinner-body {
+  fill: var(--near-black-green);
+}
+
+.ball-spinner-seam {
+  fill: none;
+  stroke: var(--sage);
+  stroke-width: 1;
+  opacity: 0.6;
+}
+
+.ball-spinner-dot {
+  fill: #F2C230;
+}
+
+@keyframes ball-spinner-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+
+@keyframes ball-spinner-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ball-spinner-shadow {
+  0%, 100% { transform: scale(1); opacity: 0.55; }
+  50% { transform: scale(0.6); opacity: 0.25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ball-spinner-shadow,
+  .ball-spinner-arc,
+  .ball-spinner-ball {
+    animation: none;
+  }
 }
 
 .builder-retry {

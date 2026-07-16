@@ -187,6 +187,24 @@ DRILL DESIGN PRINCIPLES
   Rotate pairs so nobody is stuck in one role all session.
 - Plan rotations so all players get roughly equal court time and hitting time.
 
+HOUSE IN-JOKES
+Right Court SC has a few running jokes among the founding members. Work them in
+lightly — one aside per plan at most, dropped into a coach's note or a drill/game
+description where it fits naturally, never forced and never at the expense of the
+actual coaching content:
+- Pinball level: work in an amused reference to Jonny "The Diplomat" Brooks, who
+  plays exactly like this level's namesake — end-to-end chaos, boasts fired from
+  everywhere, nobody (including him) ever quite sure where the ball's going next.
+  Nod to the dress code too — he is a repeat offender on shorts short enough to
+  risk "popping out" mid-rally. He's known to bellow "hao qiu!" (好球 — Mandarin
+  for "good shot") approvingly at his own play mid-point.
+- Exhibition Shots theme: check whether Joe "Skid Boast" Cash is in the house —
+  it's his natural habitat, and the session should feel like it.
+- Any drill or game built around a boast: name-check Jimmy "The Boaster" Rhodes,
+  the club's resident authority on the shot.
+- Any drill or game built around a drop shot: name-check Adam "Soft Hands"
+  Turner, whose touch the drop is basically named after at this point.
+
 GAMES DESIGN PRINCIPLES
 - Games must be themed on the drills — each condition should force players to use
   the skill just practised.
@@ -238,7 +256,7 @@ The bracketed `{if theme is "surprise me": ...}` line is conditional — include
 
 ## Notes for implementation
 - **Model:** `anthropic/claude-haiku-4.5:exacto` via OpenRouter is the **decided** Phase 4 default (see "Provider/model" above) — this is what the live-generation quality check (`planning/00-master-plan.md`'s Phase 4 "Still open" section) validates, and completing Phase 4 does not require testing anything else. Picked over `openai/gpt-5.4-mini:exacto` and `google/gemini-3.1-flash-lite` because this endpoint lives or dies on the model actually honoring forced tool-use every time, and Exacto routing exists specifically to bias toward providers with strong tool-calling reliability; the ~45¢/month spread between these three candidates at club volume (10–30 generations/month) isn't worth optimizing around. Comparing the alternatives head-to-head (same diagram-degrade-rate signal, see "Malformed-diagram fallback" below) is optional exploratory follow-up work a human can do post-launch, not a Phase-4 completion requirement — swap the `model` string later if a cheaper option is shown to hold up just as well.
-- `max_tokens: 4096` as the starting value — enough headroom for a full 2-hour plan plus diagram data for every drill in initial testing. Measure actual output length during Phase 4 and raise if any real test case truncates.
+- `max_tokens: 8192` — raised from the original `4096` after live testing showed complex requests (high player/court counts, Pro/Pinball level, longer durations) truncating mid tool-call, producing invalid JSON. The Worker call is non-streaming, so `max_tokens` is kept well under the ~16K threshold where non-streaming OpenRouter/Cloudflare requests risk their own HTTP timeout — Haiku 4.5 supports up to 64K output tokens, but that headroom isn't usable here without switching the Worker to streaming.
 - Do not let the client override the system prompt — only the five form fields above should be interpolated into the user message; the system prompt itself is fixed server-side in the Worker.
 - Verify current OpenRouter pricing before finalizing — the numbers above are as of mid-2026 and shift over time; check https://openrouter.ai/anthropic/claude-haiku-4.5 (and the equivalent pages for the other two candidates) at Phase 4 build time.
 - Diagrams: see `06-SVG-DIAGRAM-SYSTEM.md` for the full rendering architecture. The Worker reads `drills[].diagram` from the tool-use response (not regex-extracted — see "Structured output via forced tool-use" above) and clamps `x`/`y` to `[0,1]` as a final defensive check before returning JSON to the browser. `renderCourtDiagram` itself is DOM-manipulating (it mounts SVG into a container element) and so runs client-side in the browser, not in the Worker — the browser calls it per diagram, matched to its position in `plan_markdown` by `drill_name`. No image-generation call is involved anywhere in this flow.

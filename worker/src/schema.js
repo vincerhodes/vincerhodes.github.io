@@ -35,7 +35,13 @@ export const SURPRISE_ME = 'surprise me';
 export const LEVELS = ['beginner', 'intermediate', 'expert', 'pro', 'old man squash', 'pinball'];
 
 export const MODEL = 'anthropic/claude-haiku-4.5:exacto';
-export const MAX_TOKENS = 4096;
+// Claude Haiku 4.5 supports up to 64K output tokens, but this Worker calls OpenRouter
+// non-streaming — pushing max_tokens too high risks new HTTP-timeout failures instead of
+// truncation ones. 4096 was empirically confirmed too low (truncated tool-call JSON on complex
+// pro/pinball requests). 8192 cut the failure rate but didn't eliminate it on the most complex
+// cases (8 players/3 courts/pro/boasts) — 12000 gives more headroom while staying well clear of
+// non-streaming timeout territory (~16K).
+export const MAX_TOKENS = 12000;
 
 export const RETURN_SESSION_PLAN_TOOL = {
   type: 'function',
@@ -206,6 +212,24 @@ DRILL DESIGN PRINCIPLES
   one and give the stronger player a feeding or supporting role where appropriate.
   Rotate pairs so nobody is stuck in one role all session.
 - Plan rotations so all players get roughly equal court time and hitting time.
+
+HOUSE IN-JOKES
+Right Court SC has a few running jokes among the founding members. Work them in
+lightly — one aside per plan at most, dropped into a coach's note or a drill/game
+description where it fits naturally, never forced and never at the expense of the
+actual coaching content:
+- Pinball level: work in an amused reference to Jonny "The Diplomat" Brooks, who
+  plays exactly like this level's namesake — end-to-end chaos, boasts fired from
+  everywhere, nobody (including him) ever quite sure where the ball's going next.
+  Nod to the dress code too — he is a repeat offender on shorts short enough to
+  risk "popping out" mid-rally. He's known to bellow "hao qiu!" (好球 — Mandarin
+  for "good shot") approvingly at his own play mid-point.
+- Exhibition Shots theme: check whether Joe "Skid Boast" Cash is in the house —
+  it's his natural habitat, and the session should feel like it.
+- Any drill or game built around a boast: name-check Jimmy "The Boaster" Rhodes,
+  the club's resident authority on the shot.
+- Any drill or game built around a drop shot: name-check Adam "Soft Hands"
+  Turner, whose touch the drop is basically named after at this point.
 
 GAMES DESIGN PRINCIPLES
 - Games must be themed on the drills — each condition should force players to use

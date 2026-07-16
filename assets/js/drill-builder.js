@@ -21,6 +21,23 @@
 
   var lastPlan = null; // { plan_markdown, drills } — for the Save flow.
 
+  // Squash-ball loading spinner — near-black-green ball, sage shadow, two yellow speed dots
+  // (a nod to real squash ball speed-grade dot markings, and the site's one deliberate spot of
+  // color). Shown only while a generation request is in flight.
+  var BALL_SPINNER_SVG =
+    '<svg class="ball-spinner-svg" width="40" height="40" viewBox="0 0 60 60" aria-hidden="true">' +
+    '<ellipse class="ball-spinner-shadow" cx="30" cy="50" rx="14" ry="4"></ellipse>' +
+    '<g class="ball-spinner-arc">' +
+    '<g class="ball-spinner-ball">' +
+    '<circle class="ball-spinner-body" cx="30" cy="30" r="15"></circle>' +
+    '<path class="ball-spinner-seam" d="M17,22 Q30,32 17,42"></path>' +
+    '<path class="ball-spinner-seam" d="M43,22 Q30,32 43,42"></path>' +
+    '<circle class="ball-spinner-dot" cx="24" cy="24" r="1.7"></circle>' +
+    '<circle class="ball-spinner-dot" cx="36" cy="30" r="1.7"></circle>' +
+    '</g>' +
+    '</g>' +
+    '</svg>';
+
   // --- Minimal Markdown -> HTML renderer -------------------------------------------------
   // No external dependencies (per 03-TECHNICAL-ARCHITECTURE.md's "plain HTML/CSS/JS, no build
   // step"). Covers exactly what the return_session_plan system prompt's OUTPUT FORMAT asks the
@@ -144,7 +161,11 @@
 
   // --- Status / result rendering ----------------------------------------------------------
   function setStatus(message, state) {
-    statusEl.textContent = message || '';
+    if (state === 'loading') {
+      statusEl.innerHTML = BALL_SPINNER_SVG + '<span>' + escapeHtml(message || '') + '</span>';
+    } else {
+      statusEl.textContent = message || '';
+    }
     statusEl.hidden = !message;
     if (state) {
       statusEl.setAttribute('data-state', state);
@@ -257,7 +278,7 @@
 
     submitBtn.disabled = true;
     resultEl.hidden = true;
-    setStatus('Generating your session plan…');
+    setStatus('Generating your session plan… complex plans can take a little while.', 'loading');
 
     fetch(API_BASE + '/generate', {
       method: 'POST',
@@ -276,9 +297,13 @@
         setStatus('');
         renderResult(data);
       })
-      .catch(function () {
+      .catch(function (err) {
         // Error contract per 03-TECHNICAL-ARCHITECTURE.md: on total failure, show a plain
-        // message with a retry button — never a stack trace or raw error to the user.
+        // message with a retry button — never a stack trace or raw error to the user. The real
+        // error still goes to the console so a report of "it failed" is diagnosable.
+        if (window.console && console.error) {
+          console.error('Drill builder generation failed:', err);
+        }
         statusEl.innerHTML = '';
         statusEl.setAttribute('data-state', 'error');
         statusEl.hidden = false;
