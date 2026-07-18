@@ -9,13 +9,17 @@
 import { MAX_TOKENS, MODEL, RETURN_SESSION_PLAN_TOOL, SYSTEM_PROMPT } from './schema.js';
 import {
   applyRateLimit,
+  buildDriveListUrl,
   buildUserMessage,
   corsHeaders,
   filterValidDiagrams,
+  shapeGalleryPhotos,
   validateRequestBody,
 } from './lib.js';
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+const GALLERY_CACHE_TTL_SECONDS = 1800; // 30 min — Drive folder changes rarely, keep this snappy.
+const GALLERY_MAX_FILES = 500; // pagination backstop, not a real-world cap for a club photo folder
 
 function jsonResponse(body, status, headers) {
   return new Response(JSON.stringify(body), {
@@ -34,6 +38,20 @@ function errorResponse(message, status, headers) {
  * flow). Produces a response shaped exactly like a real forced-tool-use OpenRouter reply so the
  * rest of the pipeline (clamping, drill_name matching, client rendering) is exercised for real.
  */
+/** Test-mode stub for GET /gallery — see stubGeneration's comment, same rationale. */
+function stubGalleryPhotos() {
+  const colors = ['21472E', '8FA893', '152218', '3C6B4A'];
+  return colors.map((hex, i) => {
+    const svg =
+      `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">` +
+      `<rect width="100%" height="100%" fill="%23${hex}"/>` +
+      `<text x="50%" y="50%" fill="white" font-size="48" text-anchor="middle" dy=".3em">Stub ${i + 1}</text>` +
+      `</svg>`;
+    const dataUri = `data:image/svg+xml,${svg}`;
+    return { id: `stub-${i}`, name: `Stub Photo ${i + 1}`, thumb: dataUri, full: dataUri, width: 800, height: 600 };
+  });
+}
+
 function stubGeneration(body) {
   const drillName = `Stub Drill: ${body.theme} focus`;
   const plan_markdown = [
@@ -119,6 +137,69 @@ async function callOpenRouter(body, env) {
   return { plan_markdown: args.plan_markdown, drills: args.drills };
 }
 
+/** Calls the Drive API (paginating as needed) and shapes the result. Throws on any failure. */
+async function fetchGalleryPhotos(env) {
+  if (!env.GOOGLE_DRIVE_API_KEY || !env.GALLERY_FOLDER_ID) {
+    throw new Error('Gallery is not configured yet (missing GOOGLE_DRIVE_API_KEY or GALLERY_FOLDER_ID)');
+  }
+
+  let files = [];
+  let pageToken;
+  do {
+    const response = await fetch(buildDriveListUrl(env.GALLERY_FOLDER_ID, env.GOOGLE_DRIVE_API_KEY, pageToken));
+    if (!response.ok) {
+      throw new Error(`Google Drive request failed (${response.status})`);
+    }
+    const data = await response.json();
+    files = files.concat(data.files || []);
+    pageToken = data.nextPageToken;
+  } while (pageToken && files.length < GALLERY_MAX_FILES);
+
+  return shapeGalleryPhotos(files);
+}
+
+/**
+ * Handles GET /gallery. Cached at the edge keyed independently of Origin (CORS headers are
+ * re-applied fresh on every response below) so photos aren't re-fetched from Drive on every page
+ * load, and so a cache write for one allowed origin can't leak a mismatched Access-Control-Allow-
+ * Origin header to a request from the other.
+ */
+async function handleGallery(request, env, headers) {
+  if (request.method !== 'GET') {
+    return errorResponse('Method not allowed', 405, headers);
+  }
+
+  if (env.TEST_MODE === 'true') {
+    return jsonResponse({ photos: stubGalleryPhotos() }, 200, headers);
+  }
+
+  const cache = caches.default;
+  const cacheKey = new Request(new URL('/gallery-cache', request.url).toString());
+
+  const cached = await cache.match(cacheKey);
+  if (cached) {
+    const { photos } = await cached.json();
+    return jsonResponse({ photos }, 200, headers);
+  }
+
+  let photos;
+  try {
+    photos = await fetchGalleryPhotos(env);
+  } catch (err) {
+    return errorResponse(err instanceof Error ? err.message : 'Failed to load gallery', 502, headers);
+  }
+
+  const toCache = new Response(JSON.stringify({ photos }), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': `public, max-age=${GALLERY_CACHE_TTL_SECONDS}`,
+    },
+  });
+  await cache.put(cacheKey, toCache);
+
+  return jsonResponse({ photos }, 200, headers);
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
@@ -130,6 +211,11 @@ export default {
     }
 
     const url = new URL(request.url);
+
+    if (url.pathname === '/gallery') {
+      return handleGallery(request, env, headers);
+    }
+
     if (url.pathname !== '/generate') {
       return errorResponse('Not found', 404, headers);
     }

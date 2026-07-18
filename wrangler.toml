@@ -19,7 +19,15 @@ routes = [
 binding = "RATE_LIMIT"
 id = "26d84c6ee0094eb8ad59ee15fabc6a2c"
 
-# Secrets (not in this file): set via `wrangler secret put OPENROUTER_API_KEY`.
+[vars]
+# The public "anyone with the link can view" Drive folder already embedded in gallery/index.html
+# before the GET /gallery endpoint existed — not a secret, just an id.
+GALLERY_FOLDER_ID = "15OnlrVqOxbmUdsjWL5JuT-Va58460yrN"
+
+# Secrets (not in this file): set via `wrangler secret put OPENROUTER_API_KEY` and
+# `wrangler secret put GOOGLE_DRIVE_API_KEY`. The latter is a Google Cloud API key with only the
+# "Google Drive API" enabled (Credentials > API restrictions) — GET /gallery 502s with a clear
+# error until it's set, and the client (assets/js/gallery.js) falls back to a "view on Drive" link.
 #
 # Dev/test-only variables (never set here — passed at invocation time, see
 # tests/e2e/drill-builder.spec.ts and package.json's "worker:dev" script):

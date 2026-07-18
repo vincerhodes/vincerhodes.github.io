@@ -249,7 +249,7 @@ export function isAllowedOrigin(origin, extraAllowedOrigins = []) {
 
 export function corsHeaders(origin, extraAllowedOrigins = []) {
   const headers = {
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',
   };
@@ -258,4 +258,55 @@ export function corsHeaders(origin, extraAllowedOrigins = []) {
     headers['Vary'] = 'Origin';
   }
   return headers;
+}
+
+// -----------------------------------------------------------------------------------------------
+// Gallery — Google Drive folder listing (see gallery/index.html, assets/js/gallery.js)
+// -----------------------------------------------------------------------------------------------
+
+const DRIVE_FILES_URL = 'https://www.googleapis.com/drive/v3/files';
+
+/**
+ * Builds a Google Drive API v3 files.list URL for images directly inside `folderId`. The folder is
+ * shared "anyone with the link can view", so a plain (unauthenticated-user) API key restricted to
+ * the Drive API is enough — no OAuth flow needed. See wrangler.toml for how GOOGLE_DRIVE_API_KEY
+ * is provisioned.
+ */
+export function buildDriveListUrl(folderId, apiKey, pageToken) {
+  const params = new URLSearchParams({
+    q: `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`,
+    key: apiKey,
+    fields: 'nextPageToken, files(id, name, imageMediaMetadata(width, height))',
+    orderBy: 'name',
+    pageSize: '1000',
+  });
+  if (pageToken) params.set('pageToken', pageToken);
+  return `${DRIVE_FILES_URL}?${params.toString()}`;
+}
+
+/**
+ * Google's stable image-proxy thumbnail URL — works for any publicly-viewable Drive file without
+ * needing the API key client-side, and accepts an arbitrary target width via `sz=wNNN`.
+ */
+export function buildThumbnailUrl(fileId, width) {
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${width}`;
+}
+
+/**
+ * Shapes raw Drive `files` entries into what the gallery client renders: a small thumb for the
+ * grid, a larger full for the slideshow/lightbox. Drops anything without a usable id (defensive —
+ * malformed API response shouldn't crash the page).
+ */
+export function shapeGalleryPhotos(files) {
+  const list = Array.isArray(files) ? files : [];
+  return list
+    .filter((f) => f && typeof f.id === 'string' && f.id.trim() !== '')
+    .map((f) => ({
+      id: f.id,
+      name: typeof f.name === 'string' && f.name.trim() !== '' ? f.name : f.id,
+      thumb: buildThumbnailUrl(f.id, 500),
+      full: buildThumbnailUrl(f.id, 1800),
+      width: f.imageMediaMetadata && Number.isFinite(f.imageMediaMetadata.width) ? f.imageMediaMetadata.width : null,
+      height: f.imageMediaMetadata && Number.isFinite(f.imageMediaMetadata.height) ? f.imageMediaMetadata.height : null,
+    }));
 }

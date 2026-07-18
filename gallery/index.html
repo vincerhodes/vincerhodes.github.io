@@ -8,8 +8,7 @@
 <link rel="stylesheet" href="../assets/css/styles.css">
 <link rel="icon" type="image/png" href="../assets/favicon.png">
 <style>
-  /* Gallery page (Phase 2) — scoped to this page only; the shared stylesheet stays untouched
-     during this phase (see planning/00-master-plan.md Phase 2 "writable" scope). */
+  /* Gallery page — scoped to this page only; the shared stylesheet stays untouched. */
   .gallery-intro {
     max-width: 700px;
     margin: 0 auto 1.5rem;
@@ -17,18 +16,258 @@
     line-height: 1.6;
   }
 
-  .gallery-embed {
+  .gallery-app {
     max-width: 1100px;
     margin: 0 auto 3rem;
     padding: 0 1.25rem;
   }
 
-  .gallery-embed iframe {
+  .gallery-status {
+    text-align: center;
+    padding: 4rem 0;
+    color: var(--sage);
+    font-family: var(--font-heading);
+  }
+
+  /* --- Slideshow ------------------------------------------------------------------------ */
+
+  .gallery-slideshow {
+    border: 1px solid var(--sage);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--near-black-green);
+  }
+
+  .slideshow-stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 16 / 10;
+    background: var(--near-black-green);
+  }
+
+  .slideshow-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     display: block;
-    width: 100%;
-    height: 80vh;
-    border: 0;
+  }
+
+  .slideshow-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(21, 34, 24, 0.55);
+    color: var(--white);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .slideshow-arrow:hover {
+    background: rgba(21, 34, 24, 0.85);
+  }
+
+  .slideshow-arrow-prev {
+    left: 1rem;
+  }
+
+  .slideshow-arrow-next {
+    right: 1rem;
+  }
+
+  .slideshow-progress {
+    height: 3px;
+    background: rgba(143, 168, 147, 0.25);
+  }
+
+  .slideshow-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--sage);
+  }
+
+  .slideshow-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.9rem 1.25rem;
+    background: var(--forest-green);
+    color: var(--white);
+  }
+
+  .slideshow-controls button {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    background: transparent;
+    border: 1px solid var(--sage);
+    color: var(--white);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    cursor: pointer;
+  }
+
+  .slideshow-controls button:hover {
+    background: rgba(143, 168, 147, 0.2);
+  }
+
+  .slideshow-counter {
+    font-family: var(--font-heading);
+    color: var(--sage);
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* --- Grid ------------------------------------------------------------------------------- */
+
+  .gallery-grid-back {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    background: transparent;
+    border: 1px solid var(--sage);
+    color: var(--forest-green);
+    border-radius: 999px;
+    padding: 0.4rem 0.9rem;
+    cursor: pointer;
+    margin-bottom: 1.25rem;
+  }
+
+  .gallery-grid-back:hover {
+    background: rgba(143, 168, 147, 0.15);
+  }
+
+  .gallery-grid-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .gallery-grid-item {
+    padding: 0;
+    border: 1px solid var(--sage);
     border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    background: none;
+    aspect-ratio: 1 / 1;
+  }
+
+  .gallery-grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.2s ease;
+  }
+
+  .gallery-grid-item:hover img {
+    transform: scale(1.05);
+  }
+
+  /* --- Empty / fallback -------------------------------------------------------------------- */
+
+  .gallery-empty {
+    text-align: center;
+    padding: 3rem 1.25rem;
+    border: 1px solid var(--sage);
+    border-radius: 10px;
+  }
+
+  .gallery-empty a {
+    color: var(--forest-green);
+    font-weight: 600;
+  }
+
+  /* --- Lightbox ------------------------------------------------------------------------- */
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(21, 34, 24, 0.92);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lightbox[hidden] {
+    display: none;
+  }
+
+  .lightbox-image {
+    max-width: 92vw;
+    max-height: 86vh;
+    object-fit: contain;
+    display: block;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    background: transparent;
+    border: none;
+    color: var(--white);
+    font-size: 2.2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .lightbox-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(21, 34, 24, 0.55);
+    color: var(--white);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .lightbox-arrow-prev {
+    left: 1.5rem;
+  }
+
+  .lightbox-arrow-next {
+    right: 1.5rem;
+  }
+
+  .lightbox-counter {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--sage);
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 600px) {
+    .slideshow-stage {
+      aspect-ratio: 4 / 5;
+    }
+    .slideshow-arrow,
+    .lightbox-arrow {
+      width: 38px;
+      height: 38px;
+      font-size: 1.3rem;
+    }
   }
 </style>
 </head>
@@ -42,22 +281,51 @@
   <main>
     <p class="gallery-intro">
       The evidence. Sessions, socials, club nights, and the odd photo someone definitely didn't
-      mean to be in &mdash; all living in the Google Drive folder below. Got shots to add? Ask a
-      committee member for the upload link, or just email them to
-      <a href="mailto:info@rightcourtsc.com">info@rightcourtsc.com</a> and we'll slot them in.
+      mean to be in. Got shots to add? Ask a committee member for the upload link, or just email
+      them to <a href="mailto:info@rightcourtsc.com">info@rightcourtsc.com</a> and we'll slot them
+      in.
     </p>
 
-    <div class="gallery-embed">
-      <iframe
-        src="https://drive.google.com/embeddedfolderview?id=15OnlrVqOxbmUdsjWL5JuT-Va58460yrN#grid"
-        title="Right Court SC photo gallery (Google Drive)"
-        loading="lazy">
-      </iframe>
+    <div class="gallery-app" id="gallery-app">
+      <p class="gallery-status" id="gallery-status">Loading photos&hellip;</p>
+
+      <div class="gallery-slideshow" id="gallery-slideshow" hidden>
+        <div class="slideshow-stage">
+          <button type="button" class="slideshow-arrow slideshow-arrow-prev" id="slide-prev" aria-label="Previous photo">&#8249;</button>
+          <img class="slideshow-image" id="slide-image" alt="">
+          <button type="button" class="slideshow-arrow slideshow-arrow-next" id="slide-next" aria-label="Next photo">&#8250;</button>
+        </div>
+        <div class="slideshow-progress"><div class="slideshow-progress-bar" id="slide-progress-bar"></div></div>
+        <div class="slideshow-controls">
+          <button type="button" id="slide-play" aria-label="Pause slideshow">Pause</button>
+          <span class="slideshow-counter" id="slide-counter"></span>
+          <button type="button" id="slide-viewall">View all photos</button>
+        </div>
+      </div>
+
+      <div class="gallery-grid" id="gallery-grid" hidden>
+        <button type="button" class="gallery-grid-back" id="grid-back">&larr; Back to slideshow</button>
+        <div class="gallery-grid-inner" id="gallery-grid-inner"></div>
+      </div>
+
+      <div class="gallery-empty" id="gallery-empty" hidden>
+        <p>Couldn't load the gallery right now.</p>
+        <p><a id="gallery-fallback-link" href="#">View photos on Google Drive &rarr;</a></p>
+      </div>
     </div>
   </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+    <button type="button" class="lightbox-arrow lightbox-arrow-prev" id="lightbox-prev" aria-label="Previous photo">&#8249;</button>
+    <img class="lightbox-image" id="lightbox-image" alt="">
+    <button type="button" class="lightbox-arrow lightbox-arrow-next" id="lightbox-next" aria-label="Next photo">&#8250;</button>
+    <div class="lightbox-counter" id="lightbox-counter"></div>
+  </div>
 
   <footer id="site-footer"></footer>
 
   <script src="../assets/js/nav.js" data-base=".."></script>
+  <script src="../assets/js/gallery.js"></script>
 </body>
 </html>

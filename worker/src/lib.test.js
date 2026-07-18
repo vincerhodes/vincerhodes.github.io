@@ -10,6 +10,8 @@ import { describe, expect, it } from 'vitest';
 import {
   RATE_LIMIT_MAX,
   applyRateLimit,
+  buildDriveListUrl,
+  buildThumbnailUrl,
   buildUserMessage,
   clamp01,
   clampDiagram,
@@ -18,6 +20,7 @@ import {
   drillNameMatchesPlan,
   filterValidDiagrams,
   isAllowedOrigin,
+  shapeGalleryPhotos,
   validateRequestBody,
 } from './lib.js';
 
@@ -438,5 +441,57 @@ describe('CORS', () => {
   it('corsHeaders echoes the origin back when allowed', () => {
     const headers = corsHeaders('https://rightcourtsc.com');
     expect(headers['Access-Control-Allow-Origin']).toBe('https://rightcourtsc.com');
+  });
+
+  it('corsHeaders allows GET alongside POST (gallery + drill builder share one Worker)', () => {
+    expect(corsHeaders('https://rightcourtsc.com')['Access-Control-Allow-Methods']).toBe('GET, POST, OPTIONS');
+  });
+});
+
+describe('gallery', () => {
+  it('buildDriveListUrl includes the folder id, api key, and image-only query', () => {
+    const url = buildDriveListUrl('FOLDER123', 'KEY456');
+    expect(url).toContain('key=KEY456');
+    expect(url).toContain('%27FOLDER123%27+in+parents');
+    expect(url).toContain('mimeType+contains+%27image%2F%27');
+    expect(url).not.toContain('pageToken');
+  });
+
+  it('buildDriveListUrl appends pageToken when given one', () => {
+    const url = buildDriveListUrl('FOLDER123', 'KEY456', 'TOKEN789');
+    expect(url).toContain('pageToken=TOKEN789');
+  });
+
+  it('buildThumbnailUrl builds a Drive thumbnail proxy URL at the requested width', () => {
+    expect(buildThumbnailUrl('FILE1', 500)).toBe('https://drive.google.com/thumbnail?id=FILE1&sz=w500');
+  });
+
+  it('shapeGalleryPhotos maps Drive files to thumb/full URLs and dimensions', () => {
+    const photos = shapeGalleryPhotos([
+      { id: 'FILE1', name: 'session-01.jpg', imageMediaMetadata: { width: 4032, height: 3024 } },
+    ]);
+    expect(photos).toEqual([
+      {
+        id: 'FILE1',
+        name: 'session-01.jpg',
+        thumb: 'https://drive.google.com/thumbnail?id=FILE1&sz=w500',
+        full: 'https://drive.google.com/thumbnail?id=FILE1&sz=w1800',
+        width: 4032,
+        height: 3024,
+      },
+    ]);
+  });
+
+  it('shapeGalleryPhotos falls back to id as name and null dimensions when metadata is missing', () => {
+    const photos = shapeGalleryPhotos([{ id: 'FILE2' }]);
+    expect(photos[0].name).toBe('FILE2');
+    expect(photos[0].width).toBeNull();
+    expect(photos[0].height).toBeNull();
+  });
+
+  it('shapeGalleryPhotos drops entries without a usable id and tolerates a non-array input', () => {
+    expect(shapeGalleryPhotos([{ name: 'no-id.jpg' }, null, { id: '' }])).toEqual([]);
+    expect(shapeGalleryPhotos(null)).toEqual([]);
+    expect(shapeGalleryPhotos(undefined)).toEqual([]);
   });
 });
