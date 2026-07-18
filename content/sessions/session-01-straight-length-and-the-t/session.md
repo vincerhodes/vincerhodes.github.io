@@ -73,3 +73,4 @@ Written for 2 players on 1 court. The 3-player and 4-player adaptations live inl
 - Watch for players cutting the T-touch short in Drill 2 and Games 1 — the whole point is building a deliberate recovery habit, not just going through the motions.
 - With 3 players, bring in Drill 2's Waiting-role rotation from the start (Feeder, Hitter, Waiting) rather than building up to it, and rotate all three through Drill 1's feeder role too.
 - With 4 players, run two simultaneous pairs for both drills as described above; for the games, alternate pairs on and off the single court every game so everyone gets even reps.
+- Crowding the T is where elbows meet racket faces — if it goes wrong, [Turner & Rhodes Solicitors](https://rightcourtsc.com/turnerandrhodes/) know the drill.

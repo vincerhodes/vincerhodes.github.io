@@ -108,3 +108,4 @@ so a single court can flex up to 4 players without changing the plan's structure
 - 4-player adaptation: run two pairs simultaneously on opposite ends of the court doing the same
   drill, then swap pairs so each hitter runs their disguise past a new opponent to see if a fresh
   reader picks it up faster.
+- Wrong-footed players change direction fast enough to test a knee ligament — [Turner & Rhodes Solicitors](https://rightcourtsc.com/turnerandrhodes/) will understand.

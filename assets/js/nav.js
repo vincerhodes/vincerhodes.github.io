@@ -52,7 +52,8 @@
     '<a href="' + prefix + 'about/index.html">About / Join</a>' +
     '</div>' +
     '</div>' +
-    '<p class="copyright">&copy; 2026 Right Court SC. All rights reserved (mostly the wrongs too).</p>';
+    '<p class="copyright">&copy; 2026 Right Court SC. All rights reserved (mostly the wrongs too).</p>' +
+    '<p class="copyright"><a href="https://rightcourtsc.com/turnerandrhodes/">Injured on court? Turner &amp; Rhodes Solicitors — no boast, no win, no fee.</a></p>';
 
   var headerEl = document.getElementById('site-header');
   var footerEl = document.getElementById('site-footer');

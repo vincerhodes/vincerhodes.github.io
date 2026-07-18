@@ -103,3 +103,4 @@ player in between games) rather than as a separate parallel session.
 - With 3 players, keep the hitter on court across multiple feeders to maximize boast reps; with 4
   players, run the two drills in parallel in alternating blocks rather than splitting the court
   width, since the boast's diagonal flight path needs the full court.
+- Crosscourt drives through a crowded middle are a [Turner & Rhodes Solicitors](https://rightcourtsc.com/turnerandrhodes/) waiting room in the making.

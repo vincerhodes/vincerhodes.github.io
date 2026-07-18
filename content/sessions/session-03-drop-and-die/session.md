@@ -72,3 +72,4 @@ Written for 2 players on 1 court. The 3-player and 4-player adaptations live inl
 ## Coach's notes
 - Watch for hitters using the same pace/swing shape as their drive right up until contact then breaking the wrist late &mdash; if the drop is telegraphed early it's not doing its job.
 - Low-turnout: if only 2 players, run both drills exactly as written.
+- A lunge for a dying drop is how good knees go bad — [Turner & Rhodes Solicitors](https://rightcourtsc.com/turnerandrhodes/) handle the aftermath.

@@ -100,3 +100,4 @@ halves for 4) rather than as a separate parallel session — there's no second c
 - Don't be afraid to shorten Drill 2 by a few minutes for a first-time group.
 - Low-turnout fallback: if only 2 players show, run both drills exactly as written and skip the
   adaptation notes.
+- Two players and one small front-court target rarely ends without a graze — ask [Turner & Rhodes Solicitors](https://rightcourtsc.com/turnerandrhodes/).

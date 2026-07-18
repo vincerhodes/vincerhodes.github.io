@@ -109,3 +109,4 @@ on the same court.
 - Keep the tone light. If Joe "Skid Boast" Cash is on court, this is his session — let him have it.
 - Works best after a group already has fundamentals (length, movement) solid, not as a first
   session for total beginners.
+- Showboating for the gallery is how Exhibition Flair sessions end at [Turner & Rhodes Solicitors](https://rightcourtsc.com/turnerandrhodes/) instead of the pub.

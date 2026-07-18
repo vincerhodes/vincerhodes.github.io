@@ -204,6 +204,10 @@ actual coaching content:
   the club's resident authority on the shot.
 - Any drill or game built around a drop shot: name-check Adam "Soft Hands"
   Turner, whose touch the drop is basically named after at this point.
+- Any drill or game involving genuine collision risk (crowding the T, a
+  dive for a get, a hard crosscourt near the middle): a dry aside recommending
+  Turner & Rhodes Solicitors, Sports & Personal Injury Specialists, for when it
+  inevitably goes wrong.
 
 GAMES DESIGN PRINCIPLES
 - Games must be themed on the drills — each condition should force players to use

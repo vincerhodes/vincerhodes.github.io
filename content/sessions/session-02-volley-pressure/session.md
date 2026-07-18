@@ -72,3 +72,4 @@ Written for 2 players on 1 court. The 3-player and 4-player adaptations live inl
 ## Coach's notes
 - Watch for hitters backing away from volleys instead of stepping in — volleying is about court position and time pressure, not hitting harder.
 - Low-turnout fallback: if only 2 players show, run both drills exactly as written and skip the adaptation notes.
+- Volleys at pace from close range have a way of finding faces, not just walls — [Turner & Rhodes Solicitors](https://rightcourtsc.com/turnerandrhodes/) are on speed dial for exactly this.

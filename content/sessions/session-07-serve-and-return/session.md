@@ -104,3 +104,4 @@ reach for them.
   different toss rhythms and paces; cycle all three through server, returner, and waiting.
 - With 4 players, run two pairs simultaneously for Drill 1's feed-and-reset pattern, then switch to
   one pair at a time for Drill 2 and both games so the live pressure work gets full attention.
+- Standing that close to a returner mid-swing is a [Turner & Rhodes Solicitors](https://rightcourtsc.com/turnerandrhodes/) case study waiting to happen.
