@@ -242,6 +242,31 @@ main {
   margin-bottom: 0;
 }
 
+.sponsor-slot {
+  margin: 3rem 0 1rem;
+  text-align: center;
+}
+
+.sponsor-slot .sponsor-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--sage);
+  margin-bottom: 0.6rem;
+}
+
+.sponsor-slot a {
+  display: inline-block;
+  line-height: 0;
+}
+
+.sponsor-slot img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--sage);
+}
+
 /* --- About page --------------------------------------------------------------------------- */
 
 .page-header {
