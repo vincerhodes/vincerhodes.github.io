@@ -242,12 +242,12 @@ main {
   margin-bottom: 0;
 }
 
-.sponsor-slot {
+.partner-note {
   margin: 3rem 0 1rem;
   text-align: center;
 }
 
-.sponsor-slot .sponsor-label {
+.partner-note .partner-note-label {
   font-size: 0.68rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -255,12 +255,12 @@ main {
   margin-bottom: 0.6rem;
 }
 
-.sponsor-slot a {
+.partner-note a {
   display: inline-block;
   line-height: 0;
 }
 
-.sponsor-slot img {
+.partner-note img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
