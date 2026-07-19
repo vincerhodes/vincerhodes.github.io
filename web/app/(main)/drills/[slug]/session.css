@@ -1,0 +1,93 @@
+/* Session detail page — ported from the page-scoped <style> block shared by the static
+   drills/session-NN-slug/index.html pages. */
+.session-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
+  line-height: 1.6;
+}
+
+.session-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  font-size: 0.9rem;
+  color: var(--forest-green);
+  margin-bottom: 1.5rem;
+}
+
+.session-content h2 {
+  color: var(--forest-green);
+  margin-top: 2.5rem;
+}
+
+.session-content h3 {
+  color: var(--forest-green);
+  margin-top: 1.75rem;
+}
+
+.timeline-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 2rem;
+  font-size: 0.95rem;
+}
+
+.timeline-table th,
+.timeline-table td {
+  border: 1px solid var(--sage);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.timeline-table th {
+  background: var(--forest-green);
+  color: var(--white);
+}
+
+.drill-block,
+.game-block {
+  border: 1px solid var(--sage);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 1.25rem 0;
+}
+
+.drill-block dl,
+.game-block dl {
+  margin: 0.75rem 0 0;
+}
+
+.drill-block dt,
+.game-block dt {
+  font-weight: 600;
+  color: var(--forest-green);
+  margin-top: 0.75rem;
+}
+
+.drill-block dd,
+.game-block dd {
+  margin: 0.2rem 0 0;
+}
+
+.court-diagram-figure {
+  max-width: 320px;
+  margin: 1.5rem auto 0.5rem;
+}
+
+.court-diagram-figure svg.court-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.court-diagram-caption {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  color: var(--near-black-green);
+}
+
+.coach-notes ul {
+  padding-left: 1.25rem;
+}

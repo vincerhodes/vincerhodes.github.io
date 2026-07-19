@@ -3,6 +3,21 @@
 > Living doc for resuming in a fresh session. Read this + `~/.claude/CLAUDE.md` before touching
 > anything. Last updated: 2026-07-18.
 
+## VPS MIGRATION — Phases 0–5 DONE (2026-07-19), Phases 6–7 remaining
+
+The Next.js rebuild in `web/` is complete per `planning/07-VPS-MIGRATION.md` (read it first).
+**Everything is uncommitted** (`web/` + the plan file are untracked) — user handles commits.
+State: `cd web && npm run build` ✓ (23 routes), `npx vitest run` → 77/77, tool-schema validator ✓,
+all pages 200-verified, save/list/delete + rate limit (429 at 31st) verified. T&R site ported as
+`/turnerandrhodes/*` route group with its own chrome (main site moved under `app/(main)/`).
+
+Remaining (needs the user): Phase 6 VPS provisioning (Caddy + systemd, see plan; env vars needed:
+`OPENROUTER_API_KEY`, `GOOGLE_DRIVE_API_KEY`, `GALLERY_FOLDER_ID`, `DATABASE_PATH` — see `web/ENV.md`)
+and Phase 7 DNS cutover/retirement. **First check on the VPS:** live `POST /api/generate` — the
+OpenRouter model region-blocks THIS dev machine (403, key is valid), so real generation was only
+stub-verified (`TEST_MODE`) locally; request is byte-identical to the live Worker. Known minor:
+1 pre-existing eslint error `react-hooks/set-state-in-effect` in `web/components/SavedDrillsList.tsx:44`.
+
 ## Where we are
 
 - **Site (Phases 0–5): done and live.** `https://rightcourtsc.com/` and all real pages

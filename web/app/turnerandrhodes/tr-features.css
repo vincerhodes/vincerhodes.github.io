@@ -1,0 +1,244 @@
+/* AUTO-SCOPED from turnerandrhodes repo (features.css) during Phase 5 of the
+   VPS migration. Every selector is prefixed with .tr-site; theme switching keys off
+   [data-theme] on <html> exactly like the source site. Do not hand-edit drift back in —
+   re-scope from the source repo if the T&R design changes. */
+
+/* Turner & Rhodes — feature styles (Practice Areas page only).
+   Claim estimator itemisation + case results gallery.
+   Builds on the design tokens in css/style.css; loaded after it. */
+
+/* ---- Claim estimator: itemised breakdown ---- */
+
+/* Whole result panel fades as the itemisation is rebuilt */
+.tr-site .calculator__result {
+  transition: opacity 0.2s;
+}
+
+.tr-site .calc-breakdown {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+}
+
+.tr-site .calc-line {
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+
+.tr-site .calc-line:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.tr-site .calc-line__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.tr-site .calc-line__name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.tr-site .calc-line__range {
+  font-family: var(--serif);
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.tr-site .calc-line__note {
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  margin: 4px 0 0;
+}
+
+/* Checkbox row inside the estimator form */
+.tr-site .field--check .check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.tr-site .field--check input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.tr-site .field input[type="number"] {
+  font-family: var(--sans);
+  font-size: 0.98rem;
+  padding: 13px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.tr-site .field input[type="number"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+/* ---- Case results gallery ---- */
+
+.tr-site .case-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.tr-site .chip {
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 0.25s var(--ease-out-expo), color 0.25s,
+    border-color 0.25s, transform 0.25s var(--ease-out-expo);
+}
+
+.tr-site .chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.tr-site .chip[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.tr-site .case-status {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  margin: 0 0 28px;
+}
+
+.tr-site .case-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 980px) {
+  .tr-site .case-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .tr-site .case-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Same card language as .practice-card: hairline brass top-rule, motif, lifted hover */
+.tr-site .case-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 30px 26px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--card-top-rule), var(--card-motif), var(--bg-raised);
+  transition: transform 0.35s var(--ease-out-expo), border-color 0.3s,
+    box-shadow 0.35s var(--ease-out-expo);
+}
+
+.tr-site .case-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow);
+}
+
+.tr-site .case-card.is-hidden {
+  display: none;
+}
+
+.tr-site .case-card__tag {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  background: var(--accent);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.tr-site .case-card__title {
+  font-size: 1.12rem;
+  margin: 0;
+}
+
+.tr-site .case-card__meta {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.tr-site .case-card__summary {
+  font-size: 0.9rem;
+  color: var(--ink-faint);
+  margin: 0;
+}
+
+/* Staggered fade/rise when the grid reflows after filtering */
+.tr-site .case-card--in {
+  animation: case-card-in 0.5s var(--ease-out-expo) both;
+}
+
+@keyframes case-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .tr-site to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tr-site .calculator__result {
+    transition: none;
+  }
+
+  .tr-site .chip {
+    transition: none;
+  }
+
+  .tr-site .chip:hover,
+  .tr-site .case-card:hover {
+    transform: none;
+  }
+
+  .tr-site .case-card--in {
+    animation: none;
+  }
+}

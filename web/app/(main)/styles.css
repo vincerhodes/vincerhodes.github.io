@@ -1,0 +1,481 @@
+/* Right Court SC — base stylesheet (Phase 1: static scaffold)
+   Direction A ("Heritage Crest") from design-mockups/direction-a/ — solid forest-green nav/hero,
+   serif headings, generous letter-spacing. See planning/01-BRAND-STYLE-GUIDE.md for the palette. */
+
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&display=swap");
+
+:root {
+  --forest-green: #21472E;
+  --near-black-green: #152218;
+  --white: #FFFFFF;
+  --sage: #8FA893;
+  --header-height: 76px;
+
+  --font-heading: "Lora", Georgia, "Times New Roman", serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* This site is light-only by design (no dark theme built) — opt out of browsers/OSes that
+     auto-invert colors on pages without a declared scheme. Without this, a phone with "force dark
+     mode for web content" enabled can heuristically re-color a transparent-background bordered
+     button like .hamburger and land on text/border/background all reading as the same color. */
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--white);
+  color: var(--near-black-green);
+  line-height: 1.5;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  margin: 0 0 0.5em;
+}
+
+a {
+  color: inherit;
+}
+
+/* --- Header / primary nav ------------------------------------------------------------------ */
+
+header.site-nav {
+  background: var(--white);
+  color: var(--forest-green);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  z-index: 100;
+  border-bottom: 1px solid #E3E6E2;
+}
+
+.nav-inner {
+  max-width: 1100px;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.brand {
+  display: block;
+  line-height: 0;
+  text-decoration: none;
+  color: var(--forest-green);
+}
+
+.brand img {
+  height: 56px;
+  width: auto;
+  flex-shrink: 0;
+  display: block;
+}
+
+nav.primary ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+nav.primary a {
+  color: var(--forest-green);
+  text-decoration: none;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  padding: 0.25rem 0;
+  opacity: 0.75;
+  border-bottom: 2px solid transparent;
+  transition: opacity 0.18s ease, border-bottom-color 0.18s ease;
+}
+
+nav.primary a:hover,
+nav.primary a:focus {
+  opacity: 1;
+  border-bottom-color: var(--forest-green);
+}
+
+.hamburger {
+  display: none;
+  background: var(--white);
+  border: 1px solid var(--forest-green);
+  color: var(--forest-green);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.35rem 0.6rem;
+  border-radius: 4px;
+}
+
+@media (max-width: 700px) {
+  nav.primary {
+    display: none;
+  }
+  nav.primary.is-open {
+    display: block;
+    width: 100%;
+    order: 3;
+    background: var(--white);
+    border-top: 1px solid var(--sage);
+    box-shadow: 0 4px 8px rgba(21, 34, 24, 0.08);
+  }
+  nav.primary.is-open ul {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0.75rem 1.25rem 1rem;
+  }
+  .hamburger {
+    display: inline-block;
+  }
+}
+
+/* --- Hero ------------------------------------------------------------------------------------ */
+
+.hero {
+  background: var(--forest-green);
+  /* Faint diagonal court-line motif over the green — two hairline "court stripes" crossing the
+     hero at the squash court's angle, 5% white so it reads as texture, not pattern. */
+  background-image:
+    linear-gradient(115deg, transparent 44.7%, rgba(255, 255, 255, 0.05) 44.7%, rgba(255, 255, 255, 0.05) 45.3%, transparent 45.3%),
+    linear-gradient(65deg, transparent 64.7%, rgba(255, 255, 255, 0.05) 64.7%, rgba(255, 255, 255, 0.05) 65.3%, transparent 65.3%);
+  color: var(--white);
+  text-align: center;
+  margin-top: var(--header-height);
+  padding: 4rem 1.25rem;
+}
+
+.hero img.badge {
+  height: 140px;
+  width: auto;
+  margin-bottom: 1rem;
+  animation: hero-badge-in 0.6s ease-out;
+}
+
+@keyframes hero-badge-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  letter-spacing: 0.05em;
+}
+
+.hero p.tagline {
+  font-size: 1.15rem;
+  color: var(--sage);
+  margin: 0.25rem 0 0;
+}
+
+.hero p.est {
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 1rem;
+  color: var(--white);
+}
+
+/* --- Page shell / generic content ------------------------------------------------------------ */
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
+}
+
+.intro {
+  max-width: 700px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.next-session {
+  border: 1px solid var(--sage);
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+  max-width: 500px;
+  margin: 0 auto 3rem;
+  text-align: center;
+}
+
+.next-session h2 {
+  font-size: 1.1rem;
+  color: var(--forest-green);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.tile {
+  border: 1px solid var(--sage);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  text-decoration: none;
+  color: var(--near-black-green);
+  display: block;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tile:hover,
+.tile:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--forest-green);
+  box-shadow: 0 6px 16px rgba(21, 34, 24, 0.1);
+}
+
+.tile h3 {
+  color: var(--forest-green);
+  font-size: 1.15rem;
+}
+
+.tile p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.partner-note {
+  margin: 3rem 0 1rem;
+  text-align: center;
+}
+
+.partner-note .partner-note-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--sage);
+  margin-bottom: 0.6rem;
+}
+
+.partner-note a {
+  display: inline-block;
+  line-height: 0;
+}
+
+.partner-note img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--sage);
+}
+
+/* --- About page --------------------------------------------------------------------------- */
+
+.page-header {
+  background: var(--forest-green);
+  color: var(--white);
+  text-align: center;
+  margin-top: var(--header-height);
+  padding: 3rem 1.25rem;
+}
+
+.page-header h1 {
+  letter-spacing: 0.05em;
+}
+
+.about-content {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem;
+  line-height: 1.7;
+}
+
+.about-content h2 {
+  color: var(--forest-green);
+  font-size: 1.3rem;
+  margin-top: 2rem;
+}
+
+.join-cta {
+  border: 1px solid var(--sage);
+  border-radius: 6px;
+  padding: 1.5rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.join-cta a {
+  color: var(--forest-green);
+  font-weight: 600;
+}
+
+/* --- Founding Squashers page -------------------------------------------------------------------- */
+
+.founders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.founder-card {
+  border: 1px solid var(--sage);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.founder-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--forest-green);
+  box-shadow: 0 6px 16px rgba(21, 34, 24, 0.1);
+}
+
+.founder-avatar {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: var(--sage);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+}
+
+.founder-card h3 {
+  color: var(--forest-green);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.founder-moniker-pending {
+  font-size: 0.85rem;
+  color: var(--sage);
+  font-style: italic;
+  margin: 0.5rem 0 0;
+}
+
+/* --- Footer ---------------------------------------------------------------------------------- */
+
+footer {
+  background: var(--forest-green);
+  color: var(--white);
+  padding: 2.5rem 1.25rem;
+  margin-top: 3rem;
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+footer img.monogram {
+  height: 56px;
+  width: auto;
+}
+
+footer a {
+  color: var(--white);
+}
+
+footer .col {
+  min-width: 200px;
+}
+
+footer .col h4 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+}
+
+footer .col p,
+footer .col a {
+  display: block;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+
+.copyright {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--sage);
+  margin-top: 2rem;
+}
+
+/* --- Micro-interactions & accessibility (2026 polish pass) ------------------------------------ */
+
+/* Keyboard users get a visible ring that matches the palette; mouse users are untouched. */
+:focus-visible {
+  outline: 2px solid var(--sage);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.next-session,
+.join-cta {
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.next-session:hover,
+.join-cta:hover {
+  border-color: var(--forest-green);
+  box-shadow: 0 4px 12px rgba(21, 34, 24, 0.08);
+}
+
+/* Session detail pages: in-page anchors land below the fixed header, and major sections get a
+   bit more air between them (session pages run long). */
+.session-content h2 {
+  scroll-margin-top: calc(var(--header-height) + 1rem);
+}
+
+.session-content > h2 {
+  margin-top: 2.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero img.badge {
+    animation: none;
+  }
+
+  .tile,
+  .founder-card,
+  .next-session,
+  .join-cta,
+  nav.primary a {
+    transition: none;
+  }
+
+  .tile:hover,
+  .tile:focus-visible,
+  .founder-card:hover {
+    transform: none;
+  }
+}

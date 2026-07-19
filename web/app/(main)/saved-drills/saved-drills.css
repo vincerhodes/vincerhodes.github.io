@@ -1,0 +1,99 @@
+/* /saved-drills/ — per-browser list of drills saved from the Drill Builder (Phase 4). Reuses the
+   design tokens and button language of drill-builder.css / styles.css. */
+
+.saved-drills-status {
+  margin: 1.25rem 0;
+  font-weight: 600;
+}
+
+.saved-drills-status[data-state="error"] {
+  color: #8a1f1f;
+}
+
+.saved-drills-note {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--forest-green);
+}
+
+.saved-drills-empty {
+  border: 1px dashed var(--sage);
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.saved-drills-list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.saved-drill {
+  border: 1px solid var(--sage);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+}
+
+.saved-drill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.saved-drill-header h2 {
+  margin: 0;
+  color: var(--forest-green);
+}
+
+.saved-drill-meta {
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--near-black-green);
+}
+
+.saved-drill-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.saved-drill-actions button {
+  background: var(--white);
+  color: var(--forest-green);
+  border: 1px solid var(--forest-green);
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.saved-drill-actions button:hover:not(:disabled) {
+  background: var(--forest-green);
+  color: var(--white);
+}
+
+.saved-drill-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.saved-drill-actions .saved-drill-delete {
+  color: #8a1f1f;
+  border-color: #8a1f1f;
+}
+
+.saved-drill-actions .saved-drill-delete:hover:not(:disabled) {
+  background: #8a1f1f;
+  color: var(--white);
+}
+
+.saved-drill-plan {
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--sage);
+  padding-top: 1rem;
+}
