@@ -16,6 +16,13 @@ Verified live at cutover: all pages 200, gallery photos, www → apex 308, legac
 URLs, and the production `/api/selftest` returned 200 (= OpenRouter generation AND Turso
 round-trip both work; that temporary route was deleted post-cutover).
 
+**Shared drill library (2026-07-19):** saved drills are club-wide, not per-browser.
+`saved_drills.saved_by` ∈ the 4 founders (Jimmy/Joe/Adam/Jonny, `web/lib/founders.ts`); the save
+form has a required name dropdown (persisted in `localStorage["rc_saver_name"]`);
+`GET /api/drills/` is public (per-row `mine` flag only when the visitor token is sent — tokens are
+never serialized); delete stays restricted to the saving browser. `/saved-drills/` = "The Drill
+Library".
+
 **Deploying changes:** `node scripts/vercel-api-deploy.mjs --target production` from the repo root
 (local-only script, gitignored — it reads the Vercel MCP OAuth token; call any Vercel MCP tool
 first to refresh it if expired). OR connect the GitHub repo in the Vercel dashboard (Settings →
