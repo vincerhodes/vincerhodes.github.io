@@ -73,15 +73,52 @@ reference — `worker/src/*` paths no longer exist; their ports live in `web/lib
     show at least one card. Verified live in-browser: filters isolate correctly, diagrams render.
   - `node scripts/validate-diagrams.mjs` → 16/16 valid. `npm test` → 46/46. No open work here.
 
+## Next task: fix the drill diagrams (user wants this GOAL-BASED)
+
+**The ask, verbatim:** "Fixing the drill diagrams, both for the built in drills and for AI
+generated ones, they're currently very hard or impossible to understand as they don't make sense."
+User wants the new session to run this goal-based (CreateGoal with a verifiable completion
+criterion after scoping).
+
+**Where diagrams live now:**
+- Renderer: `web/components/CourtDiagram.tsx` (server component; SVG court + players + arrows).
+  Used BOTH by the 8 built-in session pages AND by `web/components/PlanResultView.tsx` for
+  AI-generated plans. One renderer, both consumers — fix here fixes both.
+- Built-in diagram data: `web/content/sessions/session-0*/diagrams/drill-*.json` (16 files;
+  `node scripts/validate-diagrams.mjs` validates them — expect 16 valid). These were verified
+  byte-identical to the old static site's rendering during migration, so "hard to understand" is
+  a DESIGN/data problem, not a porting regression.
+- AI-generated diagrams: produced by the model per the tool schema in `web/lib/schema.ts`
+  (`RETURN_SESSION_PLAN_TOOL`; `node web/scripts/validate-tool-schema.mjs` validates it), then
+  clamped/filtered by `filterValidDiagrams` in `web/lib/generate.ts` (diagrams whose drill_name
+  doesn't match the markdown, or with malformed players/arrows, are nulled out — the "degraded"
+  path). The schema's coordinate system/bounds define what the model can even express — likely
+  part of the fix.
+- Diagram system spec: `planning/06-SVG-DIAGRAM-SYSTEM.md`.
+- No current visual QA harness for diagrams beyond the JSON validators — step 1 of the goal is
+  probably defining what "makes sense" means checkably (e.g. screenshot review of all 16 built-in
+  diagrams + a live AI generation).
+
 ## Verify on entry
 
 ```sh
 cd /home/vincerhodes/dev/rightcourtsc
-git status --porcelain              # should be empty
-npm test                            # worker unit tests — expect 46 passing
-node scripts/validate-diagrams.mjs  # expect 16 diagram file(s) valid
-curl -sI https://rightcourtsc.com/drill-builder/ | head -1   # expect 200
-curl -sI https://api.rightcourtsc.com/generate -X POST | head -1  # expect a real response, not connection error
+git status --porcelain              # should be empty; main @ 092867a or later
+cd web && npm run build             # expect ✓ Compiled successfully, 23+ routes
+npx vitest run                      # expect 77 passing
+node ../scripts/validate-diagrams.mjs   # expect 16 diagram file(s) valid (run from web/ or repo root)
+node scripts/validate-tool-schema.mjs   # expect: matches the spec, compiles, enforces constraints
+curl -sI https://rightcourtsc.com/ | head -1   # expect 200 (Vercel)
+curl -s https://rightcourtsc.com/api/drills/ | head -c 100   # expect {"drills":[...]}
+```
+
+Deploys: `node scripts/vercel-api-deploy.mjs --target production` (gitignored local script; if it
+403s, call any Vercel MCP tool first to refresh the OAuth token it reads).
+
+## Old verify (pre-migration, kept for reference)
+
+```sh
+npm test                            # NOW delegates to web's suite (was: worker unit tests)
 ```
 
 ## Decisions taken (not otherwise recorded in code)
