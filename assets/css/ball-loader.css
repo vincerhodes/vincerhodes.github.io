@@ -108,9 +108,10 @@
 
 /* --- Racket ----------------------------------------------------------------------------------
    Grip sits below-left of the ball's rest spot (per-pattern — drop's rest spot is near the
-   front wall). The swing is a rotation about the grip: small windup, contact synced to the
-   ball's impulse squash (~3.5%), compact follow-through, then back to the ready pose where it
-   waits for the next ball. */
+   front wall). The swing is a real squash stroke, not a pure rotation: a high backswing
+   (translate up + rotate back), a fast downswing into contact synced to the ball's impulse
+   squash (~3.5%), then the arm extends through the ball and the follow-through rises toward
+   the front wall (translate forward-up + rotate over), before settling back to the ready pose. */
 .ball-spinner-racket-pos {
   transform: translate(24px, 110px);
 }
@@ -129,25 +130,35 @@
   stroke-linecap: round;
 }
 
+.ball-spinner-racket-throat {
+  stroke: var(--near-black-green);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
 .ball-spinner-racket-frame {
-  fill: none;
+  fill: rgba(255, 255, 255, 0.25);
   stroke: var(--near-black-green);
   stroke-width: 2;
+  stroke-linejoin: round;
 }
 
 .ball-spinner-racket-strings {
-  fill: none;
   stroke: var(--sage);
-  stroke-width: 0.75;
+  stroke-width: 0.7;
 }
 
 @keyframes ball-spinner-swing {
-  0% { transform: rotate(-45deg); animation-timing-function: ease-in; }
-  2% { transform: rotate(-56deg); animation-timing-function: ease-out; }
-  3.5% { transform: rotate(-10deg); animation-timing-function: ease-out; }
-  8% { transform: rotate(22deg); animation-timing-function: ease-in-out; }
-  15% { transform: rotate(-45deg); }
-  100% { transform: rotate(-45deg); }
+  /* Ready: racket head up, relaxed. */
+  0% { transform: translate(0px, 0px) rotate(-75deg); animation-timing-function: ease-in; }
+  /* Backswing: head comes up and back. */
+  1.5% { transform: translate(-6px, -9px) rotate(-88deg); animation-timing-function: ease-in; }
+  /* Contact: head arrives square on the ball (matches the arc's impulse squash). */
+  3.5% { transform: translate(0px, 0px) rotate(-10deg); animation-timing-function: ease-out; }
+  /* Follow-through: arm extends, head rises toward the front wall. */
+  7% { transform: translate(14px, -10px) rotate(18deg); animation-timing-function: ease-in-out; }
+  13% { transform: translate(0px, 0px) rotate(-75deg); }
+  100% { transform: translate(0px, 0px) rotate(-75deg); }
 }
 
 /* Swing runs on each pattern's cycle duration so contact stays synced with the impulse. */

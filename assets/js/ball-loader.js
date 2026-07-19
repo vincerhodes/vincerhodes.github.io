@@ -57,9 +57,15 @@
       // front wall), the inner group swings. Behind the ball so the ball stays visible.
       '<g class="ball-spinner-racket-pos ball-spinner-racket-pos--' + pattern + '">' +
       '<g class="ball-spinner-racket">' +
-      '<line class="ball-spinner-racket-handle" x1="0" y1="0" x2="11" y2="-12"></line>' +
-      '<ellipse class="ball-spinner-racket-frame" cx="16" cy="-18" rx="7.5" ry="10" transform="rotate(-35 16 -18)"></ellipse>' +
-      '<ellipse class="ball-spinner-racket-strings" cx="16" cy="-18" rx="4.5" ry="7" transform="rotate(-35 16 -18)"></ellipse>' +
+      '<line class="ball-spinner-racket-handle" x1="0" y1="0" x2="9" y2="-10"></line>' +
+      '<line class="ball-spinner-racket-throat" x1="9" y1="-10" x2="11.1" y2="-15.4"></line>' +
+      '<line class="ball-spinner-racket-throat" x1="9" y1="-10" x2="14.1" y2="-12.8"></line>' +
+      '<path class="ball-spinner-racket-frame" d="M12.6,-14.1 Q8.4,-27.3 24.7,-27.4 Q26.3,-11.2 12.6,-14.1 Z"></path>' +
+      '<line class="ball-spinner-racket-strings" x1="16" y1="-25.2" x2="23.4" y2="-18.6"></line>' +
+      '<line class="ball-spinner-racket-strings" x1="14" y1="-22.9" x2="21.4" y2="-16.3"></line>' +
+      '<line class="ball-spinner-racket-strings" x1="13.4" y1="-20.1" x2="18.6" y2="-15.5"></line>' +
+      '<line class="ball-spinner-racket-strings" x1="15.5" y1="-14.2" x2="24.8" y2="-24.6"></line>' +
+      '<line class="ball-spinner-racket-strings" x1="12.5" y1="-16.8" x2="21.8" y2="-27.2"></line>' +
       '</g>' +
       '</g>' +
       '<ellipse class="ball-spinner-shadow ball-spinner-shadow--' + pattern + '" cx="37" cy="89" rx="10" ry="4"></ellipse>' +
