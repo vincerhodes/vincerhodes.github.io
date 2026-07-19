@@ -11,12 +11,15 @@ State: `cd web && npm run build` ✓ (23 routes), `npx vitest run` → 77/77, to
 all pages 200-verified, save/list/delete + rate limit (429 at 31st) verified. T&R site ported as
 `/turnerandrhodes/*` route group with its own chrome (main site moved under `app/(main)/`).
 
-Remaining (needs the user): Phase 6 VPS provisioning (Caddy + systemd, see plan; env vars needed:
-`OPENROUTER_API_KEY`, `GOOGLE_DRIVE_API_KEY`, `GALLERY_FOLDER_ID`, `DATABASE_PATH` — see `web/ENV.md`)
-and Phase 7 DNS cutover/retirement. **First check on the VPS:** live `POST /api/generate` — the
-OpenRouter model region-blocks THIS dev machine (403, key is valid), so real generation was only
-stub-verified (`TEST_MODE`) locally; request is byte-identical to the live Worker. Known minor:
-1 pre-existing eslint error `react-hooks/set-state-in-effect` in `web/components/SavedDrillsList.tsx:44`.
+Remaining (needs the user): Phase 6 VPS provisioning and Phase 7 cutover. Everything for Phase 6
+is prepared in `web/deploy/` — `README.md` there is the runbook (provision.sh, deploy.sh,
+Caddyfile, systemd unit; TLS/DNS chicken-and-egg handled: smoke tests run over HTTP on the box,
+DNS moves at cutover). User action needed: create an Ubuntu 24.04 box (CX22-class), then follow
+`web/deploy/README.md` steps 1–4. Env vars: `OPENROUTER_API_KEY`, `GOOGLE_DRIVE_API_KEY`,
+`GALLERY_FOLDER_ID` (latter two are Cloudflare Worker secrets), `DATABASE_PATH` — see `web/ENV.md`.
+**First check on the VPS:** live `POST /api/generate` — the OpenRouter model region-blocks THIS
+dev machine (403, key is valid), so real generation was only stub-verified (`TEST_MODE`) locally;
+request is byte-identical to the live Worker. eslint fully clean as of 2026-07-19.
 
 ## Where we are
 

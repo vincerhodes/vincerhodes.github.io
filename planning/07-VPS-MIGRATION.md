@@ -216,7 +216,8 @@ repo workflow — for this build use branches and merge locally, no PR ceremony)
 
 ## Open questions
 
-- Box size/provider final choice (Hetzner CX11-class is plenty) — decide at Phase 6.
+- ~~Box size/provider~~ — artifacts written for Hetzner CX22-class (4GB, enough for on-box
+  `next build`); any equivalent 2vCPU/4GB Ubuntu 24.04 box works. User still needs to create it.
 - Keep or drop `loader-demo/` (Phase 1).
 - Whether to unify `serves/returns` vs `serves-returns` during the port (recommended: NOT in this
   migration — separate cleanup task if ever).

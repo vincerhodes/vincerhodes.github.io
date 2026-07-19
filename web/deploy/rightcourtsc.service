@@ -1,0 +1,28 @@
+# systemd unit for the Right Court SC Next.js app — Phase 6 of planning/07-VPS-MIGRATION.md
+# Install to /etc/systemd/system/rightcourtsc.service (provision.sh does this), then:
+#   systemctl daemon-reload && systemctl enable --now rightcourtsc
+
+[Unit]
+Description=Right Court SC Next.js app
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=rightcourtsc
+Group=rightcourtsc
+WorkingDirectory=/opt/rightcourtsc/web
+ExecStart=/usr/bin/npm start
+EnvironmentFile=/etc/rightcourtsc/env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Restart=always
+RestartSec=5
+# next build workers can spike memory; the service itself is small
+MemoryMax=1G
+NoNewPrivileges=true
+ProtectSystem=full
+ReadWritePaths=/var/lib/rightcourtsc /opt/rightcourtsc/web/.next /opt/rightcourtsc/web/data
+
+[Install]
+WantedBy=multi-user.target
