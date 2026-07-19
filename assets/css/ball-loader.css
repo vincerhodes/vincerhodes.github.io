@@ -106,6 +106,61 @@
   fill: #F2C230;
 }
 
+/* --- Racket ----------------------------------------------------------------------------------
+   Grip sits below-left of the ball's rest spot (per-pattern — drop's rest spot is near the
+   front wall). The swing is a rotation about the grip: small windup, contact synced to the
+   ball's impulse squash (~3.5%), compact follow-through, then back to the ready pose where it
+   waits for the next ball. */
+.ball-spinner-racket-pos {
+  transform: translate(24px, 110px);
+}
+
+.ball-spinner-racket-pos--drop {
+  transform: translate(54px, 97px);
+}
+
+.ball-spinner-racket {
+  animation: ball-spinner-swing 1.6s linear infinite;
+}
+
+.ball-spinner-racket-handle {
+  stroke: #8B5E34;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.ball-spinner-racket-frame {
+  fill: none;
+  stroke: var(--near-black-green);
+  stroke-width: 2;
+}
+
+.ball-spinner-racket-strings {
+  fill: none;
+  stroke: var(--sage);
+  stroke-width: 0.75;
+}
+
+@keyframes ball-spinner-swing {
+  0% { transform: rotate(-45deg); animation-timing-function: ease-in; }
+  2% { transform: rotate(-56deg); animation-timing-function: ease-out; }
+  3.5% { transform: rotate(-10deg); animation-timing-function: ease-out; }
+  8% { transform: rotate(22deg); animation-timing-function: ease-in-out; }
+  15% { transform: rotate(-45deg); }
+  100% { transform: rotate(-45deg); }
+}
+
+/* Swing runs on each pattern's cycle duration so contact stays synced with the impulse. */
+.ball-spinner-racket-pos--drive .ball-spinner-racket { animation-duration: 1.4s; }
+.ball-spinner-racket-pos--boast .ball-spinner-racket { animation-duration: 1.5s; }
+.ball-spinner-racket-pos--drop .ball-spinner-racket { animation-duration: 1.6s; }
+.ball-spinner-racket-pos--volley .ball-spinner-racket { animation-duration: 1s; }
+.ball-spinner-racket-pos--lob .ball-spinner-racket { animation-duration: 1.6s; }
+.ball-spinner-racket-pos--nick .ball-spinner-racket { animation-duration: 1.7s; }
+.ball-spinner-racket-pos--reverse .ball-spinner-racket { animation-duration: 1.7s; }
+.ball-spinner-racket-pos--corkscrew .ball-spinner-racket { animation-duration: 1.6s; }
+.ball-spinner-racket-pos--crosscourt .ball-spinner-racket { animation-duration: 1.7s; }
+
 @keyframes ball-spinner-spin {
   to { transform: rotate(360deg); }
 }
@@ -214,40 +269,42 @@
 .ball-spinner-arc--drop .ball-spinner-spin { animation: ball-spinner-spin--drop 1.6s linear infinite; }
 
 @keyframes ball-spinner-bounce--drop {
-  0% { transform: translate(0px, 0px) scale(1, 1); animation-timing-function: ease-out; }
-  4% { transform: translate(3px, -2px) scale(1.15, 0.82); animation-timing-function: ease-out; }
-  18% { transform: translate(20px, -12px) scale(1, 1); animation-timing-function: ease-out; }
-  36% { transform: translate(44px, -20px) scale(1, 1); animation-timing-function: ease-in; }
-  46% { transform: translate(66px, -28px) scale(1, 1); animation-timing-function: ease-in; }
-  50% { transform: translate(72px, -29px) scale(0.7, 1.25); animation-timing-function: ease-out; }
-  56% { transform: translate(71px, -30px) scale(0.9, 0.95); animation-timing-function: ease-in-out; }
-  64% { transform: translate(58px, -25px) scale(1, 1); animation-timing-function: ease-in; }
-  74% { transform: translate(36px, -15px) scale(1.25, 0.72); animation-timing-function: ease-out; }
-  83% { transform: translate(10px, -4px) scale(1, 1); animation-timing-function: ease-in; }
-  87% { transform: translate(0px, 0px) scale(1.15, 0.8); animation-timing-function: ease-out; }
-  90% { transform: translate(0px, 0px) scale(1, 1); }
-  100% { transform: translate(0px, 0px) scale(1, 1); }
+  /* Drop is played from the front of the court, so this pattern starts (and rests) partway
+     down the track at (30,-13) instead of the back-corner origin every other pattern uses. */
+  0% { transform: translate(30px, -13px) scale(1, 1); animation-timing-function: ease-out; }
+  4% { transform: translate(33px, -15px) scale(1.15, 0.82); animation-timing-function: ease-out; }
+  16% { transform: translate(44px, -20px) scale(1, 1); animation-timing-function: ease-out; }
+  32% { transform: translate(58px, -25px) scale(1, 1); animation-timing-function: ease-in; }
+  42% { transform: translate(68px, -28px) scale(1, 1); animation-timing-function: ease-in; }
+  46% { transform: translate(72px, -29px) scale(0.7, 1.25); animation-timing-function: ease-out; }
+  52% { transform: translate(71px, -30px) scale(0.9, 0.95); animation-timing-function: ease-in-out; }
+  60% { transform: translate(58px, -25px) scale(1, 1); animation-timing-function: ease-in; }
+  70% { transform: translate(44px, -19px) scale(1.25, 0.72); animation-timing-function: ease-out; }
+  80% { transform: translate(34px, -14px) scale(1, 1); animation-timing-function: ease-in; }
+  85% { transform: translate(30px, -13px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  89% { transform: translate(30px, -13px) scale(1, 1); }
+  100% { transform: translate(30px, -13px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--drop {
-  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  4% { transform: translate(3px, -1.3px) scale(0.99); opacity: 0.44; }
-  18% { transform: translate(20px, -8.3px) scale(0.96); opacity: 0.42; }
-  36% { transform: translate(44px, -18.3px) scale(0.98); opacity: 0.44; }
-  46% { transform: translate(66px, -27.5px) scale(1); opacity: 0.45; }
-  50% { transform: translate(72px, -30.2px) scale(1); opacity: 0.45; }
-  56% { transform: translate(71px, -29.8px) scale(1); opacity: 0.45; }
-  64% { transform: translate(58px, -24.4px) scale(0.99); opacity: 0.44; }
-  74% { transform: translate(36px, -15.1px) scale(1); opacity: 0.45; }
-  83% { transform: translate(10px, -4.2px) scale(1); opacity: 0.45; }
-  87% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  0% { transform: translate(30px, -12.5px) scale(1); opacity: 0.45; }
+  4% { transform: translate(33px, -13.8px) scale(0.99); opacity: 0.44; }
+  16% { transform: translate(44px, -18.3px) scale(0.98); opacity: 0.44; }
+  32% { transform: translate(58px, -24.4px) scale(0.99); opacity: 0.44; }
+  42% { transform: translate(68px, -28.6px) scale(1); opacity: 0.45; }
+  46% { transform: translate(72px, -30.2px) scale(1); opacity: 0.45; }
+  52% { transform: translate(71px, -29.8px) scale(1); opacity: 0.45; }
+  60% { transform: translate(58px, -24.4px) scale(0.99); opacity: 0.44; }
+  70% { transform: translate(44px, -18.3px) scale(1); opacity: 0.45; }
+  80% { transform: translate(34px, -14.3px) scale(1); opacity: 0.45; }
+  85% { transform: translate(30px, -12.5px) scale(1); opacity: 0.45; }
+  100% { transform: translate(30px, -12.5px) scale(1); opacity: 0.45; }
 }
 
 @keyframes ball-spinner-spin--drop {
   0% { transform: rotate(0deg); }
-  50% { transform: rotate(500deg); }
-  90% { transform: rotate(0deg); }
+  46% { transform: rotate(310deg); }
+  89% { transform: rotate(0deg); }
   100% { transform: rotate(0deg); }
 }
 
@@ -526,7 +583,8 @@
 @media (prefers-reduced-motion: reduce) {
   .ball-spinner-arc,
   .ball-spinner-spin,
-  .ball-spinner-shadow {
+  .ball-spinner-shadow,
+  .ball-spinner-racket {
     animation: none;
   }
 

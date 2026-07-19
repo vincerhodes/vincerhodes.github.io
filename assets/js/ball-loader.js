@@ -52,6 +52,16 @@
       '<polygon class="ball-spinner-floor" points="10,78 70,103 130,78 70,53"></polygon>' +
       '<line class="ball-spinner-plank" x1="30" y1="70" x2="90" y2="95"></line>' +
       '<line class="ball-spinner-plank" x1="50" y1="62" x2="110" y2="87"></line>' +
+      // Racket: drawn around a grip at local (0,0) so the swing is a pure rotation about the
+      // hand. The outer group positions the grip (per-pattern — drop's ball starts near the
+      // front wall), the inner group swings. Behind the ball so the ball stays visible.
+      '<g class="ball-spinner-racket-pos ball-spinner-racket-pos--' + pattern + '">' +
+      '<g class="ball-spinner-racket">' +
+      '<line class="ball-spinner-racket-handle" x1="0" y1="0" x2="11" y2="-12"></line>' +
+      '<ellipse class="ball-spinner-racket-frame" cx="16" cy="-18" rx="7.5" ry="10" transform="rotate(-35 16 -18)"></ellipse>' +
+      '<ellipse class="ball-spinner-racket-strings" cx="16" cy="-18" rx="4.5" ry="7" transform="rotate(-35 16 -18)"></ellipse>' +
+      '</g>' +
+      '</g>' +
       '<ellipse class="ball-spinner-shadow ball-spinner-shadow--' + pattern + '" cx="37" cy="89" rx="10" ry="4"></ellipse>' +
       '<g class="ball-spinner-arc ball-spinner-arc--' + pattern + '">' +
       '<g class="ball-spinner-spin">' +
