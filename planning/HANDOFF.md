@@ -24,9 +24,12 @@ protection disabled. ~~Still needed from the user: (1) Turso account~~ **Turso d
 `rightcourtsc` db created (libsql://rightcourtsc-vincerhodes.aws-us-west-2.turso.io),
 `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` set in Vercel, DB round-trip verified live on Vercel via
 the extended `/api/selftest` (200; tables auto-created by on-boot migration). Turso CLI lives at
-`~/.turso/turso` (not on PATH). Still needed from the user: (2) `GOOGLE_DRIVE_API_KEY` +
-`GALLERY_FOLDER_ID` from the Cloudflare Worker dashboard — until then `/api/gallery` 502s and the
-gallery page shows its Drive-folder fallback; (3) at cutover: DNS changes + add the
+`~/.turso/turso` (not on PATH). **Gallery done 2026-07-19:** fresh `GOOGLE_DRIVE_API_KEY` (Google
+Cloud Console, Drive-API-restricted) + `GALLERY_FOLDER_ID` set in Vercel — `/api/gallery` returns
+200 with real photos. ALSO fixed the live site: the Worker had NEVER had the Drive secrets (the
+live gallery had been 502ing behind its Drive-folder fallback since launch) — `wrangler secret put
+GOOGLE_DRIVE_API_KEY` done, `api.rightcourtsc.com/gallery` now returns photos (folder id was
+already a plain var on the Worker). Still needed from the user: (3) at cutover: DNS changes + add the
 custom domain in Vercel (apex A → 76.76.21.21, www CNAME → cname.vercel-dns.com) and Worker/GitHub
 Pages retirement.
 
