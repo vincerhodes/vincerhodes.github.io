@@ -13,7 +13,45 @@
    every PATTERN below ends its final impact there, even when it touches another surface first.
    Named after real squash shots — drive, boast, drop, volley, lob, nick, reverse (angle boast),
    corkscrew, crosscourt — rather than invented terms. The JS module maps a drill-builder theme to
-   one of these, or picks randomly when no theme is given. */
+   one of these, or picks randomly when no theme is given.
+
+   Motion model (2026, second pass — tuned for ballistic realism):
+   - The cycle is a real shot, not a hover: struck from the floor (small impulse squash on the
+     first frames), out along a shot-specific flight, off the wall(s), then a decaying return —
+     rebound down, ONE floor bounce with a flat squash, and a low roll back to rest.
+   - Impact heights respect the tin: in this scene the tin sits ~27px above the ball's floor
+     track at the front wall (translate y ≈ -27 at x=72), so every front-wall impact lands above
+     that — drive ~6px over, drop ~2px (it dies), lob ~19px.
+   - Easing is per-segment: ease-out on rises, ease-in on falls and wall approaches.
+   - Squash orientation matches the surface hit: front-wall impacts squash vertically; side-wall
+     impacts (boast, reverse) rotate ~-23deg onto the side wall's iso plane; floor contacts
+     (the return bounce, landings, the nick's crack death) squash flat-and-wide.
+   - The last ~10% of every cycle is a rest hold at the origin pose — hides the loop seam.
+   - Spin direction follows travel: the ball rolls "forward" (positive rotation) while moving
+     toward the front wall and reverses on the return leg, via per-pattern spin keyframes whose
+     breakpoints mirror the arc's x-velocity flips. Corkscrew keeps a constant fast spin — the
+     spin is the trick.
+   - Shadows track the floor line under the ball (y ≈ -0.42x along the main track) and shrink/
+     fade with height above it.
+   - prefers-reduced-motion freezes the flight but keeps a slow opacity pulse on the ball and
+     label, so the loader still reads as "working" rather than broken. */
+
+.ball-spinner {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ball-spinner-vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 
 .ball-spinner-svg {
   overflow: visible;
@@ -68,302 +106,501 @@
   fill: #F2C230;
 }
 
+/* --- Racket ----------------------------------------------------------------------------------
+   Grip sits below-left of the ball's rest spot (per-pattern — drop's rest spot is near the
+   front wall). The swing is a real squash stroke, not a pure rotation: a high backswing
+   (translate up + rotate back), a fast downswing into contact synced to the ball's impulse
+   squash (~3.5%), then the arm extends through the ball and the follow-through rises toward
+   the front wall (translate forward-up + rotate over), before settling back to the ready pose. */
+.ball-spinner-racket-pos {
+  transform: translate(24px, 110px);
+}
+
+.ball-spinner-racket-pos--drop {
+  transform: translate(54px, 97px);
+}
+
+.ball-spinner-racket {
+  animation: ball-spinner-swing 1.6s linear infinite;
+}
+
+.ball-spinner-racket-handle {
+  stroke: #8B5E34;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.ball-spinner-racket-throat {
+  stroke: var(--near-black-green);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.ball-spinner-racket-frame {
+  fill: rgba(255, 255, 255, 0.25);
+  stroke: var(--near-black-green);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.ball-spinner-racket-strings {
+  stroke: var(--sage);
+  stroke-width: 0.7;
+}
+
+@keyframes ball-spinner-swing {
+  /* Ready: racket head up, relaxed. */
+  0% { transform: translate(0px, 0px) rotate(-75deg); animation-timing-function: ease-in; }
+  /* Backswing: head comes up and back. */
+  1.5% { transform: translate(-6px, -9px) rotate(-88deg); animation-timing-function: ease-in; }
+  /* Contact: head arrives square on the ball (matches the arc's impulse squash). */
+  3.5% { transform: translate(0px, 0px) rotate(-10deg); animation-timing-function: ease-out; }
+  /* Follow-through: arm extends, head rises toward the front wall. */
+  7% { transform: translate(14px, -10px) rotate(18deg); animation-timing-function: ease-in-out; }
+  13% { transform: translate(0px, 0px) rotate(-75deg); }
+  100% { transform: translate(0px, 0px) rotate(-75deg); }
+}
+
+/* Swing runs on each pattern's cycle duration so contact stays synced with the impulse. */
+.ball-spinner-racket-pos--drive .ball-spinner-racket { animation-duration: 1.4s; }
+.ball-spinner-racket-pos--boast .ball-spinner-racket { animation-duration: 1.5s; }
+.ball-spinner-racket-pos--drop .ball-spinner-racket { animation-duration: 1.6s; }
+.ball-spinner-racket-pos--volley .ball-spinner-racket { animation-duration: 1s; }
+.ball-spinner-racket-pos--lob .ball-spinner-racket { animation-duration: 1.6s; }
+.ball-spinner-racket-pos--nick .ball-spinner-racket { animation-duration: 1.7s; }
+.ball-spinner-racket-pos--reverse .ball-spinner-racket { animation-duration: 1.7s; }
+.ball-spinner-racket-pos--corkscrew .ball-spinner-racket { animation-duration: 1.6s; }
+.ball-spinner-racket-pos--crosscourt .ball-spinner-racket { animation-duration: 1.7s; }
+
 @keyframes ball-spinner-spin {
   to { transform: rotate(360deg); }
 }
 
-/* --- Pattern: drive (length) — a flat, level drive parallel to the side wall — rises to height
-   early and holds it, rather than arcing up and dropping down, hitting the front wall while
-   still up rather than down near the floor. -------------------------------------------------- */
+@keyframes ball-spinner-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* --- Pattern: drive (length) — a flat, level drive parallel to the side wall: barely 5px of air
+   the whole way out, into the front wall just above the tin, one bounce on the way back. ------- */
 .ball-spinner-arc--drive { animation: ball-spinner-bounce--drive 1.4s linear infinite; }
 .ball-spinner-shadow--drive { animation: ball-spinner-shadow--drive 1.4s linear infinite; }
+.ball-spinner-arc--drive .ball-spinner-spin { animation: ball-spinner-spin--drive 1.4s linear infinite; }
 
 @keyframes ball-spinner-bounce--drive {
-  0% { transform: translate(0px, 0px) scale(1, 1); }
-  18% { transform: translate(22px, -22px) scale(1, 1); }
-  34% { transform: translate(44px, -27px) scale(1, 1); }
-  44% { transform: translate(58px, -28px) scale(1, 1); }
-  50% { transform: translate(72px, -26px) scale(0.55, 1.4); }
-  56% { transform: translate(58px, -28px) scale(0.85, 1.15); }
-  68% { transform: translate(40px, -26px) scale(1, 1); }
-  88% { transform: translate(12px, -8px) scale(1, 1); }
+  0% { transform: translate(0px, 0px) scale(1, 1); animation-timing-function: ease-out; }
+  3% { transform: translate(3px, -2px) scale(1.15, 0.82); animation-timing-function: ease-out; }
+  14% { transform: translate(22px, -14px) scale(1, 1); animation-timing-function: ease-out; }
+  30% { transform: translate(46px, -24px) scale(1, 1); animation-timing-function: ease-in; }
+  42% { transform: translate(72px, -33px) scale(0.55, 1.4); animation-timing-function: ease-out; }
+  50% { transform: translate(58px, -26px) scale(0.85, 1.15); animation-timing-function: ease-in; }
+  62% { transform: translate(42px, -18px) scale(1, 1); animation-timing-function: ease-in; }
+  72% { transform: translate(34px, -14px) scale(1.25, 0.72); animation-timing-function: ease-out; }
+  82% { transform: translate(14px, -6px) scale(1, 1); animation-timing-function: ease-in; }
+  86% { transform: translate(0px, 0px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  90% { transform: translate(0px, 0px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--drive {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  18% { transform: translate(22px, -4px) scale(0.65); opacity: 0.2; }
-  34% { transform: translate(44px, -5px) scale(0.55); opacity: 0.15; }
-  44% { transform: translate(58px, -5px) scale(0.55); opacity: 0.15; }
-  50% { transform: translate(72px, -5px) scale(0.7); opacity: 0.25; }
-  56% { transform: translate(58px, -5px) scale(0.55); opacity: 0.15; }
-  68% { transform: translate(40px, -5px) scale(0.55); opacity: 0.15; }
-  88% { transform: translate(12px, -1px) scale(0.85); opacity: 0.35; }
+  3% { transform: translate(3px, -1.3px) scale(0.99); opacity: 0.44; }
+  14% { transform: translate(22px, -9.2px) scale(0.95); opacity: 0.42; }
+  30% { transform: translate(46px, -19.2px) scale(0.95); opacity: 0.42; }
+  42% { transform: translate(72px, -30.2px) scale(0.97); opacity: 0.43; }
+  50% { transform: translate(58px, -24.4px) scale(0.98); opacity: 0.44; }
+  62% { transform: translate(42px, -17.6px) scale(1); opacity: 0.45; }
+  72% { transform: translate(34px, -14.3px) scale(1); opacity: 0.45; }
+  82% { transform: translate(14px, -5.9px) scale(1); opacity: 0.45; }
+  86% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: boast (boasts) — a real 2-wall boast: side wall first, then deflects across to hit
-   the front wall (every shot has to reach the front wall eventually). ------------------------ */
+@keyframes ball-spinner-spin--drive {
+  0% { transform: rotate(0deg); }
+  42% { transform: rotate(500deg); }
+  90% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* --- Pattern: boast (boasts) — a real 2-wall boast: into the side wall low, then a long crossing
+   diagonal to the front wall (every shot has to reach the front wall eventually). --------------- */
 .ball-spinner-arc--boast { animation: ball-spinner-bounce--boast 1.5s linear infinite; }
 .ball-spinner-shadow--boast { animation: ball-spinner-shadow--boast 1.5s linear infinite; }
+.ball-spinner-arc--boast .ball-spinner-spin { animation: ball-spinner-spin--boast 1.5s linear infinite; }
 
 @keyframes ball-spinner-bounce--boast {
-  0% { transform: translate(0px, 0px) scale(1, 1); }
-  16% { transform: translate(10px, -18px) scale(1, 1); }
-  28% { transform: translate(16px, -27px) scale(0.85, 1.15); }
-  34% { transform: translate(18px, -30px) scale(0.5, 1.45); }
-  40% { transform: translate(16px, -27px) scale(0.85, 1.15); }
-  50% { transform: translate(40px, -24px) scale(1, 1); }
-  58% { transform: translate(60px, -22px) scale(0.85, 1.15); }
-  64% { transform: translate(72px, -20px) scale(0.5, 1.45); }
-  78% { transform: translate(50px, -24px) scale(1, 1); }
-  92% { transform: translate(14px, -9px) scale(1, 1); }
+  0% { transform: translate(0px, 0px) scale(1, 1); animation-timing-function: ease-out; }
+  3% { transform: translate(1px, -2px) scale(1.15, 0.82); animation-timing-function: ease-out; }
+  12% { transform: translate(-7px, -6px) scale(1, 1); animation-timing-function: ease-out; }
+  20% { transform: translate(-14px, -13px) scale(1, 1); animation-timing-function: ease-in; }
+  /* Side-wall impact: squash rotated ~-23deg so it lies on the side wall's iso plane. */
+  24% { transform: translate(-16px, -20px) rotate(-23deg) scale(1.4, 0.6); animation-timing-function: ease-out; }
+  30% { transform: translate(-10px, -12px) scale(1, 1); animation-timing-function: ease-in-out; }
+  45% { transform: translate(24px, -14px) scale(1, 1); animation-timing-function: ease-in-out; }
+  58% { transform: translate(52px, -24px) scale(1, 1); animation-timing-function: ease-in; }
+  64% { transform: translate(72px, -32px) scale(0.5, 1.45); animation-timing-function: ease-out; }
+  72% { transform: translate(56px, -24px) scale(0.85, 1.15); animation-timing-function: ease-in; }
+  80% { transform: translate(36px, -15px) scale(1.25, 0.72); animation-timing-function: ease-out; }
+  86% { transform: translate(10px, -4px) scale(1, 1); animation-timing-function: ease-in; }
+  89% { transform: translate(0px, 0px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  92% { transform: translate(0px, 0px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--boast {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  16% { transform: translate(10px, -7px) scale(0.7); opacity: 0.24; }
-  28% { transform: translate(16px, -11px) scale(0.55); opacity: 0.16; }
-  34% { transform: translate(18px, -12px) scale(1); opacity: 0.45; }
-  40% { transform: translate(16px, -11px) scale(0.7); opacity: 0.24; }
-  50% { transform: translate(40px, -10px) scale(0.5); opacity: 0.13; }
-  58% { transform: translate(60px, -9px) scale(0.65); opacity: 0.2; }
-  64% { transform: translate(72px, -8px) scale(1); opacity: 0.45; }
-  78% { transform: translate(50px, -10px) scale(0.6); opacity: 0.18; }
-  92% { transform: translate(14px, -4px) scale(0.9); opacity: 0.38; }
+  3% { transform: translate(1px, -0.4px) scale(0.98); opacity: 0.44; }
+  12% { transform: translate(-7px, -2.9px) scale(0.97); opacity: 0.43; }
+  20% { transform: translate(-14px, -5.7px) scale(0.92); opacity: 0.4; }
+  24% { transform: translate(-16px, -6.6px) scale(0.95); opacity: 0.42; }
+  30% { transform: translate(-10px, -4.1px) scale(0.91); opacity: 0.39; }
+  45% { transform: translate(24px, -10px) scale(0.96); opacity: 0.42; }
+  58% { transform: translate(52px, -21.8px) scale(0.98); opacity: 0.44; }
+  64% { transform: translate(72px, -30.2px) scale(0.98); opacity: 0.44; }
+  72% { transform: translate(56px, -23.5px) scale(1); opacity: 0.45; }
+  80% { transform: translate(36px, -15.1px) scale(1); opacity: 0.45; }
+  86% { transform: translate(10px, -4.2px) scale(1); opacity: 0.45; }
+  89% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: drop (drops, front-court) — soft and low, but still travels all the way to the
-   front wall — just dies there instead of rebounding hard. ------------------------------------ */
+@keyframes ball-spinner-spin--boast {
+  0% { transform: rotate(0deg); }
+  24% { transform: rotate(-115deg); }
+  64% { transform: rotate(500deg); }
+  92% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* --- Pattern: drop (drops, front-court) — soft and low, skims a couple of pixels above the
+   floor, dies just above the tin and slides down the wall before trickling back. --------------- */
 .ball-spinner-arc--drop { animation: ball-spinner-bounce--drop 1.6s linear infinite; }
 .ball-spinner-shadow--drop { animation: ball-spinner-shadow--drop 1.6s linear infinite; }
+.ball-spinner-arc--drop .ball-spinner-spin { animation: ball-spinner-spin--drop 1.6s linear infinite; }
 
 @keyframes ball-spinner-bounce--drop {
-  0% { transform: translate(0px, 0px) scale(1, 1); }
-  25% { transform: translate(30px, -10px) scale(1, 1); }
-  42% { transform: translate(58px, -16px) scale(1, 1); }
-  48% { transform: translate(68px, -19px) scale(0.85, 1.1); }
-  52% { transform: translate(72px, -20px) scale(0.7, 1.2); }
-  58% { transform: translate(70px, -19px) scale(0.85, 1.1); }
-  68% { transform: translate(60px, -17px) scale(1, 1); }
-  85% { transform: translate(28px, -11px) scale(1, 1); }
-  100% { transform: translate(0px, 0px) scale(1, 1); }
+  /* Drop is played from the front of the court, so this pattern starts (and rests) partway
+     down the track at (30,-13) instead of the back-corner origin every other pattern uses. */
+  0% { transform: translate(30px, -13px) scale(1, 1); animation-timing-function: ease-out; }
+  4% { transform: translate(33px, -15px) scale(1.15, 0.82); animation-timing-function: ease-out; }
+  16% { transform: translate(44px, -20px) scale(1, 1); animation-timing-function: ease-out; }
+  32% { transform: translate(58px, -25px) scale(1, 1); animation-timing-function: ease-in; }
+  42% { transform: translate(68px, -28px) scale(1, 1); animation-timing-function: ease-in; }
+  46% { transform: translate(72px, -29px) scale(0.7, 1.25); animation-timing-function: ease-out; }
+  52% { transform: translate(71px, -30px) scale(0.9, 0.95); animation-timing-function: ease-in-out; }
+  60% { transform: translate(58px, -25px) scale(1, 1); animation-timing-function: ease-in; }
+  70% { transform: translate(44px, -19px) scale(1.25, 0.72); animation-timing-function: ease-out; }
+  80% { transform: translate(34px, -14px) scale(1, 1); animation-timing-function: ease-in; }
+  85% { transform: translate(30px, -13px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  89% { transform: translate(30px, -13px) scale(1, 1); }
+  100% { transform: translate(30px, -13px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--drop {
-  0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  25% { transform: translate(30px, -3px) scale(0.8); opacity: 0.32; }
-  42% { transform: translate(58px, -6px) scale(0.65); opacity: 0.22; }
-  48% { transform: translate(68px, -7px) scale(0.85); opacity: 0.36; }
-  52% { transform: translate(72px, -8px) scale(1); opacity: 0.45; }
-  58% { transform: translate(70px, -8px) scale(0.9); opacity: 0.4; }
-  68% { transform: translate(60px, -6px) scale(0.7); opacity: 0.25; }
-  85% { transform: translate(28px, -3px) scale(0.9); opacity: 0.38; }
-  100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+  0% { transform: translate(30px, -12.5px) scale(1); opacity: 0.45; }
+  4% { transform: translate(33px, -13.8px) scale(0.99); opacity: 0.44; }
+  16% { transform: translate(44px, -18.3px) scale(0.98); opacity: 0.44; }
+  32% { transform: translate(58px, -24.4px) scale(0.99); opacity: 0.44; }
+  42% { transform: translate(68px, -28.6px) scale(1); opacity: 0.45; }
+  46% { transform: translate(72px, -30.2px) scale(1); opacity: 0.45; }
+  52% { transform: translate(71px, -29.8px) scale(1); opacity: 0.45; }
+  60% { transform: translate(58px, -24.4px) scale(0.99); opacity: 0.44; }
+  70% { transform: translate(44px, -18.3px) scale(1); opacity: 0.45; }
+  80% { transform: translate(34px, -14.3px) scale(1); opacity: 0.45; }
+  85% { transform: translate(30px, -12.5px) scale(1); opacity: 0.45; }
+  100% { transform: translate(30px, -12.5px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: volley (volleys) — quick and direct, but with real air under it — struck early and
-   hit crisply at the front wall well above the tin, not skimmed along the floor. --------------- */
+@keyframes ball-spinner-spin--drop {
+  0% { transform: rotate(0deg); }
+  46% { transform: rotate(310deg); }
+  89% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* --- Pattern: volley (volleys) — quick and direct, punched out of the air well above the tin,
+   no floor contact until the rebound comes back. ---------------------------------------------- */
 .ball-spinner-arc--volley { animation: ball-spinner-bounce--volley 1s linear infinite; }
 .ball-spinner-shadow--volley { animation: ball-spinner-shadow--volley 1s linear infinite; }
+.ball-spinner-arc--volley .ball-spinner-spin { animation: ball-spinner-spin--volley 1s linear infinite; }
 
 @keyframes ball-spinner-bounce--volley {
-  0% { transform: translate(0px, 0px) scale(1, 1); }
-  22% { transform: translate(30px, -16px) scale(1, 1); }
-  40% { transform: translate(54px, -26px) scale(1, 1); }
-  46% { transform: translate(64px, -29px) scale(0.85, 1.15); }
-  50% { transform: translate(72px, -30px) scale(0.5, 1.45); }
-  54% { transform: translate(64px, -29px) scale(0.85, 1.15); }
-  72% { transform: translate(38px, -22px) scale(1, 1); }
-  90% { transform: translate(10px, -6px) scale(1, 1); }
+  0% { transform: translate(0px, 0px) scale(1, 1); animation-timing-function: ease-out; }
+  3% { transform: translate(3px, -3px) scale(1.15, 0.82); animation-timing-function: ease-out; }
+  16% { transform: translate(26px, -20px) scale(1, 1); animation-timing-function: ease-out; }
+  34% { transform: translate(56px, -32px) scale(1, 1); animation-timing-function: ease-in; }
+  42% { transform: translate(72px, -38px) scale(0.5, 1.45); animation-timing-function: ease-out; }
+  50% { transform: translate(60px, -30px) scale(0.85, 1.15); animation-timing-function: ease-in; }
+  64% { transform: translate(44px, -20px) scale(1, 1); animation-timing-function: ease-in; }
+  74% { transform: translate(34px, -14px) scale(1.25, 0.72); animation-timing-function: ease-out; }
+  84% { transform: translate(12px, -5px) scale(1, 1); animation-timing-function: ease-in; }
+  88% { transform: translate(0px, 0px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  91% { transform: translate(0px, 0px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--volley {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  22% { transform: translate(30px, -6.4px) scale(0.8); opacity: 0.32; }
-  40% { transform: translate(54px, -10.4px) scale(0.68); opacity: 0.24; }
-  46% { transform: translate(64px, -11.6px) scale(0.8); opacity: 0.32; }
-  50% { transform: translate(72px, -12px) scale(1); opacity: 0.45; }
-  54% { transform: translate(64px, -11.6px) scale(0.8); opacity: 0.32; }
-  72% { transform: translate(38px, -8.8px) scale(0.75); opacity: 0.28; }
-  90% { transform: translate(10px, -2.4px) scale(0.93); opacity: 0.4; }
+  3% { transform: translate(3px, -1.3px) scale(0.98); opacity: 0.44; }
+  16% { transform: translate(26px, -10.9px) scale(0.9); opacity: 0.39; }
+  34% { transform: translate(56px, -23.5px) scale(0.91); opacity: 0.39; }
+  42% { transform: translate(72px, -30.2px) scale(0.91); opacity: 0.4; }
+  50% { transform: translate(60px, -25.2px) scale(0.95); opacity: 0.42; }
+  64% { transform: translate(44px, -18.5px) scale(0.98); opacity: 0.44; }
+  74% { transform: translate(34px, -14.3px) scale(1); opacity: 0.45; }
+  84% { transform: translate(12px, -5px) scale(1); opacity: 0.45; }
+  88% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: lob (serves/returns) — a big, high, floaty shot that dies high on the front wall
-   instead of at floor level. Shadow shrinks toward nothing at the peak. --------------------- */
+@keyframes ball-spinner-spin--volley {
+  0% { transform: rotate(0deg); }
+  42% { transform: rotate(500deg); }
+  91% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* --- Pattern: lob (serves/returns) — a big, high, floaty arc that dies high on the front wall,
+   drops steeply, and bounces once on the way back. Shadow all but vanishes at the peak. -------- */
 .ball-spinner-arc--lob { animation: ball-spinner-bounce--lob 1.6s linear infinite; }
 .ball-spinner-shadow--lob { animation: ball-spinner-shadow--lob 1.6s linear infinite; }
+.ball-spinner-arc--lob .ball-spinner-spin { animation: ball-spinner-spin--lob 1.6s linear infinite; }
 
 @keyframes ball-spinner-bounce--lob {
-  0% { transform: translate(0px, 0px) scale(1, 1); }
-  20% { transform: translate(20px, -25.6px) scale(1, 1); }
-  38% { transform: translate(50px, -46px) scale(1, 1); }
-  46% { transform: translate(66px, -44.4px) scale(0.9, 1.08); }
-  50% { transform: translate(72px, -38px) scale(0.75, 1.2); }
-  54% { transform: translate(66px, -44.4px) scale(0.9, 1.08); }
-  70% { transform: translate(40px, -41px) scale(1, 1); }
-  92% { transform: translate(6px, -7.6px) scale(1, 1); }
+  0% { transform: translate(0px, 0px) scale(1, 1); animation-timing-function: ease-out; }
+  4% { transform: translate(3px, -3px) scale(1.15, 0.82); animation-timing-function: ease-out; }
+  16% { transform: translate(16px, -26px) scale(1, 1); animation-timing-function: ease-out; }
+  34% { transform: translate(42px, -48px) scale(1, 1); animation-timing-function: ease-in; }
+  44% { transform: translate(64px, -47px) scale(1, 1); animation-timing-function: ease-in; }
+  50% { transform: translate(72px, -46px) scale(0.72, 1.25); animation-timing-function: ease-out; }
+  56% { transform: translate(66px, -40px) scale(0.88, 1.1); animation-timing-function: ease-in; }
+  66% { transform: translate(52px, -28px) scale(1, 1); animation-timing-function: ease-in; }
+  76% { transform: translate(36px, -15px) scale(1.25, 0.72); animation-timing-function: ease-out; }
+  85% { transform: translate(12px, -5px) scale(1, 1); animation-timing-function: ease-in; }
+  89% { transform: translate(0px, 0px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  92% { transform: translate(0px, 0px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--lob {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  20% { transform: translate(20.2px, -5.6px) scale(0.6); opacity: 0.2; }
-  38% { transform: translate(50.4px, -14px) scale(0.35); opacity: 0.08; }
-  46% { transform: translate(66.2px, -18.4px) scale(0.48); opacity: 0.14; }
-  50% { transform: translate(72px, -20px) scale(0.65); opacity: 0.22; }
-  54% { transform: translate(66.2px, -18.4px) scale(0.48); opacity: 0.14; }
-  70% { transform: translate(39.6px, -11px) scale(0.4); opacity: 0.1; }
-  92% { transform: translate(5.8px, -1.6px) scale(0.85); opacity: 0.35; }
+  4% { transform: translate(3px, -1.3px) scale(0.98); opacity: 0.44; }
+  16% { transform: translate(16px, -6.7px) scale(0.79); opacity: 0.32; }
+  34% { transform: translate(42px, -17.5px) scale(0.66); opacity: 0.24; }
+  44% { transform: translate(64px, -26.7px) scale(0.78); opacity: 0.31; }
+  50% { transform: translate(72px, -30.2px) scale(0.83); opacity: 0.34; }
+  56% { transform: translate(66px, -27.7px) scale(0.86); opacity: 0.36; }
+  66% { transform: translate(52px, -21.7px) scale(0.93); opacity: 0.41; }
+  76% { transform: translate(36px, -15.1px) scale(1); opacity: 0.45; }
+  85% { transform: translate(12px, -5px) scale(1); opacity: 0.45; }
+  89% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: nick (front-court) — hits the front wall, then deflects down into the tight crack
-   where the front wall, side wall, and floor all meet, and dies there — a bad bounce almost
-   nobody returns — before slowly drifting back for the next ball. ------------------------------- */
+@keyframes ball-spinner-spin--lob {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(500deg); }
+  92% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* --- Pattern: nick (front-court) — hits the front wall low, deflects into the tight crack where
+   the front wall, side wall, and floor all meet, dies flat there, then trickles back along the
+   floor for the next ball. --------------------------------------------------------------------- */
 .ball-spinner-arc--nick { animation: ball-spinner-bounce--nick 1.7s linear infinite; }
 .ball-spinner-shadow--nick { animation: ball-spinner-shadow--nick 1.7s linear infinite; }
+.ball-spinner-arc--nick .ball-spinner-spin { animation: ball-spinner-spin--nick 1.7s linear infinite; }
 
 @keyframes ball-spinner-bounce--nick {
-  0% { transform: translate(0px, 0px) scale(1, 1); }
-  18% { transform: translate(24px, -14px) scale(1, 1); }
-  30% { transform: translate(58px, -20px) scale(0.9, 1.1); }
-  36% { transform: translate(72px, -20px) scale(0.55, 1.4); }
-  44% { transform: translate(58px, -24px) scale(0.85, 1.15); }
-  54% { transform: translate(44px, -32px) scale(0.9, 1.05); }
-  60% { transform: translate(33px, -36px) scale(0.55, 0.65); }
-  66% { transform: translate(32px, -35px) scale(0.6, 0.68); }
-  78% { transform: translate(24px, -26px) scale(0.75, 0.85); }
-  92% { transform: translate(9px, -9px) scale(0.92, 0.95); }
+  0% { transform: translate(0px, 0px) scale(1, 1); animation-timing-function: ease-out; }
+  3% { transform: translate(3px, -2px) scale(1.15, 0.82); animation-timing-function: ease-out; }
+  14% { transform: translate(22px, -13px) scale(1, 1); animation-timing-function: ease-out; }
+  28% { transform: translate(50px, -23px) scale(1, 1); animation-timing-function: ease-in; }
+  34% { transform: translate(72px, -30px) scale(0.55, 1.4); animation-timing-function: ease-out; }
+  42% { transform: translate(60px, -28px) scale(0.85, 1.12); animation-timing-function: ease-in-out; }
+  50% { transform: translate(44px, -32px) scale(1, 1); animation-timing-function: ease-in; }
+  /* Dying in the crack: flat-and-wide floor squash at the corner, then a settle. */
+  56% { transform: translate(33px, -36px) scale(1.3, 0.55); animation-timing-function: ease-out; }
+  62% { transform: translate(33.5px, -35.5px) scale(1.15, 0.7); animation-timing-function: ease-in-out; }
+  72% { transform: translate(24px, -10px) scale(1, 1); animation-timing-function: ease-in; }
+  80% { transform: translate(12px, -5px) scale(1, 1); animation-timing-function: ease-in; }
+  85% { transform: translate(0px, 0px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  89% { transform: translate(0px, 0px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--nick {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  18% { transform: translate(24px, -5.6px) scale(0.7); opacity: 0.24; }
-  30% { transform: translate(58px, -8px) scale(0.5); opacity: 0.12; }
-  36% { transform: translate(72px, -8px) scale(1); opacity: 0.45; }
-  44% { transform: translate(58px, -9.6px) scale(0.7); opacity: 0.25; }
-  54% { transform: translate(44px, -12.8px) scale(0.5); opacity: 0.13; }
-  60% { transform: translate(33px, -14.4px) scale(0.2); opacity: 0.06; }
-  66% { transform: translate(32px, -14px) scale(0.2); opacity: 0.06; }
-  78% { transform: translate(24px, -10.4px) scale(0.5); opacity: 0.15; }
-  92% { transform: translate(9px, -3.6px) scale(0.85); opacity: 0.35; }
+  3% { transform: translate(3px, -1.3px) scale(0.99); opacity: 0.44; }
+  14% { transform: translate(22px, -9.2px) scale(0.96); opacity: 0.42; }
+  28% { transform: translate(50px, -21px) scale(0.98); opacity: 0.44; }
+  34% { transform: translate(72px, -30.2px) scale(1); opacity: 0.45; }
+  42% { transform: translate(60px, -25.2px) scale(0.97); opacity: 0.43; }
+  50% { transform: translate(44px, -18.3px) scale(0.85); opacity: 0.35; }
+  56% { transform: translate(33px, -36px) scale(1); opacity: 0.45; }
+  62% { transform: translate(33px, -36px) scale(1); opacity: 0.45; }
+  72% { transform: translate(24px, -10px) scale(1); opacity: 0.45; }
+  80% { transform: translate(12px, -5px) scale(1); opacity: 0.45; }
+  85% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: reverse (deception) — a reverse angle boast: swings out the "wrong" way first,
-   then cuts back into the side wall from an unexpected angle before crossing to the front wall. */
+@keyframes ball-spinner-spin--nick {
+  0% { transform: rotate(0deg); }
+  34% { transform: rotate(500deg); }
+  56% { transform: rotate(560deg); }
+  89% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* --- Pattern: reverse (deception) — a reverse angle boast: shapes to go straight, then cuts back
+   into the side wall from an unexpected angle before crossing to the front wall. ---------------- */
 .ball-spinner-arc--reverse { animation: ball-spinner-bounce--reverse 1.7s linear infinite; }
 .ball-spinner-shadow--reverse { animation: ball-spinner-shadow--reverse 1.7s linear infinite; }
+.ball-spinner-arc--reverse .ball-spinner-spin { animation: ball-spinner-spin--reverse 1.7s linear infinite; }
 
 @keyframes ball-spinner-bounce--reverse {
-  0% { transform: translate(0px, 0px) scale(1, 1); }
-  16% { transform: translate(22px, -6px) scale(1, 1); }
-  28% { transform: translate(34px, -10px) scale(1, 1); }
-  36% { transform: translate(24px, -22px) scale(1, 1); }
-  44% { transform: translate(19px, -29px) scale(0.8, 1.2); }
-  50% { transform: translate(18px, -30px) scale(0.5, 1.45); }
-  56% { transform: translate(24px, -26px) scale(0.8, 1.2); }
-  66% { transform: translate(48px, -24px) scale(1, 1); }
-  74% { transform: translate(65px, -22px) scale(0.85, 1.15); }
-  80% { transform: translate(72px, -20px) scale(0.5, 1.4); }
-  90% { transform: translate(40px, -22px) scale(1, 1); }
+  0% { transform: translate(0px, 0px) scale(1, 1); animation-timing-function: ease-out; }
+  3% { transform: translate(3px, -1px) scale(1.15, 0.82); animation-timing-function: ease-in-out; }
+  /* The fake: skims low toward the front before cutting back. */
+  12% { transform: translate(20px, -10px) scale(1, 1); animation-timing-function: ease-in-out; }
+  22% { transform: translate(30px, -13px) scale(1, 1); animation-timing-function: ease-in-out; }
+  32% { transform: translate(12px, -14px) scale(1, 1); animation-timing-function: ease-out; }
+  42% { transform: translate(-10px, -14px) scale(1, 1); animation-timing-function: ease-in; }
+  /* Side-wall impact: squash rotated onto the side wall's iso plane. */
+  48% { transform: translate(-14px, -20px) rotate(-23deg) scale(1.4, 0.6); animation-timing-function: ease-out; }
+  56% { transform: translate(6px, -10px) scale(1, 1); animation-timing-function: ease-in-out; }
+  66% { transform: translate(40px, -20px) scale(1, 1); animation-timing-function: ease-in; }
+  74% { transform: translate(72px, -32px) scale(0.5, 1.4); animation-timing-function: ease-out; }
+  80% { transform: translate(48px, -20px) scale(0.85, 1.15); animation-timing-function: ease-in; }
+  85% { transform: translate(30px, -12px) scale(1.25, 0.72); animation-timing-function: ease-out; }
+  89% { transform: translate(12px, -5px) scale(1, 1); animation-timing-function: ease-in; }
+  92% { transform: translate(0px, 0px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  95% { transform: translate(0px, 0px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--reverse {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  16% { transform: translate(22px, -2px) scale(0.85); opacity: 0.36; }
-  28% { transform: translate(34px, -4px) scale(0.7); opacity: 0.26; }
-  36% { transform: translate(24px, -9px) scale(0.55); opacity: 0.16; }
-  44% { transform: translate(19px, -12px) scale(0.7); opacity: 0.25; }
-  50% { transform: translate(18px, -12px) scale(1); opacity: 0.45; }
-  56% { transform: translate(24px, -10px) scale(0.75); opacity: 0.28; }
-  66% { transform: translate(48px, -10px) scale(0.55); opacity: 0.15; }
-  74% { transform: translate(65px, -9px) scale(0.7); opacity: 0.25; }
-  80% { transform: translate(72px, -8px) scale(1); opacity: 0.45; }
-  90% { transform: translate(40px, -9px) scale(0.7); opacity: 0.25; }
+  3% { transform: translate(3px, -1.3px) scale(0.99); opacity: 0.44; }
+  12% { transform: translate(20px, -8.3px) scale(0.98); opacity: 0.44; }
+  22% { transform: translate(30px, -12.5px) scale(1); opacity: 0.45; }
+  32% { transform: translate(12px, -5px) scale(0.9); opacity: 0.39; }
+  42% { transform: translate(-10px, -4.1px) scale(0.89); opacity: 0.38; }
+  48% { transform: translate(-14px, -5.7px) scale(0.95); opacity: 0.42; }
+  56% { transform: translate(6px, -2.5px) scale(0.92); opacity: 0.4; }
+  66% { transform: translate(40px, -16.7px) scale(0.96); opacity: 0.42; }
+  74% { transform: translate(72px, -30.2px) scale(0.98); opacity: 0.44; }
+  80% { transform: translate(48px, -20.2px) scale(1); opacity: 0.45; }
+  85% { transform: translate(30px, -12.5px) scale(1); opacity: 0.45; }
+  89% { transform: translate(12px, -5px) scale(1); opacity: 0.45; }
+  92% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: corkscrew (exhibition-shots) — a showy trick shot: the ball loops out and up
-   before spinning hard into the front wall. The inner ball-spin runs much faster here (see
-   below) — the spin itself is most of what sells "corkscrew". ------------------------------------ */
+@keyframes ball-spinner-spin--reverse {
+  0% { transform: rotate(0deg); }
+  22% { transform: rotate(210deg); }
+  48% { transform: rotate(-105deg); }
+  74% { transform: rotate(510deg); }
+  95% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* --- Pattern: corkscrew (exhibition-shots) — a showy trick shot: loops out and up, spins hard
+   (the constant fast inner spin is most of what sells it), and slams high into the front wall. -- */
 .ball-spinner-arc--corkscrew { animation: ball-spinner-bounce--corkscrew 1.6s linear infinite; }
 .ball-spinner-shadow--corkscrew { animation: ball-spinner-shadow--corkscrew 1.6s linear infinite; }
 .ball-spinner-arc--corkscrew .ball-spinner-spin { animation-duration: 0.35s; }
 
 @keyframes ball-spinner-bounce--corkscrew {
-  0% { transform: translate(0px, 0px) scale(1, 1); }
-  14% { transform: translate(8px, -14px) scale(1, 1); }
-  26% { transform: translate(14px, -26px) scale(1, 1); }
-  32% { transform: translate(17px, -31px) scale(0.75, 1.25); }
-  40% { transform: translate(30px, -28px) scale(1, 1); }
-  50% { transform: translate(55px, -30px) scale(1, 1); }
-  58% { transform: translate(70px, -24px) scale(0.85, 1.15); }
-  64% { transform: translate(76px, -16px) scale(0.4, 1.7); }
-  70% { transform: translate(68px, -24px) scale(0.85, 1.15); }
-  84% { transform: translate(36px, -20px) scale(1, 1); }
-  96% { transform: translate(6px, -3px) scale(1, 1); }
+  0% { transform: translate(0px, 0px) scale(1, 1); animation-timing-function: ease-out; }
+  3% { transform: translate(2px, -2px) scale(1.15, 0.82); animation-timing-function: ease-out; }
+  12% { transform: translate(-6px, -12px) scale(1, 1); animation-timing-function: ease-out; }
+  24% { transform: translate(-2px, -26px) scale(1, 1); animation-timing-function: ease-in-out; }
+  36% { transform: translate(16px, -28px) scale(1, 1); animation-timing-function: ease-in-out; }
+  48% { transform: translate(46px, -28px) scale(1, 1); animation-timing-function: ease-in; }
+  58% { transform: translate(76px, -38px) scale(0.42, 1.65); animation-timing-function: ease-out; }
+  66% { transform: translate(60px, -26px) scale(0.85, 1.15); animation-timing-function: ease-in; }
+  76% { transform: translate(38px, -16px) scale(1.25, 0.72); animation-timing-function: ease-out; }
+  84% { transform: translate(14px, -6px) scale(1, 1); animation-timing-function: ease-in; }
+  88% { transform: translate(0px, 0px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  91% { transform: translate(0px, 0px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--corkscrew {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  14% { transform: translate(8px, -5px) scale(0.8); opacity: 0.32; }
-  26% { transform: translate(14px, -9px) scale(0.65); opacity: 0.24; }
-  32% { transform: translate(17px, -11px) scale(0.75); opacity: 0.28; }
-  40% { transform: translate(30px, -10px) scale(0.6); opacity: 0.2; }
-  50% { transform: translate(55px, -11px) scale(0.45); opacity: 0.13; }
-  58% { transform: translate(70px, -9px) scale(0.55); opacity: 0.17; }
-  64% { transform: translate(76px, -6px) scale(1); opacity: 0.45; }
-  70% { transform: translate(68px, -9px) scale(0.7); opacity: 0.25; }
-  84% { transform: translate(36px, -7px) scale(0.6); opacity: 0.2; }
-  96% { transform: translate(6px, -1px) scale(0.92); opacity: 0.4; }
+  3% { transform: translate(2px, -0.8px) scale(0.98); opacity: 0.44; }
+  12% { transform: translate(-6px, -2.5px) scale(0.9); opacity: 0.38; }
+  24% { transform: translate(-2px, -0.8px) scale(0.73); opacity: 0.28; }
+  36% { transform: translate(16px, -6.7px) scale(0.77); opacity: 0.3; }
+  48% { transform: translate(46px, -19.2px) scale(0.9); opacity: 0.39; }
+  58% { transform: translate(76px, -31.9px) scale(0.93); opacity: 0.41; }
+  66% { transform: translate(60px, -25.2px) scale(0.99); opacity: 0.44; }
+  76% { transform: translate(38px, -16px) scale(1); opacity: 0.45; }
+  84% { transform: translate(14px, -5.9px) scale(1); opacity: 0.45; }
+  88% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
-/* --- Pattern: crosscourt (movement) — a cross-court drive: stays low while crossing the width of
-   the floor, then rises smoothly into the front wall on the far side. A single continuous sweep —
-   no dip-then-rise reversal, which read as a glitch rather than a shot. ------------------------- */
+/* --- Pattern: crosscourt (movement) — a cross-court drive: skims low across the width of the
+   floor and into the far side of the front wall, just over the tin. ----------------------------- */
 .ball-spinner-arc--crosscourt { animation: ball-spinner-bounce--crosscourt 1.7s linear infinite; }
 .ball-spinner-shadow--crosscourt { animation: ball-spinner-shadow--crosscourt 1.7s linear infinite; }
+.ball-spinner-arc--crosscourt .ball-spinner-spin { animation: ball-spinner-spin--crosscourt 1.7s linear infinite; }
 
 @keyframes ball-spinner-bounce--crosscourt {
-  0% { transform: translate(0px, 0px) scale(1, 1); }
-  16% { transform: translate(24px, 2px) scale(1, 1); }
-  30% { transform: translate(46px, 0px) scale(1, 1); }
-  42% { transform: translate(66px, -6px) scale(1, 1); }
-  50% { transform: translate(80px, -13px) scale(0.9, 1.1); }
-  56% { transform: translate(90px, -19px) scale(0.6, 1.35); }
-  62% { transform: translate(82px, -13px) scale(0.9, 1.1); }
-  76% { transform: translate(50px, -3px) scale(1, 1); }
-  90% { transform: translate(16px, 1px) scale(1, 1); }
+  0% { transform: translate(0px, 0px) scale(1, 1); animation-timing-function: ease-out; }
+  3% { transform: translate(3px, -1px) scale(1.15, 0.82); animation-timing-function: ease-in-out; }
+  16% { transform: translate(28px, -4px) scale(1, 1); animation-timing-function: ease-in-out; }
+  32% { transform: translate(54px, -8px) scale(1, 1); animation-timing-function: ease-in-out; }
+  46% { transform: translate(76px, -12px) scale(1, 1); animation-timing-function: ease-in; }
+  54% { transform: translate(90px, -24px) scale(0.6, 1.35); animation-timing-function: ease-out; }
+  62% { transform: translate(74px, -12px) scale(0.85, 1.12); animation-timing-function: ease-in; }
+  72% { transform: translate(52px, -7px) scale(1, 1); animation-timing-function: ease-in; }
+  80% { transform: translate(30px, -4px) scale(1.25, 0.75); animation-timing-function: ease-out; }
+  86% { transform: translate(12px, -2px) scale(1, 1); animation-timing-function: ease-in; }
+  89% { transform: translate(0px, 0px) scale(1.15, 0.8); animation-timing-function: ease-out; }
+  92% { transform: translate(0px, 0px) scale(1, 1); }
   100% { transform: translate(0px, 0px) scale(1, 1); }
 }
 
 @keyframes ball-spinner-shadow--crosscourt {
   0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
-  16% { transform: translate(24px, 1px) scale(0.85); opacity: 0.36; }
-  30% { transform: translate(46px, 0px) scale(0.8); opacity: 0.32; }
-  42% { transform: translate(66px, -2px) scale(0.7); opacity: 0.25; }
-  50% { transform: translate(80px, -4px) scale(0.55); opacity: 0.16; }
-  56% { transform: translate(90px, -6px) scale(0.75); opacity: 0.28; }
-  62% { transform: translate(82px, -4px) scale(0.6); opacity: 0.2; }
-  76% { transform: translate(50px, -1px) scale(0.85); opacity: 0.36; }
-  90% { transform: translate(16px, 0px) scale(0.95); opacity: 0.42; }
+  3% { transform: translate(3px, -0.4px) scale(0.99); opacity: 0.45; }
+  16% { transform: translate(28px, -3.3px) scale(1); opacity: 0.45; }
+  32% { transform: translate(54px, -6.4px) scale(0.98); opacity: 0.44; }
+  46% { transform: translate(76px, -9px) scale(0.97); opacity: 0.43; }
+  54% { transform: translate(90px, -10.6px) scale(0.95); opacity: 0.42; }
+  62% { transform: translate(74px, -8.7px) scale(0.96); opacity: 0.42; }
+  72% { transform: translate(52px, -6.1px) scale(0.99); opacity: 0.44; }
+  80% { transform: translate(30px, -3.5px) scale(1); opacity: 0.45; }
+  86% { transform: translate(12px, -1.4px) scale(1); opacity: 0.45; }
+  89% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
   100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
 }
 
+@keyframes ball-spinner-spin--crosscourt {
+  0% { transform: rotate(0deg); }
+  54% { transform: rotate(630deg); }
+  92% { transform: rotate(0deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Reduced motion: freeze the flight, but keep a slow opacity pulse so the loader still signals
+   "working" instead of looking like a broken static image. */
 @media (prefers-reduced-motion: reduce) {
   .ball-spinner-arc,
   .ball-spinner-spin,
-  .ball-spinner-shadow {
+  .ball-spinner-shadow,
+  .ball-spinner-racket {
     animation: none;
+  }
+
+  .ball-spinner-body,
+  .ball-spinner-label {
+    animation: ball-spinner-pulse 2.2s ease-in-out infinite;
   }
 }
