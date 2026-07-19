@@ -56,8 +56,8 @@
       '<g class="ball-spinner-arc ball-spinner-arc--' + pattern + '">' +
       '<g class="ball-spinner-spin">' +
       '<circle class="ball-spinner-body" cx="37" cy="89" r="8"></circle>' +
-      '<circle class="ball-spinner-dot" cx="34" cy="85" r="1.4"></circle>' +
-      '<circle class="ball-spinner-dot" cx="40" cy="89" r="1.4"></circle>' +
+      '<circle class="ball-spinner-dot" cx="35" cy="86" r="1.4"></circle>' +
+      '<circle class="ball-spinner-dot" cx="38.5" cy="88" r="1.4"></circle>' +
       '</g>' +
       '</g>' +
       '</svg>'
