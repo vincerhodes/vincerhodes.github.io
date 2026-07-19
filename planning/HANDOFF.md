@@ -20,10 +20,13 @@ Remaining (user steps, runbook is in 08's V2–V4): ~~create Vercel project~~ **
 diagrams SSR'd), **live OpenRouter generation confirmed working on Vercel** via a temporary
 `web/app/api/selftest/` route (runtime logs show 200; DELETE that route at cutover). Deploys run
 via `node scripts/vercel-api-deploy.mjs --target preview` (local-only, gitignored). Preview
-protection disabled. Still needed from the user: (1) Turso account → `turso db create
-rightcourtsc` → URL + token (set as `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` in Vercel — without
-them `/api/drills*` 500s on Vercel's read-only FS, expected for now); (2) `GOOGLE_DRIVE_API_KEY` +
-`GALLERY_FOLDER_ID` from the Cloudflare Worker dashboard; (3) at cutover: DNS changes + add the
+protection disabled. ~~Still needed from the user: (1) Turso account~~ **Turso done 2026-07-19:**
+`rightcourtsc` db created (libsql://rightcourtsc-vincerhodes.aws-us-west-2.turso.io),
+`TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` set in Vercel, DB round-trip verified live on Vercel via
+the extended `/api/selftest` (200; tables auto-created by on-boot migration). Turso CLI lives at
+`~/.turso/turso` (not on PATH). Still needed from the user: (2) `GOOGLE_DRIVE_API_KEY` +
+`GALLERY_FOLDER_ID` from the Cloudflare Worker dashboard — until then `/api/gallery` 502s and the
+gallery page shows its Drive-folder fallback; (3) at cutover: DNS changes + add the
 custom domain in Vercel (apex A → 76.76.21.21, www CNAME → cname.vercel-dns.com) and Worker/GitHub
 Pages retirement.
 
