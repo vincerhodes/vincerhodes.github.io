@@ -14,11 +14,18 @@ gone; `maxDuration = 300` on `/api/generate` (hobby+Fluid Compute cap; drop to 6
 rejects it). Verified: build ✓, vitest 77/77, eslint clean, file-mode round-trip + 429-at-31 all
 green locally.
 
-Remaining (user steps, runbook is in 08's V2–V4): create Vercel project (root dir `web/`) + Turso
-db, set env vars (`OPENROUTER_API_KEY`, `GOOGLE_DRIVE_API_KEY`, `GALLERY_FOLDER_ID`,
-`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`), preview deploy → smoke tests (**live `/api/generate`
-is finally testable there** — Vercel isn't region-blocked like this dev machine), then DNS cutover
-(apex A → 76.76.21.21, www CNAME → cname.vercel-dns.com) and Worker/GitHub Pages retirement.
+Remaining (user steps, runbook is in 08's V2–V4): ~~create Vercel project~~ **V2 mostly done
+2026-07-19 via Vercel MCP** — project `rightcourtsc` (`prj_eJTNoVDkcysihGQ39hfklEohjKpk`, team
+`vincerhodes-projects`) exists, `OPENROUTER_API_KEY` set, preview deploys green (all pages 200,
+diagrams SSR'd), **live OpenRouter generation confirmed working on Vercel** via a temporary
+`web/app/api/selftest/` route (runtime logs show 200; DELETE that route at cutover). Deploys run
+via `node scripts/vercel-api-deploy.mjs --target preview` (local-only, gitignored). Preview
+protection disabled. Still needed from the user: (1) Turso account → `turso db create
+rightcourtsc` → URL + token (set as `TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` in Vercel — without
+them `/api/drills*` 500s on Vercel's read-only FS, expected for now); (2) `GOOGLE_DRIVE_API_KEY` +
+`GALLERY_FOLDER_ID` from the Cloudflare Worker dashboard; (3) at cutover: DNS changes + add the
+custom domain in Vercel (apex A → 76.76.21.21, www CNAME → cname.vercel-dns.com) and Worker/GitHub
+Pages retirement.
 
 ## Where we are
 

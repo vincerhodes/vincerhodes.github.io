@@ -8,3 +8,7 @@ playwright-report/
 .dev.vars
 .wrangler/
 dns/
+
+# Local-only Vercel API deploy helpers (read local OAuth creds, user-specific)
+scripts/vercel-api-deploy.mjs
+scripts/build-vercel-payload.mjs

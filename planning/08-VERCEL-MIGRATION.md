@@ -74,7 +74,24 @@ but saved drills want real queries), staying on better-sqlite3 (impossible on Ve
 
 ### V2 — Vercel project + first preview deploy (needs user accounts)
 
-User steps (or hand an authed CLI):
+**STATUS 2026-07-19: mostly DONE via Vercel MCP + REST API.** Project `rightcourtsc`
+(`prj_eJTNoVDkcysihGQ39hfklEohjKpk`) created in team `vincerhodes-projects`; preview deploys via
+`node scripts/vercel-api-deploy.mjs --target preview` (local-only script, gitignored — reads the
+MCP OAuth token; `mcp__vercel__deploy_to_vercel` can't take a multi-MB file tree in one call).
+`OPENROUTER_API_KEY` set via the REST API. Preview protection (`ssoProtection`) disabled for now.
+Latest preview: all pages 200 (verified via `web_fetch_vercel_url`).
+
+**Live generation CONFIRMED:** this dev machine can't reach `*.vercel.app` at all (network block)
+and can't POST through MCP, so a temporary `web/app/api/selftest/route.ts` (GET) replicates the
+generate route's OpenRouter call server-side — Vercel runtime logs show `GET /api/selftest/ 200`,
+and that route only returns 200 when env key → OpenRouter → tool-call parse → diagram filter all
+succeed. **Delete `web/app/api/selftest/` at cutover (V4).**
+
+Still user steps (below): Turso account + the two Drive secrets from the Cloudflare dashboard.
+Until Turso env vars are set, `/api/drills*` and the `/api/generate` rate limiter run in file-mode,
+which FAILS on Vercel's read-only FS — expected, don't debug it.
+
+Original step list (for reference):
 1. Create Vercel account (hobby) → New Project → import the GitHub repo → **Root Directory:
    `web/`**. Framework preset Next.js, defaults otherwise.
 2. Env vars (Production + Preview): `OPENROUTER_API_KEY` (from repo-root `.env`),
