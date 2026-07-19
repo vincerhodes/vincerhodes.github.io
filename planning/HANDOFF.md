@@ -22,13 +22,12 @@ first to refresh it if expired). OR connect the GitHub repo in the Vercel dashbo
 Git) for push-to-deploy — not done yet, file deploys work fine meanwhile. There is no git
 integration: pushes to GitHub do NOT deploy by themselves.
 
-**Remaining retirement loose ends:** the Cloudflare Worker `rightcourtsc-drill-builder` still
-exists (now unused — nothing points at `api.rightcourtsc.com`); delete it + the
-`api.rightcourtsc.com` DNS record at the registrar when convenient. GitHub Pages: `CNAME`,
-`.nojekyll`, and `worker/` are deleted from the repo; Pages itself may still need disabling in
-repo settings. `web/lib/schema.ts` is now the canonical schema/system-prompt (worker drift guard
-removed from `web/scripts/validate-tool-schema.mjs`; the repo-root validator was deleted with the
-worker).
+**Remaining retirement loose ends:** ~~the Cloudflare Worker~~ Worker `rightcourtsc-drill-builder`
+DELETED 2026-07-19. Still open: (1) delete the `api.rightcourtsc.com` DNS record at the registrar
+(it now resolves nowhere — nothing uses it, harmless until removed); (2) `vincerhodes.github.io`
+keeps serving the legacy static files — GitHub does not allow disabling Pages on a user-site repo
+(422 from the API); the only ways to kill it are renaming/making-private/deleting the repo, none
+recommended. Harmless legacy mirror, ignore it.
 
 History below this line describes the pre-migration static site + Worker (superseded, kept for
 reference — `worker/src/*` paths no longer exist; their ports live in `web/lib/`).
