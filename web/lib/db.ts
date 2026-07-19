@@ -40,6 +40,18 @@ const MIGRATION: InStatement[] = [
   `CREATE INDEX IF NOT EXISTS idx_saved_drills_token ON saved_drills(visitor_token)`,
 ];
 
+/**
+ * Idempotent follow-up migration: adds saved_by to saved_drills when it isn't there yet
+ * (databases created before the library went shared). PRAGMA table_info is checked first
+ * because SQLite has no ADD COLUMN IF NOT EXISTS.
+ */
+async function ensureSavedByColumn(client: Client): Promise<void> {
+  const rs = await client.execute("PRAGMA table_info(saved_drills)");
+  if (!rs.rows.some((row) => row.name === "saved_by")) {
+    await client.execute("ALTER TABLE saved_drills ADD COLUMN saved_by TEXT");
+  }
+}
+
 interface DbHandle {
   client: Client;
   /** Resolves once the migration has run — every use awaits this before touching the DB. */
@@ -67,7 +79,10 @@ function getHandle(): DbHandle {
 
   const handle: DbHandle = {
     client,
-    ready: client.batch(MIGRATION, "write").then(() => undefined),
+    ready: client
+      .batch(MIGRATION, "write")
+      .then(() => ensureSavedByColumn(client))
+      .then(() => undefined),
   };
   globalForDb.__rcDb = handle;
   return handle;
@@ -142,18 +157,22 @@ export async function applyRateLimit(
 }
 
 // -----------------------------------------------------------------------------------------------
-// Saved drills — anonymous per-browser token identity, no auth. The client sends an
-// X-Visitor-Token header.
+// Saved drills — the shared club library. Each row carries an anonymous per-browser visitor
+// token (sent as the X-Visitor-Token header; it gates deletes) plus a saved_by founder name
+// for display. listAllDrills is the public read path and never returns the token.
 // -----------------------------------------------------------------------------------------------
 
 export interface SavedDrillRow {
   id: string;
-  visitor_token: string;
   title: string;
   /** Full generated session plan JSON ({ plan_markdown, drills }) as a string. */
   payload: string;
+  /** Founding-squasher display name; null only for rows saved before the library went shared. */
+  saved_by: string | null;
   /** Unix epoch milliseconds. */
   created_at: number;
+  /** Present only when the caller supplied a visitor token: true when the row is theirs. */
+  mine?: boolean;
 }
 
 export async function saveDrill(input: {
@@ -161,36 +180,41 @@ export async function saveDrill(input: {
   visitorToken: string;
   title: string;
   payload: string;
+  savedBy: string;
   createdAt?: number;
 }): Promise<void> {
   const db = await getDb();
   await db.execute({
-    sql: `INSERT INTO saved_drills (id, visitor_token, title, payload, created_at)
-          VALUES (?, ?, ?, ?, ?)`,
+    sql: `INSERT INTO saved_drills (id, visitor_token, title, payload, saved_by, created_at)
+          VALUES (?, ?, ?, ?, ?, ?)`,
     args: [
       input.id,
       input.visitorToken,
       input.title,
       input.payload,
+      input.savedBy,
       input.createdAt ?? Date.now(),
     ],
   });
 }
 
-/** All drills saved by this browser token, newest first. */
-export async function listDrillsForToken(visitorToken: string): Promise<SavedDrillRow[]> {
+/**
+ * Every drill in the shared library, newest first. The visitor_token column is selected only
+ * to compute `mine` when a token is passed — it is never part of the returned rows.
+ */
+export async function listAllDrills(visitorToken?: string): Promise<SavedDrillRow[]> {
   const db = await getDb();
-  const rs = await db.execute({
-    sql: `SELECT id, visitor_token, title, payload, created_at FROM saved_drills
-          WHERE visitor_token = ? ORDER BY created_at DESC`,
-    args: [visitorToken],
-  });
+  const rs = await db.execute(
+    `SELECT id, visitor_token, title, payload, saved_by, created_at FROM saved_drills
+     ORDER BY created_at DESC`
+  );
   return rs.rows.map((row) => ({
     id: String(row.id),
-    visitor_token: String(row.visitor_token),
     title: String(row.title),
     payload: String(row.payload),
+    saved_by: row.saved_by === null ? null : String(row.saved_by),
     created_at: Number(row.created_at),
+    ...(visitorToken ? { mine: String(row.visitor_token) === visitorToken } : {}),
   }));
 }
 

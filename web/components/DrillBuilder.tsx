@@ -15,6 +15,7 @@ import BallLoader, { randomPattern, type BallLoaderPattern } from "@/components/
 import PlanResultView, { type PlanResult } from "@/components/PlanResultView";
 import { LEVELS, SURPRISE_ME, THEMES } from "@/lib/schema";
 import { getVisitorToken } from "@/lib/visitor";
+import { FOUNDERS, SAVER_NAME_KEY } from "@/lib/founders";
 
 // Select labels, matching the static forms' option text exactly (values come from schema.ts —
 // the single source of truth — labels are display-only).
@@ -63,7 +64,8 @@ function apiUrl(): string {
 }
 
 // --- Save this drill (Phase 4) ------------------------------------------------------------------
-// Persists the generated plan to SQLite via /api/drills/, keyed by this browser's visitor token.
+// Persists the generated plan to the shared club library via /api/drills/. The browser's visitor
+// token goes along for the ride (it gates deletes); saved_by names one of the four founders.
 type SaveState =
   | { state: "idle" }
   | { state: "saving" }
@@ -103,6 +105,19 @@ export default function DrillBuilder() {
   // Form values at submit time — the Save flow builds front matter / filenames from them.
   const [submitted, setSubmitted] = useState<{ theme: string; level: string } | null>(null);
   const [saveTitle, setSaveTitle] = useState("");
+  // Preselected with the name this browser saved under last time. The dropdown only renders
+  // after a plan is generated (never in the SSR HTML), so a lazy localStorage read can't cause
+  // a hydration mismatch.
+  const [saverName, setSaverName] = useState(() => {
+    if (typeof window === "undefined") return "";
+    try {
+      const remembered = window.localStorage.getItem(SAVER_NAME_KEY);
+      return remembered && (FOUNDERS as readonly string[]).includes(remembered) ? remembered : "";
+    } catch {
+      // localStorage unavailable (private mode etc.) — the dropdown just starts blank.
+      return "";
+    }
+  });
   const [saveState, setSaveState] = useState<SaveState>({ state: "idle" });
   const loadingTimerRef = useRef<number | null>(null);
 
@@ -191,6 +206,14 @@ export default function DrillBuilder() {
   const savePlan = () => {
     if (!plan) return;
 
+    if (!saverName) {
+      setSaveState({
+        state: "error",
+        message: "pick your name first — the library needs to know who saved it",
+      });
+      return;
+    }
+
     const token = getVisitorToken();
     if (!token) {
       setSaveState({
@@ -204,12 +227,17 @@ export default function DrillBuilder() {
     fetch("/api/drills/", {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Visitor-Token": token },
-      body: JSON.stringify({ title: saveTitle, payload: plan }),
+      body: JSON.stringify({ title: saveTitle, payload: plan, saved_by: saverName }),
     })
       .then((response) =>
         response.json().then((body) => {
           if (!response.ok) {
             throw new Error((body && body.error) || `Save failed (${response.status})`);
+          }
+          try {
+            window.localStorage.setItem(SAVER_NAME_KEY, saverName);
+          } catch {
+            // Remembering the name is a nicety — a failed write doesn't affect the save.
           }
           setSaveState({ state: "saved" });
         })
@@ -348,11 +376,32 @@ export default function DrillBuilder() {
             <div className="save-drill" id="save-drill">
               <h2>Save this drill</h2>
               <p>
-                Keep this plan on hand for Wednesday — it saves to this browser only (no account,
-                no sign-up), and you can find it any time under{" "}
-                <Link href="/saved-drills/">Saved drills</Link>.
+                Keep this plan on hand for Wednesday — it goes in the club&rsquo;s shared drill
+                library (no account, no sign-up), and you can find it any time under{" "}
+                <Link href="/saved-drills/">The Drill Library</Link>.
               </p>
               <div className="save-drill-row">
+                <label className="sr-only" htmlFor="save-drill-name">
+                  Your name
+                </label>
+                <select
+                  id="save-drill-name"
+                  value={saverName}
+                  onChange={(event) => {
+                    setSaverName(event.target.value);
+                    if (saveState.state !== "saving") setSaveState({ state: "idle" });
+                  }}
+                  disabled={saveState.state === "saving"}
+                >
+                  <option value="" disabled>
+                    Pick your name…
+                  </option>
+                  {FOUNDERS.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
                 <label className="sr-only" htmlFor="save-drill-title">
                   Title for this saved drill
                 </label>
@@ -378,8 +427,8 @@ export default function DrillBuilder() {
               </div>
               {saveState.state === "saved" && (
                 <p className="save-drill-note" data-state="saved">
-                  Saved. It&rsquo;s waiting for you in{" "}
-                  <Link href="/saved-drills/">Saved drills</Link>.
+                  Saved. It&rsquo;s waiting in{" "}
+                  <Link href="/saved-drills/">The Drill Library</Link>.
                 </p>
               )}
               {saveState.state === "error" && (

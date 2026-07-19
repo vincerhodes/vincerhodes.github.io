@@ -9,7 +9,7 @@ import {
   applyRateLimit,
   deleteDrill,
   getDb,
-  listDrillsForToken,
+  listAllDrills,
   RATE_LIMIT_MAX,
   RATE_LIMIT_WINDOW_SECONDS,
   resetDbForTests,
@@ -40,6 +40,9 @@ describe("getDb", () => {
       "SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name"
     );
     expect(rs.rows.map((t) => t.name)).toEqual(["rate_limits", "saved_drills"]);
+    // The saved_by follow-up migration has run too.
+    const cols = await db.execute("PRAGMA table_info(saved_drills)");
+    expect(cols.rows.map((c) => c.name)).toContain("saved_by");
   });
 
   it("returns the same instance on repeated calls", async () => {
@@ -96,29 +99,34 @@ describe("applyRateLimit", () => {
 });
 
 describe("saved drills", () => {
-  it("saves and lists drills for a token, newest first", async () => {
-    await saveDrill({ id: "a", visitorToken: "tok-1", title: "First", payload: "{}", createdAt: 1000 });
-    await saveDrill({ id: "b", visitorToken: "tok-1", title: "Second", payload: "{}", createdAt: 2000 });
-    await saveDrill({ id: "c", visitorToken: "tok-2", title: "Other", payload: "{}", createdAt: 3000 });
+  it("lists every saved drill newest first, with saved_by and no visitor token", async () => {
+    await saveDrill({ id: "a", visitorToken: "tok-1", title: "First", payload: "{}", savedBy: "Jimmy", createdAt: 1000 });
+    await saveDrill({ id: "b", visitorToken: "tok-1", title: "Second", payload: "{}", savedBy: "Joe", createdAt: 2000 });
+    await saveDrill({ id: "c", visitorToken: "tok-2", title: "Other", payload: "{}", savedBy: "Adam", createdAt: 3000 });
 
-    const rows = await listDrillsForToken("tok-1");
-    expect(rows.map((r) => r.id)).toEqual(["b", "a"]);
-    expect(rows[0].visitor_token).toBe("tok-1");
+    const rows = await listAllDrills();
+    expect(rows.map((r) => r.id)).toEqual(["c", "b", "a"]);
+    expect(rows.map((r) => r.saved_by)).toEqual(["Adam", "Joe", "Jimmy"]);
+    expect(rows.every((r) => !("visitor_token" in r))).toBe(true);
+    expect(rows.every((r) => !("mine" in r))).toBe(true);
   });
 
-  it("defaults created_at to now", async () => {
-    const before = Date.now();
-    await saveDrill({ id: "a", visitorToken: "tok-1", title: "T", payload: "{}" });
-    const [row] = await listDrillsForToken("tok-1");
-    expect(row.created_at).toBeGreaterThanOrEqual(before);
+  it("flags mine when a visitor token is passed, still without leaking tokens", async () => {
+    await saveDrill({ id: "a", visitorToken: "tok-1", title: "Mine", payload: "{}", savedBy: "Jimmy" });
+    await saveDrill({ id: "b", visitorToken: "tok-2", title: "Theirs", payload: "{}", savedBy: "Jonny" });
+
+    const rows = await listAllDrills("tok-1");
+    expect(rows.find((r) => r.id === "a")?.mine).toBe(true);
+    expect(rows.find((r) => r.id === "b")?.mine).toBe(false);
+    expect(rows.every((r) => !("visitor_token" in r))).toBe(true);
   });
 
   it("deletes only when the token matches", async () => {
-    await saveDrill({ id: "a", visitorToken: "tok-1", title: "T", payload: "{}" });
+    await saveDrill({ id: "a", visitorToken: "tok-1", title: "T", payload: "{}", savedBy: "Jimmy" });
     expect(await deleteDrill("a", "tok-2")).toBe(false);
-    expect(await listDrillsForToken("tok-1")).toHaveLength(1);
+    expect(await listAllDrills()).toHaveLength(1);
     expect(await deleteDrill("a", "tok-1")).toBe(true);
-    expect(await listDrillsForToken("tok-1")).toHaveLength(0);
+    expect(await listAllDrills()).toHaveLength(0);
   });
 
   it("returns false when deleting a non-existent id", async () => {

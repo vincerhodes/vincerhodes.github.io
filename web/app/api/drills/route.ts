@@ -1,11 +1,13 @@
-// GET/POST /api/drills — saved-drills API (planning/07-VPS-MIGRATION.md Phase 4). Identity is an
-// anonymous per-browser UUID sent as the X-Visitor-Token header (see web/lib/visitor.ts); no
-// accounts, no auth. Response shapes:
-//   GET  200 { drills: SavedDrillRow[] }        (newest first; payload is the plan JSON string)
+// GET/POST /api/drills — the shared club drill library. Saving and deleting still need the
+// anonymous per-browser X-Visitor-Token header (see web/lib/visitor.ts); listing is public.
+// Every save names one of the four founding squashers as saved_by. Response shapes:
+//   GET  200 { drills: SavedDrillRow[] }        (newest first; never includes visitor_token;
+//                                                `mine` per row only when a token is sent)
 //   POST 201 SavedDrillRow                      (the saved row, id generated server-side)
-//   400 { error }  missing token / invalid JSON / invalid title or payload shape
+//   400 { error }  missing token / invalid JSON / invalid title, payload, or saved_by
 //   413 { error }  payload over ~256KB
-import { listDrillsForToken, saveDrill, type SavedDrillRow } from "@/lib/db";
+import { listAllDrills, saveDrill, type SavedDrillRow } from "@/lib/db";
+import { FOUNDERS } from "@/lib/founders";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs"; // @libsql/client — never the edge runtime.
@@ -30,15 +32,20 @@ interface SessionPlanPayload {
 /**
  * Validates the POST body: title must be a non-empty string ≤200 chars; payload must be a
  * session-plan object ({ plan_markdown: string, drills: array }) whose serialized size stays
- * under ~256KB. Returns the trimmed title + payload, or an error message + status.
+ * under ~256KB; saved_by must be one of the four founding squashers. Returns the trimmed
+ * title + payload + saved_by, or an error message + status.
  */
 function validateSaveBody(body: unknown):
-  | { ok: true; title: string; payload: SessionPlanPayload }
+  | { ok: true; title: string; payload: SessionPlanPayload; savedBy: string }
   | { ok: false; error: string; status: number } {
   if (typeof body !== "object" || body === null) {
     return { ok: false, error: "Request body must be an object", status: 400 };
   }
-  const { title, payload } = body as { title?: unknown; payload?: unknown };
+  const { title, payload, saved_by } = body as {
+    title?: unknown;
+    payload?: unknown;
+    saved_by?: unknown;
+  };
 
   if (typeof title !== "string" || title.trim().length === 0) {
     return { ok: false, error: "title must be a non-empty string", status: 400 };
@@ -63,15 +70,15 @@ function validateSaveBody(body: unknown):
     return { ok: false, error: "payload is too large", status: 413 };
   }
 
-  return { ok: true, title: title.trim(), payload: payload as SessionPlanPayload };
+  if (typeof saved_by !== "string" || !(FOUNDERS as readonly string[]).includes(saved_by)) {
+    return { ok: false, error: `saved_by must be one of: ${FOUNDERS.join(", ")}`, status: 400 };
+  }
+
+  return { ok: true, title: title.trim(), payload: payload as SessionPlanPayload, savedBy: saved_by };
 }
 
 export async function GET(request: Request): Promise<Response> {
-  const token = visitorToken(request);
-  if (!token) {
-    return errorResponse("Missing X-Visitor-Token header", 400);
-  }
-  return Response.json({ drills: await listDrillsForToken(token) });
+  return Response.json({ drills: await listAllDrills(visitorToken(request) ?? undefined) });
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -94,16 +101,17 @@ export async function POST(request: Request): Promise<Response> {
 
   const row: SavedDrillRow = {
     id: crypto.randomUUID(),
-    visitor_token: token,
     title: validated.title,
     payload: JSON.stringify(validated.payload),
+    saved_by: validated.savedBy,
     created_at: Date.now(),
   };
   await saveDrill({
     id: row.id,
-    visitorToken: row.visitor_token,
+    visitorToken: token,
     title: row.title,
     payload: row.payload,
+    savedBy: validated.savedBy,
     createdAt: row.created_at,
   });
 

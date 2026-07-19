@@ -1,9 +1,10 @@
 "use client";
 
-// Client half of /saved-drills/ (Phase 4 of planning/07-VPS-MIGRATION.md). Fetches this
-// browser's saved drills from GET /api/drills/ with the X-Visitor-Token header (see
-// web/lib/visitor.ts), renders each plan with the same PlanResultView the drill builder uses,
-// and deletes via DELETE /api/drills/[id] (with a confirm — there's no undo).
+// Client half of /saved-drills/ — the club's shared drill library. Fetches everyone's saved
+// drills from the public GET /api/drills/ (sending the X-Visitor-Token header when this browser
+// has one, so the server can flag `mine` for the delete buttons), renders each plan with the
+// same PlanResultView the drill builder uses, and deletes via DELETE /api/drills/[id] (with a
+// confirm — there's no undo).
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import PlanResultView, { type PlanResult } from "@/components/PlanResultView";
@@ -14,7 +15,11 @@ interface SavedDrill {
   title: string;
   /** Session-plan JSON string ({ plan_markdown, drills }). */
   payload: string;
+  /** Founding-squasher display name; null only for pre-library rows. */
+  saved_by: string | null;
   created_at: number;
+  /** Present only when this browser sent its visitor token: true for its own saves. */
+  mine?: boolean;
 }
 
 type LoadState =
@@ -42,10 +47,10 @@ export default function SavedDrillsList() {
     let cancelled = false;
 
     async function loadDrills(): Promise<{ drills: SavedDrill[] }> {
+      // The list is public; the token (when available) only marks which rows are ours.
       const token = getVisitorToken();
-      if (!token) throw new Error("No visitor token available");
       const response = await fetch("/api/drills/", {
-        headers: { "X-Visitor-Token": token },
+        headers: token ? { "X-Visitor-Token": token } : {},
       });
       if (!response.ok) throw new Error(`List failed (${response.status})`);
       return response.json();
@@ -106,7 +111,7 @@ export default function SavedDrillsList() {
   if (load.state === "error") {
     return (
       <p className="saved-drills-status" data-state="error">
-        Couldn&rsquo;t load your saved drills — refresh and try again.
+        Couldn&rsquo;t load the drill library — refresh and try again.
       </p>
     );
   }
@@ -117,12 +122,9 @@ export default function SavedDrillsList() {
         <p>
           Nothing saved yet — the cupboard&rsquo;s as bare as court two on a bank holiday. When
           the <Link href="/drill-builder/">Drill Builder</Link> serves up a plan worth keeping,
-          hit <strong>Save this drill</strong> and it&rsquo;ll live here.
+          hit <strong>Save this drill</strong> and it&rsquo;ll live here for everyone.
         </p>
-        <p>
-          Saved drills stay in this browser, so no — the committee can&rsquo;t see what
-          you&rsquo;ve been planning.
-        </p>
+        <p>Everything here is shared with the whole club — save something worth stealing.</p>
       </div>
     );
   }
@@ -130,8 +132,9 @@ export default function SavedDrillsList() {
   return (
     <>
       <p className="saved-drills-note">
-        These plans live in this browser only. Delete one and it&rsquo;s gone — like a drop shot
-        that dies in the nick, there&rsquo;s no retrieving it.
+        These are the club&rsquo;s shared saves — anyone can view them, but only the browser that
+        saved one can delete it. Delete one and it&rsquo;s gone — like a drop shot that dies in
+        the nick, there&rsquo;s no retrieving it.
       </p>
       {deleteError && (
         <p className="saved-drills-status" data-state="error">
@@ -154,7 +157,9 @@ export default function SavedDrillsList() {
               <div className="saved-drill-header">
                 <div>
                   <h2>{drill.title}</h2>
-                  <p className="saved-drill-meta">Saved {formatSavedAt(drill.created_at)}</p>
+                  <p className="saved-drill-meta">
+                    Saved by {drill.saved_by ?? "someone"} · {formatSavedAt(drill.created_at)}
+                  </p>
                 </div>
                 <div className="saved-drill-actions">
                   <button
@@ -164,14 +169,16 @@ export default function SavedDrillsList() {
                   >
                     {expanded ? "Hide plan" : "View plan"}
                   </button>
-                  <button
-                    type="button"
-                    className="saved-drill-delete"
-                    disabled={deletingId === drill.id}
-                    onClick={() => remove(drill)}
-                  >
-                    {deletingId === drill.id ? "Deleting…" : "Delete"}
-                  </button>
+                  {drill.mine === true && (
+                    <button
+                      type="button"
+                      className="saved-drill-delete"
+                      disabled={deletingId === drill.id}
+                      onClick={() => remove(drill)}
+                    >
+                      {deletingId === drill.id ? "Deleting…" : "Delete"}
+                    </button>
+                  )}
                 </div>
               </div>
               {expanded && (
