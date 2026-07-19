@@ -3,23 +3,22 @@
 > Living doc for resuming in a fresh session. Read this + `~/.claude/CLAUDE.md` before touching
 > anything. Last updated: 2026-07-18.
 
-## VPS MIGRATION — Phases 0–5 DONE (2026-07-19), Phases 6–7 remaining
+## VERCEL MIGRATION — V0+V1 DONE (2026-07-19), V2–V4 need the user's accounts
 
-The Next.js rebuild in `web/` is complete per `planning/07-VPS-MIGRATION.md` (read it first).
-**Everything is uncommitted** (`web/` + the plan file are untracked) — user handles commits.
-State: `cd web && npm run build` ✓ (23 routes), `npx vitest run` → 77/77, tool-schema validator ✓,
-all pages 200-verified, save/list/delete + rate limit (429 at 31st) verified. T&R site ported as
-`/turnerandrhodes/*` route group with its own chrome (main site moved under `app/(main)/`).
+**Direction changed 2026-07-19:** hosting is Vercel hobby, NOT a VPS. `planning/08-VERCEL-MIGRATION.md`
+supersedes 07's Phase 6/7 (the VPS `web/deploy/` artifacts were deleted unused). Read 08 first.
 
-Remaining (needs the user): Phase 6 VPS provisioning and Phase 7 cutover. Everything for Phase 6
-is prepared in `web/deploy/` — `README.md` there is the runbook (provision.sh, deploy.sh,
-Caddyfile, systemd unit; TLS/DNS chicken-and-egg handled: smoke tests run over HTTP on the box,
-DNS moves at cutover). User action needed: create an Ubuntu 24.04 box (CX22-class), then follow
-`web/deploy/README.md` steps 1–4. Env vars: `OPENROUTER_API_KEY`, `GOOGLE_DRIVE_API_KEY`,
-`GALLERY_FOLDER_ID` (latter two are Cloudflare Worker secrets), `DATABASE_PATH` — see `web/ENV.md`.
-**First check on the VPS:** live `POST /api/generate` — the OpenRouter model region-blocks THIS
-dev machine (403, key is valid), so real generation was only stub-verified (`TEST_MODE`) locally;
-request is byte-identical to the live Worker. eslint fully clean as of 2026-07-19.
+Done in V0+V1: `web/lib/db.ts` is now on `@libsql/client` (async API, same schema/semantics) —
+`file:./data/drills.db` locally, `TURSO_DATABASE_URL`+`TURSO_AUTH_TOKEN` in prod; `better-sqlite3`
+gone; `maxDuration = 300` on `/api/generate` (hobby+Fluid Compute cap; drop to 60 if a deploy
+rejects it). Verified: build ✓, vitest 77/77, eslint clean, file-mode round-trip + 429-at-31 all
+green locally.
+
+Remaining (user steps, runbook is in 08's V2–V4): create Vercel project (root dir `web/`) + Turso
+db, set env vars (`OPENROUTER_API_KEY`, `GOOGLE_DRIVE_API_KEY`, `GALLERY_FOLDER_ID`,
+`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`), preview deploy → smoke tests (**live `/api/generate`
+is finally testable there** — Vercel isn't region-blocked like this dev machine), then DNS cutover
+(apex A → 76.76.21.21, www CNAME → cname.vercel-dns.com) and Worker/GitHub Pages retirement.
 
 ## Where we are
 

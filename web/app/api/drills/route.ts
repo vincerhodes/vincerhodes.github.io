@@ -8,7 +8,7 @@
 import { listDrillsForToken, saveDrill, type SavedDrillRow } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs"; // better-sqlite3 is native — never the edge runtime.
+export const runtime = "nodejs"; // @libsql/client — never the edge runtime.
 
 const TITLE_MAX_LENGTH = 200;
 const PAYLOAD_MAX_BYTES = 256 * 1024;
@@ -66,12 +66,12 @@ function validateSaveBody(body: unknown):
   return { ok: true, title: title.trim(), payload: payload as SessionPlanPayload };
 }
 
-export function GET(request: Request): Response {
+export async function GET(request: Request): Promise<Response> {
   const token = visitorToken(request);
   if (!token) {
     return errorResponse("Missing X-Visitor-Token header", 400);
   }
-  return Response.json({ drills: listDrillsForToken(token) });
+  return Response.json({ drills: await listDrillsForToken(token) });
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -99,7 +99,7 @@ export async function POST(request: Request): Promise<Response> {
     payload: JSON.stringify(validated.payload),
     created_at: Date.now(),
   };
-  saveDrill({
+  await saveDrill({
     id: row.id,
     visitorToken: row.visitor_token,
     title: row.title,

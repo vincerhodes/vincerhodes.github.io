@@ -6,8 +6,8 @@
 //   429 { error: "Rate limit exceeded (30 generations/hour) — try again later." }
 //   502 { error: "<openrouter/config failure message>" }
 //   200 { plan_markdown, drills }  (drills post-filterValidDiagrams — malformed diagrams → null)
-// Rate limiting moves from Cloudflare KV to SQLite (web/lib/db.ts), keyed on x-forwarded-for
-// (Caddy sets it in prod; 'unknown' locally). Semantics preserved: the limit is applied AFTER
+// Rate limiting moves from Cloudflare KV to libsql (web/lib/db.ts), keyed on x-forwarded-for
+// (Vercel sets it in prod; 'unknown' locally). Semantics preserved: the limit is applied AFTER
 // body validation, so malformed requests never consume quota. CORS is gone — post-cutover this
 // is same-origin; Next auto-answers OPTIONS preflights.
 import {
@@ -20,7 +20,10 @@ import { buildUserMessage, filterValidDiagrams, validateRequestBody } from "@/li
 import { applyRateLimit } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs"; // better-sqlite3 is native — never the edge runtime.
+export const runtime = "nodejs"; // @libsql/client — never the edge runtime.
+// Vercel hobby + Fluid Compute allows up to 300s (planning/08-VERCEL-MIGRATION.md "Key facts");
+// the haiku call is the only slow hop. If a deploy ever rejects 300, drop to 60 and measure.
+export const maxDuration = 300;
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -144,7 +147,7 @@ export async function POST(request: Request): Promise<Response> {
 
   // Rate limit AFTER validation, exactly like the Worker — invalid requests never consume quota.
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
-  const decision = applyRateLimit(ip);
+  const decision = await applyRateLimit(ip);
   if (!decision.allowed) {
     return errorResponse("Rate limit exceeded (30 generations/hour) — try again later.", 429);
   }

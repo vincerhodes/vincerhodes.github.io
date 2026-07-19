@@ -19,14 +19,14 @@ const VALID_PLAN = {
 
 let tmpDir: string;
 
-beforeEach(() => {
+beforeEach(async () => {
   tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "rc-drills-api-test-"));
   process.env.DATABASE_PATH = path.join(tmpDir, "test.db");
-  resetDbForTests();
+  await resetDbForTests();
 });
 
-afterEach(() => {
-  resetDbForTests();
+afterEach(async () => {
+  await resetDbForTests();
   delete process.env.DATABASE_PATH;
   fs.rmSync(tmpDir, { recursive: true, force: true });
 });
@@ -45,12 +45,10 @@ function postDrills(body: unknown, token?: string): Promise<Response> {
 }
 
 function getDrills(token?: string): Promise<Response> {
-  return Promise.resolve(
-    GET(
-      new Request("http://localhost/api/drills/", {
-        headers: token ? { "X-Visitor-Token": token } : {},
-      })
-    )
+  return GET(
+    new Request("http://localhost/api/drills/", {
+      headers: token ? { "X-Visitor-Token": token } : {},
+    })
   );
 }
 

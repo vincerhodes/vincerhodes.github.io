@@ -7,7 +7,7 @@
 import { deleteDrill } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
-export const runtime = "nodejs"; // better-sqlite3 is native — never the edge runtime.
+export const runtime = "nodejs"; // @libsql/client — never the edge runtime.
 
 function errorResponse(message: string, status: number): Response {
   return Response.json({ error: message }, { status });
@@ -23,7 +23,7 @@ export async function DELETE(
   }
 
   const { id } = await context.params;
-  if (!deleteDrill(id, token)) {
+  if (!(await deleteDrill(id, token))) {
     return errorResponse("No saved drill with that id for this token", 403);
   }
 

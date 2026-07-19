@@ -1,59 +1,89 @@
-// web/lib/db.ts — SQLite storage for the VPS backend (planning/07-VPS-MIGRATION.md Phase 3).
-// better-sqlite3, single file; path from DATABASE_PATH env var, default ./data/drills.db
-// (relative to web/ — the systemd unit sets DATABASE_PATH=/var/lib/rightcourtsc/drills.db on
-// the VPS). Holds the rate_limits table that replaces the Worker's Cloudflare KV counter, plus
-// the saved_drills table ahead of Phase 4.
+// web/lib/db.ts — SQLite storage via libSQL (planning/08-VERCEL-MIGRATION.md Phase V0).
+// @libsql/client, two connection modes:
+//   - TURSO_DATABASE_URL set (prod, Vercel env vars) → hosted Turso database. Vercel serverless
+//     has an ephemeral filesystem, so a local SQLite file can't survive there.
+//   - otherwise → file:./data/drills.db (relative to web/, gitignored; DATABASE_PATH overrides
+//     the file location — used by the tests for a fresh tmp DB per test).
+// Holds the rate_limits table that replaces the Worker's Cloudflare KV counter, plus the
+// saved_drills table.
 //
 // Rate-limit semantics mirror worker/src/lib.js's applyRateLimit: the limit is checked AFTER
 // request validation in the route (invalid requests never reach here), a denied request does
 // NOT consume quota (count is only incremented on allow). One deliberate difference: the Worker
 // used a rolling window starting at the first request; here windows are fixed clock-hour buckets
 // (window_start = unix epoch of the hour), per the plan's (ip, window_start) primary key.
+//
+// All exported functions are async — the libsql client is promise-based (local file mode just
+// resolves immediately). Everything else — SQL, signatures, decision semantics — is unchanged
+// from the synchronous predecessor.
 import fs from "node:fs";
 import path from "node:path";
-import Database from "better-sqlite3";
+import { createClient, type Client, type InStatement } from "@libsql/client";
 
 export const RATE_LIMIT_MAX = 30;
 export const RATE_LIMIT_WINDOW_SECONDS = 60 * 60;
 
-const MIGRATION = `
-CREATE TABLE IF NOT EXISTS rate_limits (
+const MIGRATION: InStatement[] = [
+  `CREATE TABLE IF NOT EXISTS rate_limits (
   ip TEXT NOT NULL,
   window_start INTEGER NOT NULL,   -- unix epoch of hour bucket
   count INTEGER NOT NULL DEFAULT 0,
   PRIMARY KEY (ip, window_start)
-);
-CREATE TABLE IF NOT EXISTS saved_drills (
+)`,
+  `CREATE TABLE IF NOT EXISTS saved_drills (
   id TEXT PRIMARY KEY,             -- uuid
   visitor_token TEXT NOT NULL,
   title TEXT NOT NULL,
   payload TEXT NOT NULL,           -- full generated session plan JSON
   created_at INTEGER NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_saved_drills_token ON saved_drills(visitor_token);
-`;
+)`,
+  `CREATE INDEX IF NOT EXISTS idx_saved_drills_token ON saved_drills(visitor_token)`,
+];
 
-// Kept on globalThis so Next.js dev-mode module reloading doesn't open a second handle.
-const globalForDb = globalThis as unknown as { __rcDb?: Database.Database };
+interface DbHandle {
+  client: Client;
+  /** Resolves once the migration has run — every use awaits this before touching the DB. */
+  ready: Promise<void>;
+}
 
-export function getDb(): Database.Database {
+// Kept on globalThis so Next.js dev-mode module reloading doesn't open a second handle, and so
+// the migration runs once per process (per cold start on serverless).
+const globalForDb = globalThis as unknown as { __rcDb?: DbHandle };
+
+function getHandle(): DbHandle {
   if (globalForDb.__rcDb) return globalForDb.__rcDb;
 
-  const dbPath = process.env.DATABASE_PATH ?? "./data/drills.db";
-  // turbopackIgnore: DATABASE_PATH is a runtime env var — the path can't be statically traced.
-  const resolved = path.resolve(/*turbopackIgnore: true*/ dbPath);
-  fs.mkdirSync(path.dirname(resolved), { recursive: true });
+  const tursoUrl = process.env.TURSO_DATABASE_URL;
+  let client: Client;
+  if (tursoUrl) {
+    client = createClient({ url: tursoUrl, authToken: process.env.TURSO_AUTH_TOKEN });
+  } else {
+    const dbPath = process.env.DATABASE_PATH ?? "./data/drills.db";
+    // turbopackIgnore: DATABASE_PATH is a runtime env var — the path can't be statically traced.
+    const resolved = path.resolve(/*turbopackIgnore: true*/ dbPath);
+    fs.mkdirSync(path.dirname(resolved), { recursive: true });
+    client = createClient({ url: `file:${resolved}` });
+  }
 
-  const db = new Database(resolved);
-  db.exec(MIGRATION);
-  globalForDb.__rcDb = db;
-  return db;
+  const handle: DbHandle = {
+    client,
+    ready: client.batch(MIGRATION, "write").then(() => undefined),
+  };
+  globalForDb.__rcDb = handle;
+  return handle;
+}
+
+/** The shared client, with the migration guaranteed applied. */
+export async function getDb(): Promise<Client> {
+  const handle = getHandle();
+  await handle.ready;
+  return handle.client;
 }
 
 /** Test-only: close the singleton so the next getDb() re-opens (e.g. with a new DATABASE_PATH). */
-export function resetDbForTests(): void {
+export async function resetDbForTests(): Promise<void> {
   if (globalForDb.__rcDb) {
-    globalForDb.__rcDb.close();
+    globalForDb.__rcDb.client.close();
     delete globalForDb.__rcDb;
   }
 }
@@ -74,37 +104,46 @@ export interface RateLimitResult {
 /**
  * Applies the rate limit for `ip` in the current hour bucket. Like the Worker's
  * computeRateLimitDecision, a denied request leaves the count untouched; an allowed one
- * increments it atomically (better-sqlite3 transactions are synchronous, so no race).
+ * increments it inside a write transaction, so the check-and-increment is atomic.
  */
-export function applyRateLimit(ip: string, now: number = Date.now()): RateLimitResult {
-  const db = getDb();
+export async function applyRateLimit(
+  ip: string,
+  now: number = Date.now()
+): Promise<RateLimitResult> {
+  const db = await getDb();
   const windowStart =
     Math.floor(now / 1000 / RATE_LIMIT_WINDOW_SECONDS) * RATE_LIMIT_WINDOW_SECONDS;
 
-  const apply = db.transaction((): RateLimitResult => {
-    const row = db
-      .prepare("SELECT count FROM rate_limits WHERE ip = ? AND window_start = ?")
-      .get(ip, windowStart) as { count: number } | undefined;
-    const count = row ? row.count : 0;
+  const tx = await db.transaction("write");
+  try {
+    const rs = await tx.execute({
+      sql: "SELECT count FROM rate_limits WHERE ip = ? AND window_start = ?",
+      args: [ip, windowStart],
+    });
+    const count = rs.rows.length > 0 ? Number(rs.rows[0].count) : 0;
 
     if (count >= RATE_LIMIT_MAX) {
+      await tx.rollback(); // read-only on this path — nothing to commit
       return { allowed: false, count, windowStart };
     }
 
-    db.prepare(
-      `INSERT INTO rate_limits (ip, window_start, count) VALUES (?, ?, 1)
-       ON CONFLICT(ip, window_start) DO UPDATE SET count = count + 1`
-    ).run(ip, windowStart);
+    await tx.execute({
+      sql: `INSERT INTO rate_limits (ip, window_start, count) VALUES (?, ?, 1)
+            ON CONFLICT(ip, window_start) DO UPDATE SET count = count + 1`,
+      args: [ip, windowStart],
+    });
+    await tx.commit();
 
     return { allowed: true, count: count + 1, windowStart };
-  });
-
-  return apply();
+  } catch (err) {
+    await tx.rollback();
+    throw err;
+  }
 }
 
 // -----------------------------------------------------------------------------------------------
-// Saved drills (Phase 4) — anonymous per-browser token identity, no auth. See the plan's
-// "Saved drills identity" decision: the client sends an X-Visitor-Token header.
+// Saved drills — anonymous per-browser token identity, no auth. The client sends an
+// X-Visitor-Token header.
 // -----------------------------------------------------------------------------------------------
 
 export interface SavedDrillRow {
@@ -117,39 +156,54 @@ export interface SavedDrillRow {
   created_at: number;
 }
 
-export function saveDrill(input: {
+export async function saveDrill(input: {
   id: string;
   visitorToken: string;
   title: string;
   payload: string;
   createdAt?: number;
-}): void {
-  getDb()
-    .prepare(
-      `INSERT INTO saved_drills (id, visitor_token, title, payload, created_at)
-       VALUES (?, ?, ?, ?, ?)`
-    )
-    .run(input.id, input.visitorToken, input.title, input.payload, input.createdAt ?? Date.now());
+}): Promise<void> {
+  const db = await getDb();
+  await db.execute({
+    sql: `INSERT INTO saved_drills (id, visitor_token, title, payload, created_at)
+          VALUES (?, ?, ?, ?, ?)`,
+    args: [
+      input.id,
+      input.visitorToken,
+      input.title,
+      input.payload,
+      input.createdAt ?? Date.now(),
+    ],
+  });
 }
 
 /** All drills saved by this browser token, newest first. */
-export function listDrillsForToken(visitorToken: string): SavedDrillRow[] {
-  return getDb()
-    .prepare(
-      `SELECT id, visitor_token, title, payload, created_at FROM saved_drills
-       WHERE visitor_token = ? ORDER BY created_at DESC`
-    )
-    .all(visitorToken) as SavedDrillRow[];
+export async function listDrillsForToken(visitorToken: string): Promise<SavedDrillRow[]> {
+  const db = await getDb();
+  const rs = await db.execute({
+    sql: `SELECT id, visitor_token, title, payload, created_at FROM saved_drills
+          WHERE visitor_token = ? ORDER BY created_at DESC`,
+    args: [visitorToken],
+  });
+  return rs.rows.map((row) => ({
+    id: String(row.id),
+    visitor_token: String(row.visitor_token),
+    title: String(row.title),
+    payload: String(row.payload),
+    created_at: Number(row.created_at),
+  }));
 }
 
 /**
  * Deletes a saved drill only when it belongs to this token. Returns true when a row was
  * deleted, false when the id doesn't exist or belongs to a different token (callers should
- * map both to the same 403/404 behaviour — see Phase 4 acceptance: wrong token → 403).
+ * map both to the same 403/404 behaviour — wrong token → 403).
  */
-export function deleteDrill(id: string, visitorToken: string): boolean {
-  const result = getDb()
-    .prepare("DELETE FROM saved_drills WHERE id = ? AND visitor_token = ?")
-    .run(id, visitorToken);
-  return result.changes > 0;
+export async function deleteDrill(id: string, visitorToken: string): Promise<boolean> {
+  const db = await getDb();
+  const rs = await db.execute({
+    sql: "DELETE FROM saved_drills WHERE id = ? AND visitor_token = ?",
+    args: [id, visitorToken],
+  });
+  return rs.rowsAffected > 0;
 }
