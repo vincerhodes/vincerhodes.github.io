@@ -56,8 +56,8 @@
       '<g class="ball-spinner-arc ball-spinner-arc--' + pattern + '">' +
       '<g class="ball-spinner-spin">' +
       '<circle class="ball-spinner-body" cx="37" cy="89" r="8"></circle>' +
-      '<circle class="ball-spinner-dot" cx="34" cy="85" r="1.1"></circle>' +
-      '<circle class="ball-spinner-dot" cx="40" cy="89" r="1.1"></circle>' +
+      '<circle class="ball-spinner-dot" cx="34" cy="85" r="1.4"></circle>' +
+      '<circle class="ball-spinner-dot" cx="40" cy="89" r="1.4"></circle>' +
       '</g>' +
       '</g>' +
       '</svg>'
@@ -75,9 +75,17 @@
   // resolving one from a theme — e.g. a demo/QA page showing every pattern, or a page that always
   // wants a specific one regardless of theme.
   function markupForPattern(message, pattern) {
-    var html = svg(pattern);
-    if (message) html += '<span>' + escapeHtml(message) + '</span>';
-    return html;
+    // The SVG is aria-hidden, so the accessible loading signal lives in the label: the visible
+    // message when given, otherwise a visually-hidden "Loading…" — never a silent spinner.
+    var label = message
+      ? '<span class="ball-spinner-label">' + escapeHtml(message) + '</span>'
+      : '<span class="ball-spinner-label ball-spinner-vh">Loading…</span>';
+    return (
+      '<span class="ball-spinner" role="status" aria-live="polite">' +
+      svg(pattern) +
+      label +
+      '</span>'
+    );
   }
 
   // Convenience for pages that just want to hand over an element and forget about it: replaces

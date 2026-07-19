@@ -145,10 +145,45 @@
   // --- Status / result rendering ----------------------------------------------------------
   // theme (optional): the selected drill theme, used only when state === 'loading' so the
   // loader's tracer pattern (see assets/js/ball-loader.js) matches the shot being generated.
+
+  // Long generations bore a single fixed loop to death — while loading, rotate the status quip
+  // and re-roll the tracer pattern every few seconds. Cleared on any non-loading setStatus.
+  var LOADING_QUIPS = [
+    'Warming up the robot coach…',
+    'Lining up the diagrams…',
+    'Arguing about who takes the T…',
+    'Chalking the tin…',
+  ];
+  var loadingTimer = null;
+  var loadingQuipIndex = 0;
+
+  function stopLoadingRotation() {
+    if (loadingTimer) {
+      clearInterval(loadingTimer);
+      loadingTimer = null;
+    }
+  }
+
   function setStatus(message, state, theme) {
     if (state === 'loading' && window.RCBallLoader) {
       statusEl.innerHTML = window.RCBallLoader.markup(message, theme);
+      stopLoadingRotation();
+      loadingQuipIndex = -1;
+      loadingTimer = setInterval(function () {
+        if (statusEl.getAttribute('data-state') !== 'loading') {
+          stopLoadingRotation();
+          return;
+        }
+        loadingQuipIndex = (loadingQuipIndex + 1) % LOADING_QUIPS.length;
+        var patterns = window.RCBallLoader.PATTERNS;
+        var pattern = patterns[Math.floor(Math.random() * patterns.length)];
+        statusEl.innerHTML = window.RCBallLoader.markupForPattern(
+          LOADING_QUIPS[loadingQuipIndex],
+          pattern
+        );
+      }, 6000);
     } else {
+      stopLoadingRotation();
       statusEl.textContent = message || '';
     }
     statusEl.hidden = !message;
