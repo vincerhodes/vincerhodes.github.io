@@ -123,6 +123,16 @@ Also verify in Vercel dashboard: build output shows all 8 `/drills/[slug]` pages
 
 ### V4 — DNS cutover + retirement (replaces 07 Phase 7)
 
+**STATUS 2026-07-19: cutover DONE.** Domains added via REST API (both verified), production
+deploy live at https://rightcourtsc.com (all smoke tests green incl. generation + Turso via the
+selftest route, since deleted). Repo cleanup done: `CNAME`, `.nojekyll`, `worker/`,
+`scripts/validate-tool-schema.mjs`, and `web/app/api/selftest/` deleted; `web/lib/schema.ts` is
+now canonical (drift guard removed); root `npm test` delegates to web. Still open at time of
+writing: deleting the Cloudflare Worker itself, the `api.rightcourtsc.com` DNS record, and
+disabling GitHub Pages in repo settings.
+
+Original step list (for reference):
+
 1. Registrar: apex A → `76.76.21.21` (delete the 4 GitHub Pages A + 4 AAAA), www CNAME →
    `cname.vercel-dns.com`. Vercel issues TLS automatically.
 2. `curl -sI https://rightcourtsc.com/ | head -1` → 200; re-run the V2 smoke list against the

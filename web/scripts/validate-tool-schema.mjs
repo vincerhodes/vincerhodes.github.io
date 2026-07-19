@@ -1,31 +1,24 @@
 #!/usr/bin/env node
-// web/scripts/validate-tool-schema.mjs — DOMAIN.tool-schema-valid (web port)
+// web/scripts/validate-tool-schema.mjs — DOMAIN.tool-schema-valid
 //
-// The web-side equivalent of scripts/validate-tool-schema.mjs, run against the Phase 0 TypeScript
-// port web/lib/schema.ts instead of worker/src/schema.js. Performs the same three checks:
+// Validates web/lib/schema.ts's RETURN_SESSION_PLAN_TOOL — the single source of truth for the
+// AI drill builder's tool schema since the Cloudflare Worker was retired (V4 cutover,
+// 2026-07-19). Performs three checks:
 //   1. `parameters` compiles as a valid JSON Schema (ajv.compile doesn't throw).
 //   2. The tool's structural shape matches the spec exactly (function name, required fields at
 //      every level, the color/type enums, x/y bounds).
 //   3. A known-good sample payload validates; known-bad payloads each fail.
-// Plus a drift guard: the port's RETURN_SESSION_PLAN_TOOL must deep-equal the worker original
-// until the worker is retired in Phase 7.
 //
 // web/lib/schema.ts is TypeScript, so it is bundled to a temp file with esbuild (already a vitest
 // dependency) before import. ajv resolves from the repo-root node_modules. Run from anywhere:
 //   node web/scripts/validate-tool-schema.mjs
 
-import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import Ajv from 'ajv';
 import { build as esbuild } from 'esbuild';
-import {
-  ARROW_TYPES as ORIG_ARROW_TYPES,
-  PLAYER_COLORS as ORIG_PLAYER_COLORS,
-  RETURN_SESSION_PLAN_TOOL as ORIG_TOOL,
-} from '../../worker/src/schema.js';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SCHEMA_PATH = path.join(WEB_ROOT, 'lib', 'schema.ts');
@@ -47,15 +40,6 @@ const failures = [];
 
 function check(label, condition) {
   if (!condition) failures.push(label);
-}
-
-// --- 0. Drift guard: the port must match the worker original exactly ------------------------------
-try {
-  assert.deepEqual(RETURN_SESSION_PLAN_TOOL, ORIG_TOOL);
-  assert.deepEqual(PLAYER_COLORS, ORIG_PLAYER_COLORS);
-  assert.deepEqual(ARROW_TYPES, ORIG_ARROW_TYPES);
-} catch (err) {
-  failures.push(`ported schema.ts has drifted from worker/src/schema.js: ${err.message}`);
 }
 
 // --- 1. Top-level tool shape ---------------------------------------------------------------------
@@ -241,5 +225,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`validate-tool-schema: ${rel} — port deep-equals the worker original, matches the spec, schema compiles, and enforces its constraints`);
+console.log(`validate-tool-schema: ${rel} — matches the spec, schema compiles, and enforces its constraints`);
 process.exit(0);

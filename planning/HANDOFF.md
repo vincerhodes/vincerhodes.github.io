@@ -1,39 +1,41 @@
 # Handoff — Right Court SC build state
 
 > Living doc for resuming in a fresh session. Read this + `~/.claude/CLAUDE.md` before touching
-> anything. Last updated: 2026-07-18.
+> anything. Last updated: 2026-07-19.
 
-## VERCEL MIGRATION — V0+V1 DONE (2026-07-19), V2–V4 need the user's accounts
+## MIGRATION COMPLETE (2026-07-19) — site runs on Vercel + Turso
 
-**Direction changed 2026-07-19:** hosting is Vercel hobby, NOT a VPS. `planning/08-VERCEL-MIGRATION.md`
-supersedes 07's Phase 6/7 (the VPS `web/deploy/` artifacts were deleted unused). Read 08 first.
+`https://rightcourtsc.com/` is now the Next.js app in `web/`, served by Vercel (project
+`rightcourtsc`, id `prj_eJTNoVDkcysihGQ39hfklEohjKpk`, team `vincerhodes-projects`). DB is Turso
+(libsql://rightcourtsc-vincerhodes.aws-us-west-2.turso.io) via `@libsql/client` in `web/lib/db.ts`;
+local dev uses `file:./data/drills.db` — no env needed locally. Env vars live in the Vercel
+dashboard (encrypted, production+preview): `OPENROUTER_API_KEY`, `TURSO_DATABASE_URL`,
+`TURSO_AUTH_TOKEN`, `GOOGLE_DRIVE_API_KEY`, `GALLERY_FOLDER_ID`.
 
-Done in V0+V1: `web/lib/db.ts` is now on `@libsql/client` (async API, same schema/semantics) —
-`file:./data/drills.db` locally, `TURSO_DATABASE_URL`+`TURSO_AUTH_TOKEN` in prod; `better-sqlite3`
-gone; `maxDuration = 300` on `/api/generate` (hobby+Fluid Compute cap; drop to 60 if a deploy
-rejects it). Verified: build ✓, vitest 77/77, eslint clean, file-mode round-trip + 429-at-31 all
-green locally.
+Verified live at cutover: all pages 200, gallery photos, www → apex 308, legacy `.html` → clean
+URLs, and the production `/api/selftest` returned 200 (= OpenRouter generation AND Turso
+round-trip both work; that temporary route was deleted post-cutover).
 
-Remaining (user steps, runbook is in 08's V2–V4): ~~create Vercel project~~ **V2 mostly done
-2026-07-19 via Vercel MCP** — project `rightcourtsc` (`prj_eJTNoVDkcysihGQ39hfklEohjKpk`, team
-`vincerhodes-projects`) exists, `OPENROUTER_API_KEY` set, preview deploys green (all pages 200,
-diagrams SSR'd), **live OpenRouter generation confirmed working on Vercel** via a temporary
-`web/app/api/selftest/` route (runtime logs show 200; DELETE that route at cutover). Deploys run
-via `node scripts/vercel-api-deploy.mjs --target preview` (local-only, gitignored). Preview
-protection disabled. ~~Still needed from the user: (1) Turso account~~ **Turso done 2026-07-19:**
-`rightcourtsc` db created (libsql://rightcourtsc-vincerhodes.aws-us-west-2.turso.io),
-`TURSO_DATABASE_URL`/`TURSO_AUTH_TOKEN` set in Vercel, DB round-trip verified live on Vercel via
-the extended `/api/selftest` (200; tables auto-created by on-boot migration). Turso CLI lives at
-`~/.turso/turso` (not on PATH). **Gallery done 2026-07-19:** fresh `GOOGLE_DRIVE_API_KEY` (Google
-Cloud Console, Drive-API-restricted) + `GALLERY_FOLDER_ID` set in Vercel — `/api/gallery` returns
-200 with real photos. ALSO fixed the live site: the Worker had NEVER had the Drive secrets (the
-live gallery had been 502ing behind its Drive-folder fallback since launch) — `wrangler secret put
-GOOGLE_DRIVE_API_KEY` done, `api.rightcourtsc.com/gallery` now returns photos (folder id was
-already a plain var on the Worker). Still needed from the user: (3) at cutover: DNS changes + add the
-custom domain in Vercel (apex A → 76.76.21.21, www CNAME → cname.vercel-dns.com) and Worker/GitHub
-Pages retirement.
+**Deploying changes:** `node scripts/vercel-api-deploy.mjs --target production` from the repo root
+(local-only script, gitignored — it reads the Vercel MCP OAuth token; call any Vercel MCP tool
+first to refresh it if expired). OR connect the GitHub repo in the Vercel dashboard (Settings →
+Git) for push-to-deploy — not done yet, file deploys work fine meanwhile. There is no git
+integration: pushes to GitHub do NOT deploy by themselves.
 
-## Where we are
+**Remaining retirement loose ends:** the Cloudflare Worker `rightcourtsc-drill-builder` still
+exists (now unused — nothing points at `api.rightcourtsc.com`); delete it + the
+`api.rightcourtsc.com` DNS record at the registrar when convenient. GitHub Pages: `CNAME`,
+`.nojekyll`, and `worker/` are deleted from the repo; Pages itself may still need disabling in
+repo settings. `web/lib/schema.ts` is now the canonical schema/system-prompt (worker drift guard
+removed from `web/scripts/validate-tool-schema.mjs`; the repo-root validator was deleted with the
+worker).
+
+History below this line describes the pre-migration static site + Worker (superseded, kept for
+reference — `worker/src/*` paths no longer exist; their ports live in `web/lib/`).
+
+---
+
+## Where we are (pre-migration, historical)
 
 - **Site (Phases 0–5): done and live.** `https://rightcourtsc.com/` and all real pages
   (`/about/`, `/gallery/`, `/drills/`, `/drill-builder/`, `/founding-squashers/`) return `200`.

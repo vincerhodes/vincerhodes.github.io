@@ -2,10 +2,10 @@
   "name": "rightcourtsc",
   "private": true,
   "version": "0.0.0",
-  "description": "Right Court SC — club website. The static site at repo root is served by GitHub Pages until cutover; web/ holds the Next.js app (Vercel + Turso) that replaces it — see planning/08-VERCEL-MIGRATION.md. Root dev-dependencies are the static site's verify gate.",
+  "description": "Right Court SC — club website. web/ holds the Next.js app (Vercel + Turso) serving rightcourtsc.com since 2026-07-19 — see planning/08-VERCEL-MIGRATION.md. The static site at repo root is legacy (kept for history/rollback). Root dev-dependencies are the static site's verify gate.",
   "type": "module",
   "scripts": {
-    "test": "vitest run worker/"
+    "test": "npm --prefix web test"
   },
   "devDependencies": {
     "html-validate": "^8.24.0",
