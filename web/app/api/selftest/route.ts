@@ -11,12 +11,37 @@ import {
   SYSTEM_PROMPT,
 } from "@/lib/schema";
 import { buildUserMessage, filterValidDiagrams } from "@/lib/generate";
+import { deleteDrill, listDrillsForToken, saveDrill } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+
+// DB round-trip against whatever backend the env selects (Turso in prod, file: locally):
+// save → list → delete with a probe token. Returns a small report object.
+async function checkDb() {
+  const probe = `selftest-probe-${Date.now()}`;
+  try {
+    await saveDrill({
+      id: crypto.randomUUID(),
+      visitorToken: probe,
+      title: "selftest",
+      payload: JSON.stringify({ plan_markdown: "x", drills: [] }),
+    });
+    const listed = await listDrillsForToken(probe);
+    const other = await listDrillsForToken("selftest-someone-else");
+    const deletedWrong = await deleteDrill(listed[0]?.id ?? "nope", "selftest-someone-else");
+    const deleted = listed[0] ? await deleteDrill(listed[0].id, probe) : false;
+    const after = await listDrillsForToken(probe);
+    const ok =
+      listed.length === 1 && other.length === 0 && deletedWrong === false && deleted === true && after.length === 0;
+    return { ok, listed: listed.length, deletedWrong, deleted, remaining: after.length };
+  } catch (err) {
+    return { ok: false, error: String(err).slice(0, 300) };
+  }
+}
 
 const CANNED_BODY = {
   players: 2,
@@ -71,16 +96,18 @@ export async function GET() {
     }
 
     const plan = JSON.parse(toolCall.function.arguments);
-    const { drills, total, degraded } = filterValidDiagrams(plan.drills, plan.plan_markdown);
+    const { total, degraded } = filterValidDiagrams(plan.drills, plan.plan_markdown);
+    const db = await checkDb();
     return Response.json({
-      ok: true,
+      ok: db.ok,
       ms,
       model: MODEL,
       planTitle: plan.title ?? null,
       markdownChars: (plan.plan_markdown ?? "").length,
       drillsReturned: total,
       drillsValid: total - degraded,
-    });
+      db,
+    }, { status: db.ok ? 200 : 500 });
   } catch (err) {
     return Response.json(
       { ok: false, stage: "fetch", ms: Date.now() - started, error: String(err).slice(0, 300) },
