@@ -45,7 +45,7 @@ is finally testable there** — Vercel isn't region-blocked like this dev machin
     to the shared format on 2026-07-18 (commit `257238a`).
   - `session-02-volley-pressure` (volleys) through `session-08-exhibition-flair`
     (exhibition-shots) — built 2026-07-18 (commit `1a063e1`).
-  - Every session: `content/sessions/session-NN-slug/session.md` +
+  - Every session: `web/content/sessions/session-NN-slug/session.md` +
     `diagrams/drill-1.json`/`drill-2.json`, a rendered page at
     `drills/session-NN-slug/index.html`, and a card in `drills/index.html`'s `#session-grid` with a
     matching `.theme-filter` button. All 9 filter buttons (`length` through `exhibition-shots`) now
@@ -67,7 +67,7 @@ curl -sI https://api.rightcourtsc.com/generate -X POST | head -1  # expect a rea
 
 - **Model for AI Drill Builder:** `anthropic/claude-haiku-4.5:exacto` via OpenRouter, non-
   streaming call — see `planning/05-AI-DRILL-BUILDER-PROMPT.md`.
-- **Content folder layout:** `/content/sessions/session-NN-slug/session.md` + one
+- **Content folder layout:** `/web/content/sessions/session-NN-slug/session.md` + one
   `diagrams/drill-N.json` per drill, a rendered page at `drills/session-NN-slug/index.html`, and a
   card in `drills/index.html`'s `<div class="session-grid">` — three artifacts per session. Full
   process: `CONTENTS-HOWTO.md`.
@@ -101,7 +101,7 @@ assets/js/nav.js                     # shared header/footer, generated ONCE per 
                                       # — the cheapest way to add something to every page
 assets/css/ball-loader.css, assets/js/ball-loader.js   # modular loader
 loader-demo/index.html               # loader QA/demo page, not in nav
-content/sessions/session-0[1-8]-.../ # all 8 hand-authored sessions, 2-4p/1-court format
+web/content/sessions/session-0[1-8]-.../ # all 8 hand-authored sessions, 2-4p/1-court format
 drills/session-0[1-8]-.../index.html # their rendered pages
 CONTENTS-HOWTO.md                    # the 6-step process for adding a new session (content + page + card)
 founding-squashers/index.html        # 4 founders — Jonny Short Shorts is NOT one of them
@@ -151,7 +151,7 @@ they should be funny and link to `https://rightcourtsc.com/turnerandrhodes/`.
    pattern exactly. Read that section in full before touching it; also update
    `planning/05-AI-DRILL-BUILDER-PROMPT.md`'s mirror of it if changed, per the existing convention
    noted above.
-4. `content/sessions/*/session.md` Coach's notes, and/or `gallery/index.html` captions: possible
+4. `web/content/sessions/*/session.md` Coach's notes, and/or `gallery/index.html` captions: possible
    additional light-touch spots if more than one or two references feels right.
 
 ### Entry checklist
@@ -167,7 +167,7 @@ they should be funny and link to `https://rightcourtsc.com/turnerandrhodes/`.
    `prefix`-relative logic still resolves correctly and the link actually reaches
    `https://rightcourtsc.com/turnerandrhodes/`.
 5. Run `npm test` and `node scripts/validate-diagrams.mjs` (unrelated to this task, but confirms
-   nothing else broke) if any `content/sessions/*` or `worker/src/schema.js` files were touched.
+   nothing else broke) if any `web/content/sessions/*` or `worker/src/schema.js` files were touched.
 6. Check in browser: load the site, confirm the reference(s) read as funny/in-tone and the link(s)
    work.
 7. Commit and push (direct-to-`main` is authorized for this repo — see "Decisions taken").

@@ -274,7 +274,7 @@ write access; a human still commits the file.
 - Add a "Save this session plan" button to the drill-builder results page (`/drill-builder/`).
 - Clicking it packages the already-returned `plan_markdown` (with front-matter added: theme, level,
   date, tags, a slugified session title) and each drill's `diagram` JSON into the canonical layout from
-  `03-TECHNICAL-ARCHITECTURE.md`'s repo structure — `/content/sessions/session-XX-slug/session.md` plus
+  `03-TECHNICAL-ARCHITECTURE.md`'s repo structure — `/web/content/sessions/session-XX-slug/session.md` plus
   one `diagrams/drill-N.json` per drill — client-side only, no extra Worker/API call.
 - Offer it as a downloadable bundle (or copy-to-clipboard per file if a zip is overkill for v1) so a
   committee member can drop it straight into the repo and push, the same way `CONTENTS-HOWTO.md`

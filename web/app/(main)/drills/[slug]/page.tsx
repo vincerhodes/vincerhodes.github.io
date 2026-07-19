@@ -1,5 +1,5 @@
 // Dynamic SSG port of the static drills/session-*/index.html pages. The markdown body comes
-// from ../content/sessions/<slug>/session.md (rendered to the static pages' structure by
+// from content/sessions/<slug>/session.md (inside web/, rendered to the static pages' structure by
 // @/lib/sessions) and the court diagrams from diagrams/drill-N.json, rendered by
 // @/components/CourtDiagram — the React port of assets/js/court-diagram.js.
 import type { Metadata } from "next";

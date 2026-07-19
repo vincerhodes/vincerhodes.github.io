@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // scripts/validate-diagrams.mjs — DOMAIN.diagram-schema-valid
 //
-// Validates every content/sessions/**/diagrams/*.json against the diagram data schema defined in
+// Validates every web/content/sessions/**/diagrams/*.json against the diagram data schema defined in
 // planning/06-SVG-DIAGRAM-SYSTEM.md ("Per-drill data schema") and planning/05-AI-DRILL-BUILDER-PROMPT.md
 // (the `return_session_plan` tool's `drills[].diagram` schema — same shape, this is the static-library
 // counterpart):
@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SESSIONS_ROOT = path.join(REPO_ROOT, 'content', 'sessions');
+const SESSIONS_ROOT = path.join(REPO_ROOT, 'web', 'content', 'sessions');
 
 // Must match the 3 brand player-marker colors (Forest Green / Muted Sage / Near-black Green) —
 // see 01-BRAND-STYLE-GUIDE.md and 06-SVG-DIAGRAM-SYSTEM.md's per-drill data schema.

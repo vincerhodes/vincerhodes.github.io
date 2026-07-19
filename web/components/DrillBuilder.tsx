@@ -393,7 +393,7 @@ export default function DrillBuilder() {
               <h2>Save this session plan</h2>
               <p>
                 Like this one? Grab the files below and hand them to a committee member to add to{" "}
-                <code>content/sessions/</code> — see{" "}
+                <code>web/content/sessions/</code> — see{" "}
                 <a href="https://github.com/vincerhodes/rightcourtsc/blob/main/CONTENTS-HOWTO.md">
                   CONTENTS-HOWTO.md
                 </a>{" "}

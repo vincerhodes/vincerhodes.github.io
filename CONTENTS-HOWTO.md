@@ -5,11 +5,11 @@ knowledge is required for the content itself — you're copying a folder and edi
 
 ## 1. Copy the folder
 
-Duplicate the most recent session's folder inside `content/sessions/`, and rename your copy to
+Duplicate the most recent session's folder inside `web/content/sessions/`, and rename your copy to
 match your new session, e.g.:
 
 ```
-content/sessions/session-02-your-session-title/
+web/content/sessions/session-02-your-session-title/
 ├── session.md
 └── diagrams/
     ├── drill-1.json

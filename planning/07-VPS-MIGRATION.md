@@ -76,7 +76,8 @@ web/                          # the Next.js app (new)
     db.ts                     # better-sqlite3 connection + migrations
     sessions.ts               # reads content/sessions/*.md + diagrams (gray-matter)
   public/                     # assets/logos, partners, favicon, fonts
-content/sessions/             # stays where it is — web/lib/sessions.ts reads it via ../content
+  content/sessions/           # sessions markdown + diagrams — moved inside web/ (was repo-root,
+                              # read via ../content) so web/ is self-contained for Vercel deploys
 worker/                       # untouched until Phase 7, then deleted
 ```
 
@@ -139,8 +140,10 @@ repo workflow — for this build use branches and merge locally, no PR ceremony)
 
 ### Phase 2 — Sessions content pipeline
 
-- `web/lib/sessions.ts`: read `../content/sessions/session-*/session.md` (gray-matter
+- `web/lib/sessions.ts`: read `web/content/sessions/session-*/session.md` (gray-matter
   front-matter: `theme`, `tags`, etc.) + `diagrams/drill-N.json` via `generateStaticParams`.
+  (Content originally lived at repo root and was read via `../content`; moved inside `web/`
+  during 08 so the app is self-contained for Vercel.)
 - `drills/page.tsx`: session grid with theme filter buttons — replicate current filter behaviour
   exactly, including the `data-themes` single-primary-token rule and the 9 theme buttons.
 - `drills/[slug]/page.tsx`: render markdown + diagram JSON using the existing SVG diagram system

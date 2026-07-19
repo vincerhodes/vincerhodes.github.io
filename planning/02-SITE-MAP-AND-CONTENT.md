@@ -19,8 +19,8 @@ Keep the nav to 4 items max for mobile — this should sit comfortably as a hamb
 - Landing view: card grid of published session plans, each card showing session number, theme, and date.
 - Filter/tag by skill theme (length, volleys, drops, boasts, movement, front-court, deception, serves/returns) — even a simple client-side filter (no backend needed) is enough for v1.
 - Each session plan gets its own page (`/drills/session-01-straight-length-and-the-t/`), rendered from the same structure as the plans already being produced: theme, timeline table, drill details (setup/pattern/coaching points/success criteria/regression/progression), games details, court split, coach's notes.
-- **Content source:** session plans are written as Markdown in `/content/sessions/session-XX-slug/session.md` (one folder per session, matching the page's URL slug) — see `03-TECHNICAL-ARCHITECTURE.md`'s repo structure and `05-AI-DRILL-BUILDER-PROMPT.md`'s "Save to library" for the exact layout. Easy for a non-technical committee member to add a new one later by copying an existing session's folder.
-- Diagrams: each drill's diagram is authored as structured JSON (not an image), one file per drill at `/content/sessions/session-XX-slug/diagrams/drill-N.json`, rendered client-side by the shared `renderCourtDiagram` component — see `06-SVG-DIAGRAM-SYSTEM.md` for the full system. (Earlier drafts of this content pipeline used AI-generated diagram images; that approach was replaced — there is no image-generation step anywhere in this flow.)
+- **Content source:** session plans are written as Markdown in `/web/content/sessions/session-XX-slug/session.md` (one folder per session, matching the page's URL slug) — see `03-TECHNICAL-ARCHITECTURE.md`'s repo structure and `05-AI-DRILL-BUILDER-PROMPT.md`'s "Save to library" for the exact layout. Easy for a non-technical committee member to add a new one later by copying an existing session's folder.
+- Diagrams: each drill's diagram is authored as structured JSON (not an image), one file per drill at `/web/content/sessions/session-XX-slug/diagrams/drill-N.json`, rendered client-side by the shared `renderCourtDiagram` component — see `06-SVG-DIAGRAM-SYSTEM.md` for the full system. (Earlier drafts of this content pipeline used AI-generated diagram images; that approach was replaced — there is no image-generation step anywhere in this flow.)
 
 ### 3. Gallery (`/gallery/`)
 - Single embedded Google Drive folder view (iframe), full-width, responsive.
@@ -45,5 +45,5 @@ Keep the nav to 4 items max for mobile — this should sit comfortably as a hamb
 
 ## Content maintenance model
 Since this is GitHub Pages, content updates happen via git. Recommend:
-- `/content/sessions/session-XX-slug/session.md` — one folder per session plan (matching its URL slug), using consistent front-matter (theme, date, tags) so the Drills & Sessions page can list/filter them automatically, plus a `diagrams/drill-N.json` per drill in the same folder.
+- `/web/content/sessions/session-XX-slug/session.md` — one folder per session plan (matching its URL slug), using consistent front-matter (theme, date, tags) so the Drills & Sessions page can list/filter them automatically, plus a `diagrams/drill-N.json` per drill in the same folder.
 - A short `CONTENTS-HOWTO.md` in the repo (Phase 3 deliverable) explaining, in plain language, how a non-technical committee member adds a new session plan folder and gets it live (even if that just means "ask [technical person] to copy this folder in and push").

@@ -1,13 +1,14 @@
 // Sessions content pipeline (Phase 2 of planning/07-VPS-MIGRATION.md).
-// Reads the repo-root content directory IN PLACE (../content/sessions relative to web/) — the
-// markdown + diagram JSON files are the source of truth and are not copied into web/. Everything
-// here runs at build time (SSG via generateStaticParams), so no runtime fs access is needed.
+// Reads web/content/sessions/ — the content directory now lives inside web/ so the app is
+// self-contained for a Vercel file-upload deploy (see planning/08-VERCEL-MIGRATION.md). The
+// markdown + diagram JSON files are the source of truth. Everything here runs at build time
+// (SSG via generateStaticParams), so no runtime fs access is needed.
 import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import { marked } from "marked";
 
-const CONTENT_DIR = path.resolve(process.cwd(), "../content/sessions");
+const CONTENT_DIR = path.resolve(process.cwd(), "content/sessions");
 
 // ---------------------------------------------------------------------------
 // Types (diagram schema mirrors planning/06-SVG-DIAGRAM-SYSTEM.md exactly)

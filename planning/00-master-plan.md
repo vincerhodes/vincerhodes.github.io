@@ -120,9 +120,9 @@ Deliverables:
 Deliverables:
 - `drills/index.html`
 - `drills/session-01-straight-length-and-the-t/index.html`
-- `content/sessions/session-01-straight-length-and-the-t/session.md`
-- `content/sessions/session-01-straight-length-and-the-t/diagrams/drill-1.json`
-- `content/sessions/session-01-straight-length-and-the-t/diagrams/drill-2.json`
+- `web/content/sessions/session-01-straight-length-and-the-t/session.md`
+- `web/content/sessions/session-01-straight-length-and-the-t/diagrams/drill-1.json`
+- `web/content/sessions/session-01-straight-length-and-the-t/diagrams/drill-2.json`
 - `assets/js/court-diagram.js`
 - `scripts/validate-diagrams.mjs`
 - `CONTENTS-HOWTO.md`
@@ -135,7 +135,7 @@ Deliverables:
 | theme filter | `npx playwright test tests/e2e/theme-filter.spec.ts` | 0 |
 | HTML valid | `npx html-validate "drills/**/*.html"` | 0 |
 
-`diagram schema valid` validates every `content/sessions/**/diagrams/*.json` against the schema in
+`diagram schema valid` validates every `web/content/sessions/**/diagrams/*.json` against the schema in
 `05-AI-DRILL-BUILDER-PROMPT.md` / `06-SVG-DIAGRAM-SYSTEM.md` (non-empty `players`/`arrows`, `x`/`y` in
 `[0,1]`, `color` in the 3-value brand enum, `type` in `["ball","movement"]`) using `ajv`. `diagram
 render smoke` loads the session-01 page and asserts exactly 2 `svg.court-diagram` elements render with
@@ -216,7 +216,7 @@ placeholder `FOLDER_ID`, which reliably 404s against the real Drive endpoint unt
 the real folder (see Phase 2 and the Outstanding work list below); same reason
 `tests/structure/gallery.spec.ts` never asserted on console cleanliness either.
 
-Don't touch `worker/**`, `wrangler.toml`, or `content/sessions/**` while doing polish work — those are
+Don't touch `worker/**`, `wrangler.toml`, or `web/content/sessions/**` while doing polish work — those are
 Phase 3/4 deliverables, unrelated to this phase's scope.
 
 **Human checkpoints:**

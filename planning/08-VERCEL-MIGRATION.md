@@ -29,9 +29,10 @@ but saved drills want real queries), staying on better-sqlite3 (impossible on Ve
   long-running route; it must complete within the limit.
 - `vercel` and `turso` CLIs are NOT installed/authed on the dev machine. Account/project creation
   is a user step (or `npm i -g vercel` + `vercel login`, `curl … turso CLI` + `turso auth signup`).
-- Vercel project root directory = `web/`. The full repo is still cloned at build, so
-  `web/lib/sessions.ts` reading `../content/sessions` keeps working at build time (SSG) — verify on
-  the first preview deploy; fallback is moving `content/` inside `web/`.
+- Vercel project root directory = `web/`. `content/` has been moved inside `web/`
+  (`web/content/sessions/`), so `web/lib/sessions.ts` reads `content/sessions` relative to
+  `process.cwd()` and the app is fully self-contained — a file-upload deploy of `web/` alone
+  works, no repo-root dependency at build time.
 - GitHub Pages stays live until DNS cutover. Vercel preview URLs (`*.vercel.app`) give a full
   pre-cutover smoke-test venue — and Vercel's infra is NOT OpenRouter-region-blocked like the dev
   machine, so live `/api/generate` is finally testable there.
@@ -95,7 +96,7 @@ time curl -s -X POST $BASE/api/generate/ -H 'Content-Type: application/json' \
 # list, but against $BASE), and a browser click-through incl. save→reload persistence.
 ```
 Also verify in Vercel dashboard: build output shows all 8 `/drills/[slug]` pages prerendered
-(proves `../content` resolution worked).
+(proves `web/content` resolution worked).
 
 ### V3 — Custom domain on Vercel
 
@@ -131,4 +132,6 @@ git history. After step 3: rollback is re-enabling Pages + reverting the cleanup
 - Hobby maxDuration: 300 vs 60 — resolved empirically at V2 (set 300, drop to 60 if rejected).
   If generation wall-time ever approaches the cap, options are streaming the response or Pro —
   not a redesign now.
-- Whether to move `content/` inside `web/` — only if V2 build shows `../content` unresolved.
+- ~~Whether to move `content/` inside `web/`~~ — DONE (2026-07-19): content moved to
+  `web/content/sessions/`, `web/lib/sessions.ts` resolves `content/sessions` from `process.cwd()`,
+  and `scripts/validate-diagrams.mjs` + docs were updated to match. `web/` is self-contained.
